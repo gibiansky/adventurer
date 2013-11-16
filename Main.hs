@@ -87,8 +87,8 @@ site st =
       let props = gameProperties game
           newData = replace "#{name}"        (propertyName props) . 
                     replace "#{background}"  (propertyBackground props) . 
-                    replace "#{font-color}"  (propertyFontColor props) . 
-                    replace "#{font-family}" (propertyFontFamily props) $ fileData
+                    replace "#{font-color}"  ("font-color: " ++ propertyFontColor props) . 
+                    replace "#{font-family}" ("font-family: " ++ propertyFontFamily props) $ fileData
       writeBS $ Chars.pack newData
 
     createGameRoute = route [(toStrict ":name/create", createGame st)]
