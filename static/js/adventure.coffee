@@ -1,39 +1,13 @@
 ### Models ###
 class Command extends Backbone.Model
-    url: "/run"
+    url: "/{name}/run"
 
 ### Collections ###
 class CommandHistory extends Backbone.Collection
     model: Command
-    url: "/history"
+    url: "/{name}/history"
 
 ### Views ###
-class Sidebar extends Backbone.View
-    initialize: =>
-        @update()
-
-    update: =>
-      $.get "/items", (data) =>
-        @items = $.parseJSON data
-        @render()
-
-    render: =>
-      @$el.html  ''
-      _.each @items, (item) =>
-        itemDiv = $(document.createElement 'div')
-        itemDiv.attr("class", "item")
-        itemDiv.html item
-        @$el.append itemDiv
-
-      @addHintText()
-
-    addHintText: =>
-      hintText = _.template $('#hint-text-template').html(), {}
-      div = $(document.createElement 'div')
-      div.html hintText
-      @$el.append div
-
-
 class AdventureView extends Backbone.View
     views: []
 
@@ -105,7 +79,6 @@ class TextField extends Backbone.View
         # Store history and items so we can add to it.
         @history = options.history
         @items = options.items
-        @sidebar = options.sidebar
         @historyPosition = @history.length - 1
 
         # Do initial rendering.
@@ -118,7 +91,6 @@ class TextField extends Backbone.View
         @history.add command
         @historyPosition = @history.length
         command.save()
-        @sidebar.update()
 
     getHistoryCommands: () =>
         return @history.collect ((model) -> model.get("command"))
@@ -255,16 +227,13 @@ class CommandView extends Backbone.View
 @loadGame = ->
     history = new CommandHistory []
 
-    # Load all views: sidebar, main view, and text entry view.
-    sidebarView = new Sidebar
-        el: $('#sidebar')
+    # Load all views: main view, and text entry view.
     adventureView = new AdventureView
         el: $('#main')
         history: history
     textField = new TextField
         el: adventureView.textEntry
         history: history
-        sidebar: sidebarView
 
     # Load command history.
     history.fetch
