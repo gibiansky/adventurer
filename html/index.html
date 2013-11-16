@@ -8,9 +8,9 @@
         <script src="http://code.jquery.com/jquery.js"></script>
 
         <!-- Bootstrap-->
-        <link href="../static/thirdparty/bootstrap/css/bootstrap.min.css" rel="stylesheet"
+        <link href="/static/thirdparty/bootstrap/css/bootstrap.min.css" rel="stylesheet"
         media="screen">
-        <script src="../static/thirdparty/bootstrap/js/bootstrap.min.js"> </script>
+        <script src="/static/thirdparty/bootstrap/js/bootstrap.min.js"> </script>
 
         <!-- Bootstrap Prettifications -->
         <style>
@@ -160,7 +160,6 @@
                     </ul>
                 </div>
 
-
             <div id="uploadField" class="container hidden sidebar">
                 <input type="file"> </input>
                 <canvas id='cvs'></canvas>
@@ -171,7 +170,6 @@
             </div>
 
             </div>
-
              <!-- MAIN DOOOP -->
              <div class="col-md-9 content">
                  <div class="panel panel-default">
@@ -245,15 +243,6 @@
               OK = false;
             }
 
-            if (bg == "") {
-              $("#bg").addClass("btn-danger");
-              OK = false;
-            }
-
-            if (bg == "Upload") {
-                bf = bgImage;
-            }
-
             if (!OK) { return; }
 
             var params = { "name" : name,
@@ -269,8 +258,7 @@
                 dataType: "json",
                 url: "http://www.enquack.com/" + name + "/create",
                 data: JSON.stringify(params),
-                success: 
-                  $(".alert-success").removeClass("hidden");
+                success: $(".alert-success").removeClass("hidden")
               })
         });
     </script>
