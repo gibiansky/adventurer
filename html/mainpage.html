@@ -2,17 +2,17 @@
 <html>
     <head>
         <title>Adventure Generator</title>
-        <meta name="editor">
+        <meta name="editor" charset=utf-8>
 
         <!-- JQuery -->
         <script src="http://code.jquery.com/jquery.js"></script>
 
         <!-- Bootstrap-->
-        <link href="../static/thirdparty/bootstrap/css/bootstrap.min.css" rel="stylesheet"
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
         media="screen">
-        <script src="../static/thirdparty/bootstrap/js/bootstrap.min.js"> </script>
+        <script src="bootstrap/js/bootstrap.min.js"> </script>
 
-        <!-- Bootstrap Prettifications -->
+
         <style>
 
             #editor {
@@ -41,20 +41,9 @@
             .sidebar{
                 padding:10px;
                 }
-            .content {
+            .content{
                 padding:10px;
                 }
-
-            .serif { font-family: serif;
-            }
-
-            .sans-serif {
-              font-family: sans-serif;
-            }
-
-            .monospace {
-              font-family: monospace;
-            }
         </style>
 
     </head>
@@ -119,12 +108,12 @@
                     <ul class="dropdown-menu btn-sidebar" role="menu">
                         <li><a href="#">Font Family</a></li>
                         <li class="divider"></li>
-                        <li onClick="select('#fFamily', 'Serif', 'serif')"><a
-                            href="#" class="serif">Serif</a></li>
-                        <li onClick="select('#fFamily', 'Sans Serif', 'sans-serif')"><a
-                            href="#" class="sans-serif">Sans Serif</a></li>
-                        <li onClick="select('#fFamily', 'Monospace', 'monospace')"><a
-                            href="#" class="monospace">Monospace</a></li>
+                        <li onClick="select('#fFamily', 'Serif')"><a
+                            href="#">Serif</a></li>
+                        <li onClick="select('#fFamily', 'Sans Serif')"><a
+                            href="#">Sans Serif</a></li>
+                        <li onClick="select('#fFamily', 'Monospace')"><a
+                            href="#">Monospace</a></li>
                     </ul>
                 </div>
 
@@ -137,9 +126,9 @@
                         role="menu">
                         <li><a href="#">Font Color</a></li>
                         <li class="divider"></li>
-                        <li onClick="select('#fColor', 'Black', 'black')"><a href="#">Black</a></li>
-                        <li onClick="select('#fColor', 'Grey', 'grey')"><a href="#">Grey</a></li>
-                        <li onClick="select('#fColor', 'White', 'white')"><a href="#">White</a></li>
+                        <li onClick="select('#fColor', 'Black')"><a href="#">Black</a></li>
+                        <li onClick="select('#fColor', 'Grey')"><a href="#">Grey</a></li>
+                        <li onClick="select('#fColor', 'White')"><a href="#">White</a></li>
                     </ul>
                 </div>
 
@@ -160,15 +149,14 @@
                     </ul>
                 </div>
 
+                <div id="uploadField" class="container hidden sidebar">
+                    <input type="file"> </input>
+                    <canvas id='cvs'></canvas>
+                </div>
 
-            <div id="uploadField" class="container hidden sidebar">
-                <input type="file"> </input>
-                <canvas id='cvs'></canvas>
-            </div>
-
-            <div class="btn-group-vertical btn-block sidebar">
-              <button id="submit" type="button" class="btn btn-primary">Submit</button>
-            </div>
+                <div class="btn-group-vertical btn-block sidebar">
+                  <button id="submit" type="button" class="btn btn-primary">Submit</button>
+                </div>
 
             </div>
 
@@ -183,28 +171,29 @@
                      </div>
                  </div>
              
-                 <script src="/static/AdvEditor/ace-builds/src-noconflict/ace.js"
+                 <script src="AdvEditor/ace-builds/src-noconflict/ace.js"
                     type="text/javascript" charset="utf-8"></script>
-                 <script src="/static/AdvEditor/require.js" type="text/javascript" charset="utf-8"></script>
+                 <script src="require.js" type="text/javascript" charset="utf-8"></script>
              
-                 <script data-main="/static/AdvEditor/scripts/editorForAdventures.js"
-                     src="/static/AdvEditor/scripts/require.js"></script>
+                 <script data-main="AdvEditor/scripts/editorForAdventures.js"
+                     src="AdvEditor/scripts/require.js"></script>
              </div>
          </div>
      </div>
 
     <script type="text/javascript">
+        function select(button, newVar) {
+            $(button).text(newVar);
+            $(button).val(newVar);
+            $(button).removeClass("btn-danger");
+            $(uploadField).addClass("hidden");
+        }
+
         function upload(button, newVar) {
             $(button).text(newVar);
             $(button).val(newVar);
             $(button).removeClass("btn-danger");
             $(uploadField).removeClass("hidden");
-        }
-
-        function select(button, newVar, newVal) {
-            $(button).text(newVar);
-            $(button).val(newVal);
-            $(button).removeClass("btn-danger");
         }
 
         $('input').change(function() {
@@ -230,7 +219,7 @@
             var name = $('#id').val();
             var fFamily = $('#fFamily').val();
             var fColor = $('#fFamily').val();
-            var bg = $('#bg').val();
+            var bg= $('#bg').val();
             var editor = ace.edit("editor");
             var code = editor.getSession().getValue();
             var OK = true;
@@ -245,13 +234,13 @@
               OK = false;
             }
 
-            if (bg == "") {
+            if (bg== "") {
               $("#bg").addClass("btn-danger");
               OK = false;
             }
 
-            if (bg == "Upload") {
-                bf = bgImage;
+            if (bg== "Upload") {
+                bg = bgImage;
             }
 
             if (!OK) { return; }
@@ -259,19 +248,15 @@
             var params = { "name" : name,
               "font-color" : fColor,
               "font-family" : fFamily,
-              "background" : bg,
-              "code" : code };
-
-            $('.alert-link').href = "http://enquack.com/" + name + "/test"
+              "background" : bg};
 
             $.ajax({
                 type: "POST",
                 dataType: "json",
-                url: "http://www.enquack.com/" + name + "/create",
+                url: "enquack.com" + name + "/create",
                 data: JSON.stringify(params),
-                success: 
-                  $(".alert-success").removeClass("hidden");
-              })
+                success: alert("fuck yeah")
+                })
         });
     </script>
   </body>
