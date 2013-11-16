@@ -141,7 +141,7 @@ instance FromJSON GameCreation where
       bgString <- v .: "background"
       return $ if startswith "data" (bgString :: String)
          then "background: url(" ++ bgString ++ ")"
-         else  "background-color: " ++ bgString
+         else  "background-image: none; background-color: " ++ bgString
 
   parseJSON _ = fail "Expecing an object."
                
