@@ -38,7 +38,7 @@ define(function(require, exports, module) {
                    },
                    {
                    token : "comment",
-                   regex : "\\#.*$"
+                   regex : "^[' ']*\\#.*$"
                    },
                    ]
        };
