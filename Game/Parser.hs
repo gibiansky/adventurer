@@ -8,25 +8,35 @@ import Control.Monad (void)
 import Text.Parsec
 import Text.Parsec.String (Parser)
 import Control.Applicative ((<$>), (<*>))
+import Data.Char (isDigit)
 
 import Data.String.Utils (replace)
 import qualified Data.Map as Map
+
+import Debug.Trace
 
 import Game.Types
 
 parseFile :: String -> IO String
 parseFile filename = do
   contents <- readFile filename
-  case parse parseEpisode filename contents of
+  case parse parseEpisode filename (removeComments contents) of
     Left err -> return $ show err
     Right game -> return $ show game
 
 parseString :: String -> Either (Int, Int) Episode
 parseString contents =
-  case parse parseEpisode "<interactive>" contents of
+  case parse parseEpisode "<interactive>" (removeComments contents) of
     Left err -> Left (sourceLine pos, sourceColumn pos)
       where pos = errorPos err
     Right episode -> Right episode
+
+removeComments :: String -> String
+removeComments = unlines . filter (not . isComment) . lines
+  where 
+    isComment line = case dropWhile (== ' ') line of
+      '#':_ -> True
+      _ -> False
 
 data Decl = SynDecl Synonym
           | EnvDecl Environment
@@ -93,12 +103,14 @@ parseEpisode = do
 toplevelItem :: Parser Decl 
 toplevelItem = do
   declType <- parseDeclType ["location", "environment", "synonym"]
-  name <- many (noneOf " ;{")
+  name <- case declType of
+    "synonym" -> parseStr
+    _ -> many (noneOf " ;{")
   whitespace
   case declType of
     "location" -> LocDecl <$> braced (parseLocation name)
     "environment" -> EnvDecl <$> braced (parseEnvironment name)
-    "synonym" -> SynDecl <$> braced (parseSynonym name)
+    "synonym" -> SynDecl <$> parseSynonym name
 
 parseSynonym :: String -> Parser Synonym
 parseSynonym name = do
@@ -153,7 +165,7 @@ parseDeclType options = do
 locItem :: Parser Decl
 locItem = do
   declType <- parseDeclType ["object", "command"]
-  name <- many (noneOf " ")
+  name <- many (noneOf " ;{")
   whitespace
   case declType of
     "object" -> ObjDecl <$> braced (parseObject name)
@@ -197,11 +209,11 @@ parseExpr = do
      then parseFun word
      else return $ if isValue word then makeValue word else Var word
   where
-    parseWord = many1 (noneOf " `()")
+    parseWord = many1 (noneOf " `();")
     functions = ["add", "sub", "and", "or", "not", "eq"]
 
 isValue :: String -> Bool
-isValue (first:_) = (first `elem` ['0'..'9']) || first == '"'
+isValue (first:_) = isDigit first || first == '"'
 
 makeValue :: String -> Expression
 makeValue str = 
@@ -305,9 +317,9 @@ ifParser = do
   whitespace
   exp <- between (char '`') (char '`') parseExpr
 
-  thenActs <- braced $ many1 $ try parseAction
+  thenActs <- braced $ many $ try parseAction
   whitespace >> string "else" >> whitespace
-  elseActs <- braced $ many1 $ try parseAction
+  elseActs <- braced $ many $ try parseAction
   return $ IfExpr exp thenActs elseActs
 
 assignParser :: Parser Action
@@ -317,7 +329,16 @@ assignParser = do
   whitespace
   varname <- many (noneOf " ;")
   whitespace
-  exp <- between (char '`') (char '`') parseExpr
+  nextChar <- lookAhead anyChar
+  exp <- if nextChar == '`'
+        then between (char '`') (char '`') parseExpr
+        else if isDigit nextChar || nextChar == '"'
+             then do 
+                word <- many1 (noneOf " ;")
+                return $ makeValue word
+             else error "Expecting values or backticks."
+  semicolon
+
   return $ Assign varname exp
 
 stateParser :: Parser GameState

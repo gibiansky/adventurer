@@ -76,13 +76,15 @@ site st =
       writeLBS $ encode out
 
     createGameFromEpisode :: Episode -> Game
-    createGameFromEpisode episode = Game {
-      history = [],
-      currentRoom = findRoom episode "init",
-      episode = episode,
-      lastId = 0,
-      gameState = initState episode
-    }
+    createGameFromEpisode episode = 
+      let pregame = Game {
+            history = [],
+            currentRoom = findRoom episode "init",
+            episode = episode,
+            lastId = 0,
+            gameState = initState episode
+          } in
+        run (Command 0 "start" Nothing) pregame
       where
         findRoom :: Episode -> String -> Location
         findRoom episode name = fromJust $ find ((== name) . locationName) (rooms episode)
