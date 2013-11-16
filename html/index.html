@@ -8,11 +8,10 @@
         <script src="http://code.jquery.com/jquery.js"></script>
 
         <!-- Bootstrap-->
-        <link href="/static/thirdparty/bootstrap/css/bootstrap.min.css" rel="stylesheet"
+        <link href="../static/thirdparty/bootstrap/css/bootstrap.min.css" rel="stylesheet"
         media="screen">
-        <script src="/static/thirdparty/bootstrap/js/bootstrap.min.js"> </script>
+        <script src="../static/thirdparty/bootstrap/js/bootstrap.min.js"> </script>
 
-        <!-- Bootstrap Prettifications -->
         <style>
 
             #editor {
@@ -150,6 +149,18 @@
                         <li onClick="select('#bg', 'Black', 'black')"><a href="#">Black</a></li>
                         <li onClick="select('#bg', 'Grey', 'grey')"><a href="#">Grey</a></li>
                         <li onClick="select('#bg', 'White', 'white')"><a href="#">White</a></li>
+                        <li onClick="select('#bg', 'Red', 'red')"><a
+                            href="#">Red</a></li>
+                        <li onClick="select('#bg', 'Orange', 'orange')"><a
+                            href="#">Orange</a></li>
+                        <li onClick="select('#bg', 'Yellow', 'yellow')"><a
+                            href="#">Yellow</a></li>
+                        <li onClick="select('#bg', 'Green', 'green')"><a
+                            href="#">Green</a></li>
+                        <li onClick="select('#bg', 'Blue', 'blue')"><a
+                            href="#">Blue</a></li>
+                        <li onClick="select('#bg', 'Purple', 'purple')"><a
+                            href="#">Purple</a></li>
                         <li class="divider"></li>
                         <li onClick="upload('#bg', 'Upload')"><a id="upload"
                             href="#">Upload</a></li>
@@ -157,7 +168,7 @@
                 </div>
 
             <div id="uploadField" class="container hidden sidebar">
-                <input type="file"> </input>
+                <input id="uploadImg" type="file"> </input>
                 <canvas id='cvs'></canvas>
             </div>
 
@@ -177,12 +188,12 @@
                      </div>
                  </div>
              
-                 <script src="/static/AdvEditor/ace-builds/src-noconflict/ace.js"
+                 <script src="../static/AdvEditor/ace-builds/src-noconflict/ace.js"
                     type="text/javascript" charset="utf-8"></script>
-                 <script src="/static/AdvEditor/require.js" type="text/javascript" charset="utf-8"></script>
+                 <script src="../static/AdvEditor/require.js" type="text/javascript" charset="utf-8"></script>
              
-                 <script data-main="/static/AdvEditor/scripts/editorForAdventures.js"
-                     src="/static/AdvEditor/scripts/require.js"></script>
+                 <script data-main="../static/AdvEditor/scripts/editorForAdventures.js"
+                     src="../static/AdvEditor/scripts/require.js"></script>
              </div>
              <div class="col-md-2">
                 <h3>Formatting</h3>
@@ -215,7 +226,7 @@
             $(button).removeClass("btn-danger");
         }
 
-        $('#upload').change(function() {
+        $('#uploadImg').change(function() {
             
             var fr = new FileReader;
             
@@ -231,7 +242,6 @@
             };
             
             fr.readAsDataURL(this.files[0]);
-            
         });
 
         $("#submit").click(function(){
@@ -252,6 +262,16 @@
               $("#fFamily").addClass("btn-danger");
               OK = false;
             }
+
+            if (bg == "") {
+              $("#bg").addClass("btn-danger");
+              OK = false;
+            }
+
+            if (bg == "Upload") {
+                bg = bgImage;
+            }
+
 
             if (!OK) { return; }
 
