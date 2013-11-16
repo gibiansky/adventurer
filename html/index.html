@@ -251,7 +251,6 @@
               "background" : bg,
               "code" : code };
 
-            $('.alert-link').href = "http://enquack.com/" + name + "/test"
 
             $.ajax({
                 type: "POST",
@@ -260,6 +259,10 @@
                 data: JSON.stringify(params),
                 success: $(".alert-success").removeClass("hidden")
               })
+
+            console.log($('.alert-link'));
+            $('.alert-link').href = "www.enquack.com/" + name + "/test"
+            console.log($('.alert-link'));
         });
     </script>
   </body>
