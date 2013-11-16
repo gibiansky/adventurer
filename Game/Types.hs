@@ -18,7 +18,8 @@ data Game = Game {
   currentRoom :: Location,                -- ^ The current room the player is in.
   episode :: Episode,                     -- ^ The episode this game is for.
   lastId :: CommandId,                    -- ^ The last id assigned to a command.
-  gameState :: GameState
+  gameState :: GameState,
+  gameProperties :: GameProperties
   } deriving Show
 
 type GameState = Map.Map String (Either Int String)
@@ -113,7 +114,14 @@ data GameCreation = CreateGame {
   fontColor :: String,
   fontFamily :: String,
   gameCode :: String
-  }
+  } deriving Show
+
+data GameProperties = GameProperties {
+  propertyName :: String,
+  propertyBackground :: String,
+  propertyFontColor :: String,
+  propertyFontFamily :: String
+  } deriving Show
 
 data CreationResult = CreationError Int Int | CreationSuccess String
 

@@ -1,51 +1,234 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-        <title></title>
+        <title>Adventure Generator</title>
+        <meta name="editor">
 
         <!-- JQuery -->
         <script src="http://code.jquery.com/jquery.js"></script>
 
-        <!-- Bootstrap -->
-        <link href="../static/thirdparty/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-        <script src="../static/thirdparty/bootstrap/js/bootstrap.min.js"></script>
+        <!-- Bootstrap-->
+        <link href="/static/thirdparty/css/bootstrap.min.css" rel="stylesheet"
+        media="screen">
+        <script src="/static/thirdparty/css/bootstrap/js/bootstrap.min.js"> </script>
 
-        <!-- Backbone -->
-        <script src="../static/thirdparty/backbone/js/underscore.min.js"></script>
-        <script src="../static/thirdparty/backbone/js/backbone.min.js"></script>
+        <!-- Bootstrap Prettifications -->
+        <style>
 
-        <!-- My scripts -->
-        <script src="../static/js/adventure.js"></script>
+            #editor {
+                    height: 500px;
+                    width: 600px;
+                }
 
-        <!-- Bootstrap customizations -->
-        <link href="../static/css/stylesheet.css" rel="stylesheet"></script>
+            .panel {
+                width: 635px !important;
+                }
+            .ace_keyword {
+                color: fuchsia;
+                }
+            .ace_func {
+                color: cyan;
+                }
+            .ace_backtick {
+                color: lightgreen;
+                }
+            .ace_call {
+                color: orange;
+                }
+            .ace_cond {
+                color: violet;
+                }
+            .sidebar{
+                padding:10px;
+                }
+            .content {
+                padding:10px;
+                }
 
-        <script type="text/template" id="command-template">
-            <div class="command">
-              <span class="prompt-entered"><%= command %>
-            </div>
-            <div class="response">
-                <%= response %>
-            </div>
-        </script>
+            .serif { font-family: serif;
+            }
 
-        <script type="text/template" id="text-entry-template">
-            <div id="main-text-field">
-                <span class="prompt">&gt;&gt; <%= text %>
-            </div>
-        </script>
+            .sans-serif {
+              font-family: sans-serif;
+            }
+
+            .monospace {
+              font-family: monospace;
+            }
+        </style>
 
     </head>
 
-    <body onload="loadGame();">
-        <div class="container">
-            <div class="row">
-                <div class="span8 offset4 fill">
-                    <div id="main" class="rounded-box"> </div>
+    <body>
+
+     <div class="navbar navbar-inverse">
+          <div class="container">
+              <div class="navbar-brand">
+                  Adventure Editor
+              </div>
+         <div class="collapse navbar-collapse navHeaderCollapse"
+             id="navHeaderCollapse">
+          <ul class="nav navbar-nav navbar-right"> </ul>
+         </div>
+
+         </div>
+     </div>
+
+     <div class="container">
+         <div class="row">
+            <div class="col-md-12 submit-link">
+
+                 <div class="alert alert-success alert-dismissable hidden">
+                    <button type="button" class="close" data-dismiss="alert"
+                        aria-hidden="true">&times;</button>
+                    <strong>Success!</strong> Click 
+                    <a href="#" class="alert-link">here</a> 
+                    to play your game!
+                 </div>
+
+                 <div class="alert alert-danger alert-dismissable hidden">
+                    <button type="button" class="close" data-dismiss="alert"
+                        aria-hidden="true">&times;</button>
+                    <strong>Compile Error!</strong> Deal with your life. 
+                 </div>
+             </div>
+         </div>
+     </div>
+
+     <div class="container">
+         <div class="row">
+
+             <!-- SIDEBAR -->
+            <div class="col-md-3 sidebar">
+                <h3>Properties</h3>
+
+                <!-- Getting the name.  This will also be the url extension.-->
+                <div class="input-group sidebar-text">
+                    <span class="input-group-addon">ID</span>
+                    <input id="id" type="text" class="form-control" placeholder="Name">
+                </div>
+
+                </br>
+
+                <!--Font and background properties-->
+                <div class="btn-group-vertical btn-block">
+                    <button id="fFamily" type="button" class="btn btn-default
+                        dropdown-toggle btn-sidebar" data-toggle="dropdown">Font
+                        Family <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu btn-sidebar" role="menu">
+                        <li><a href="#">Font Family</a></li>
+                        <li class="divider"></li>
+                        <li onClick="select('#fFamily', 'Serif', 'serif')"><a
+                            href="#" class="serif">Serif</a></li>
+                        <li onClick="select('#fFamily', 'Sans Serif', 'sans-serif')"><a
+                            href="#" class="sans-serif">Sans Serif</a></li>
+                        <li onClick="select('#fFamily', 'Monospace', 'monospace')"><a
+                            href="#" class="monospace">Monospace</a></li>
+                    </ul>
+                </div>
+
+                <div class="btn-group-vertical btn-block">
+                    <button id="fColor" type="button" class="btn btn-default dropdown-toggle
+                        btn-sidebar" data-toggle="dropdown"> Font Color
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu btn-sidebar"
+                        role="menu">
+                        <li><a href="#">Font Color</a></li>
+                        <li class="divider"></li>
+                        <li onClick="select('#fColor', 'Black', 'black')"><a href="#">Black</a></li>
+                        <li onClick="select('#fColor', 'Grey', 'grey')"><a href="#">Grey</a></li>
+                        <li onClick="select('#fColor', 'White', 'white')"><a href="#">White</a></li>
+                    </ul>
+                </div>
+
+                <div class="btn-group-vertical btn-block">
+                    <button id="bgColor" type="button" class="btn btn-default dropdown-toggle
+                        btn-sidebar" data-toggle="dropdown"> Background Color
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu btn-sidebar" role="menu">
+                        <li><a href="#">Background Color</a></li>
+                        <li class="divider"></li>
+                        <li onClick="select('#bgColor', 'Black', 'black')"><a href="#">Black</a></li>
+                        <li onClick="select('#bgColor', 'Grey', 'grey')"><a href="#">Grey</a></li>
+                        <li onClick="select('#bgColor', 'White', 'white')"><a href="#">White</a></li>
+                    </ul>
+                </div>
+
+                <div class="btn-group-vertical btn-block">
+                  <button id="submit" type="button" class="btn btn-primary">Submit</button>
                 </div>
             </div>
-        </div>
-    </body>
+
+             <!-- MAIN DOOOP -->
+             <div class="col-md-9 content">
+                 <div class="panel panel-default">
+                     <div class="panel-heading">
+                        <h3 class="panel-title">Text Adventure Editor</h3>
+                     </div>
+                     <div class="panel-body">
+                        <div id="editor"></div>
+                     </div>
+                 </div>
+             
+                 <script src="AdvEditor/ace-builds/src-noconflict/ace.js"
+                    type="text/javascript" charset="utf-8"></script>
+                 <script src="require.js" type="text/javascript" charset="utf-8"></script>
+             
+                 <script data-main="AdvEditor/scripts/editorForAdventures.js"
+                     src="AdvEditor/scripts/require.js"></script>
+             </div>
+         </div>
+     </div>
+
+    <script type="text/javascript">
+        function select(button, newVar, newVal) {
+            $(button).text(newVar);
+            $(button).val(newVal);
+            $(button).removeClass("btn-danger");
+        }
+
+        $("#submit").click(function(){
+            var name = $('#id').val();
+            var fFamily = $('#fFamily').val();
+            var fColor = $('#fFamily').val();
+            var bgColor = $('#bgColor').val();
+            var editor = ace.edit("editor");
+            var code = editor.getSession().getValue();
+            var OK = true;
+
+            if (fFamily == "") {
+              $("#fColor").addClass("btn-danger");
+              OK = false;
+            }
+
+            if (fColor == "") {
+              $("#fFamily").addClass("btn-danger");
+              OK = false;
+            }
+
+            if (bgColor == "") {
+              $("#bgColor").addClass("btn-danger");
+              OK = false;
+            }
+
+            if (!OK) { return; }
+
+            var params = { "name" : name,
+              "font-color" : fColor,
+              "font-family" : fFamily,
+              "background" : bgColor };
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "enquack.com/" + name + "/create",
+                data: JSON.stringify(params),
+                success: alert("fuck yeah")
+              })
+        });
+    </script>
+  </body>
 </html>
