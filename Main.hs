@@ -25,7 +25,7 @@ import System.Environment
 -- My imports.
 import Game.Types
 import Game.Parser
-import Game.Actions
+--import Game.Actions
 
 -- Qualified imports.
 import qualified Data.Map as Map
@@ -35,15 +35,15 @@ main :: IO ()
 main = do
   args <- getArgs
   case args of
-    ["parse", filename] -> parseFile filename
-    ["serve"] -> do
+    ["parse", filename] -> parseFile filename >>= putStrLn
+    ["serve"] -> return ()
       -- Create a mutable variable where we store all game state.
       -- An MVar is a mutable variable which you can access inside the IO monad.
-      st <- newMVar initGame
+      --st <- newMVar initGame
 
       -- Serve the site.
-      quickHttpServe $ site st
-
+      --quickHttpServe $ site st
+{-
 site :: MVar Game -> Snap ()
 site st =
   -- Order of routes:
@@ -89,3 +89,4 @@ routes = Map.fromList [
     (toStrict "history", getHistory),
     (toStrict "items", getItems)
   ]
+-}
