@@ -2,9 +2,8 @@ define(['require', 'editorLanguage'], function (require) {
        // make and editor, set some stuff
        var editor = ace.edit("editor");
        editor.setTheme("ace/theme/monokai");
-       editor.setValue("'This is a string' and state this is a `backtick YAY!`. We also have special words location, environment, add(1,1), or(thing thing) also synonyms respond i dunno things yes? sub(8, x) and(things) object if else variable");
 
-" # Starter code for your text adventure! \
+var str = " # Starter code for your text adventure! \
  \
 # initialize all variables first, in your state \
 state { \
@@ -145,8 +144,9 @@ location end in global { \
 		You won!  \
 		} \
 	} \
-}"
+}";
 
+       editor.setValue(str);
 
        var myMode = require("editorLanguage").Mode;
        editor.getSession().setMode(new myMode());
