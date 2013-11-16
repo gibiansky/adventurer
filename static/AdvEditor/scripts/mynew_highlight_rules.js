@@ -10,19 +10,15 @@ define(function(require, exports, module) {
        "start" :  [
                    {
                    token: "keyword",
-                   regex: "location|object|environment|synonym|state|set|command|in",
+                   regex: "\\blocation\\b|\\bobject\\b|\\benvironment\\b|\\bsynonym\\b|\\bstate\\b|\\bset\\b|\\bcommand\\b|\\bvariable\\b",
                    },
                    {
                    token: "call",
-                   regex: "respond|move-to|init|start",
+                   regex: "\\brespond\\b|\\bmove-to\\b|\\binit\\b|\\bstart\\b",
                    },
                    {
                    token: "cond",
-                   regex: "if|else",
-                   },
-                   {
-                   token: "func",
-                   regex: "add|sub|or|and|variable|eq",
+                   regex: "\\bif\\b|\\belse\\b",
                    },
                    {
                    token : "string", // single line
@@ -32,15 +28,34 @@ define(function(require, exports, module) {
                    token : "string", // single line
                    regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']"
                    },
+                   /*
                    {
                    token : "backtick", // single line
-                   regex : "[`](?:(?:\\\\.)|(?:[^'\\\\]))*?[`]"
+                   regex : "[`](?:(?:\\\\.)|(?:[^'\\\\]))*?[`]",
+                   next: "backtick"
+                   }, */
+                    {
+                    token : "backtick", // single line
+                    regex : "`",
+                    next: "backtick"
                    },
                    {
                    token : "comment",
                    regex : "^[' ']*\\#.*$"
-                   },
-                   ]
+                   }
+                   ],
+       "backtick" : [
+                     {
+                     token: "func",
+                     regex: "\\badd\\b|\\bsub\\b|\\bor\\b|\\band\\b|\\beq\\b"
+                     },
+                     {
+                     token : "backtick", // single line
+                     regex : ".*`",
+                     next: "start"
+                     }
+                     
+                     ]
        };
        
        };
