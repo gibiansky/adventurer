@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <title>Text Editor</title>
+        <style type="text/css" media="screen">
+            #editor {
+                height: 500px;
+                width: 600px;
+                        }
+        .panel {
+            width: 635px !important;
+        }
+        .ace_keyword {
+            color: fuchsia;
+        }
+        .ace_func {
+            color: cyan;
+        }
+        .ace_backtick {
+            color: lightgreen;
+        }
+        .ace_call {
+            color: orange;
+        }
+        .ace_cond {
+            color: violet;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Text Adventure Editor</h3>
+                </div>
+                <div class="panel-body">
+                    <div id="editor"></div>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+        <script src="ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="require.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script data-main="scripts/editorForAdventures.js" src="scripts/require.js"></script>
+        
+        
+        
+    </body>
+</html>
