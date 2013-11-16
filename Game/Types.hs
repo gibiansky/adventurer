@@ -9,6 +9,7 @@ module Game.Types where
 import Control.Applicative ((<$>), (<*>))
 import Control.Monad (mzero)
 import Data.Aeson
+import Data.String.Utils (startswith)
 
 import qualified Data.Map as Map
 
@@ -127,10 +128,18 @@ data CreationResult = CreationError Int Int | CreationSuccess String
 
 instance FromJSON GameCreation where
   parseJSON (Object v) = CreateGame <$> v .: "name"
-                                    <*> v .: "background"
+                                    <*> readBg
                                     <*> v .: "font-color"
                                     <*> v .: "font-family"
                                     <*> v .: "code"
+    where
+      readBg = do
+        bgString <- v .: "background"
+        if startswith "data" bgString
+           then return $ "background: url(" ++ bgString ++ ")"
+           else return $ "background-color: " ++ bgString
+
+
 
 instance ToJSON CreationResult where
   toJSON (CreationError line col) = object ["result" .= errstr, "line" .= line, "column" .= col]
