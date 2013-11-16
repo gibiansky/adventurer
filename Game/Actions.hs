@@ -121,6 +121,70 @@ run Command { commandString = cmdstr } game =
            -- Create the new game with updated history, command counts, and last used ID.
            game' {history = history game ++ [newCommand], lastId = 1 + lastId game, commandCounts = newCounts}
 
+-- Convert an evaluated expression into a 1 or 0
+getBool :: Either Int String -> Bool
+getBool expr = 
+  case expr of
+    Left i -> if i == 0 then False else True
+    Right s -> if s == "" then False else True
+
+-- | Operations on expressions
+evaluateExpression :: Expression -> Either Int String
+evaluateExpression (Var varName) = 
+  case Map.lookup varName $ gameState game of
+    Nothing -> error $ concat ["No state variable named ", name, "! You be cray."]
+    Just state -> state
+ 
+evaluateExpression (Add exp1 exp2) = 
+  let evaledExp1 = evaluateExpression exp1
+      evaledExp2 = evaluateExpression exp2 in
+    case (evaledExp1, evaledExp2) of
+      (Left i1, Left i2) -> Left $ i1 + i2  
+      (Right s1, Right s2) -> Right $ s1 ++ s2
+      (Left i1, Right s2) -> Right $ show i1 ++ s2
+      (Right s1, Left i2) -> Right $ s1 ++ show i2
+     
+evaluateExpression (Sub exp1 exp2) = 
+  let evaledExp1 = evaluateExpression exp1
+      evaledExp2 = evaluateExpression exp2 in
+    case (evaledExp1, evaledExp2) of
+      (Left i1, Left i2) -> Left $ i1 - i2  
+      (Right s1, Right s2) -> Left 0
+      (Left i1, Right s2) -> Left 0
+      (Right s1, Left i2) -> Left 0
+
+evaluateExpression (And exp1 exp2) = 
+  let evaledExp1 = evaluateExpression exp1
+      evaledExp2 = evaluateExpression exp2 
+      truthVal1 = getBool evaledExp1 
+      truthVal2 = getBool evaledExp2 in
+    Left $ if truthVal1 && truthVal2 then 1 else 0
+
+evaluateExpression (Or exp1 exp2) = 
+  let evaledExp1 = evaluateExpression exp1
+      evaledExp2 = evaluateExpression exp2 
+      truthVal1 = getBool evaledExp1 
+      truthVal2 = getBool evaledExp2 in
+    Left $ if truthVal1 || truthVal2 then 1 else 0
+
+evaluateExpression (Not exp) = 
+  let evaledExp = evaluateExpression exp 
+      truthiness = getBool evaled Exp in
+    Left $ if truthiness then 1 else 0
+
+evaluateExpression (Equal exp1 exp2) = 
+  let evaledExp1 = evaluateExpression exp1
+      evaledExp2 = evaluateExpression exp2 in
+    case (evaledExp1, evaledExp2) of
+      (Left i1, Left i2) -> Left $ i1 == i2  
+      (Right s1, Right s2) -> Right $ s1 == s2
+      (Left i1, Right s2) -> Right $ show i1 == s2
+      (Right s1, Left i2) -> Right $ s1 == show i2
+
+evaluateExpression (StringVal string) = string
+
+evaluateExpression (IntVal int) = int
+
 -- | Run an action on a game and return the new game.
 -- | Keep track of the output of the action using the Writer monad.
 -- |
@@ -135,24 +199,20 @@ runAction game (Print string) = do
   tell string
   return game
 
--- Just output the given string, resplacing underscores with the power name.
--- Add the power name to the list of usable powers.
-runAction game (GainPower name dispstring) = do
-  tell $ replace "_" name dispstring
-  return $ game {powers = name : powers game}
+-- Update the state of the game by assigning expr to predefined variable var
+-- within the state.
+runAction game (Assign var expr) = do
+  afterExitGame <- foldM runAction game (exitActions $ currentRoom game)
+  case Map.lookup var $ gameState game of
+    Nothing -> error $ concat ["No state variable named ", name, "! You be cray."]
+    Just stateToUpdate -> do
+      let stateToUpdate = evaluateExpression expr
+  return game
 
--- Just output the given string, resplacing underscores with the power name.
--- Remove the power name from the list of usable powers.
-runAction game (LosePower name dispstring) = do
-  tell $ replace "_" name dispstring
-  return $ game {powers = filter (/= name) $ powers game}
+runAction game (IfExpr expr thenActs elseActs) = do
+  afterExitGame <- foldM runAction game (exitActions)
+  let truthiness = getBool $ evaluateExpression expr
 
--- Output the nth string (looping around if n is greater than the number of options),
--- where n is the number of times that the power with the given name was used.
--- Return the game unchanged.
-runAction game (ChooseByCount name strlist) = do
-  let ct = Map.findWithDefault 0 name $ commandCounts game
-  tell $ cycle strlist !! ct
   return game
 
 -- Move to a new room.
@@ -161,28 +221,15 @@ runAction game (ChooseByCount name strlist) = do
 --   2. Change to the new room.
 --   3. Run the enter actions of the new room.
 runAction game (MoveToRoom name) = do
-  -- Run the exit actions.
   afterExitGame <- foldM runAction game (exitActions $ currentRoom game)
   case Map.lookup name $ rooms game of
     Nothing -> error $ concat ["No room named ", name, " in room list!"]
     Just room -> do
       -- Move to the next room.
-      let nextRoomGame = afterExitGame { currentRoom = room, commandCounts = Map.empty }
-
+      let newRoomDescrip = room
+      nextRoomGame = afterExitGame { currentRoom = room, commandCounts = Map.empty }
       -- Run the new room enter actions.
       foldM runAction nextRoomGame $ enterActions room
-
--- Print the display string.
--- Add the item to the inventory of the game.
-runAction game (GainItem itemName dispstring) = do
-  tell dispstring
-  return game {items = itemName : items game}
-
--- Print the display string.
--- remove the item from the inventory of the game.
-runAction game (LoseItem itemName dispstring) = do
-  tell dispstring
-  return game {items = filter (/= itemName) $ items game}
 
 -- Check if the item is in the inventory.
 -- If it is, run the first set of actions.
@@ -190,23 +237,12 @@ runAction game (LoseItem itemName dispstring) = do
 runAction game (IfPosessingItem itemName thenActs elseActs) =
   foldM runAction game (if itemName `elem` items game then thenActs else elseActs)
 
--- Trigger a power artificially.
--- Run all actions that this power would trigger.
-runAction game (PowerTrigger cmdstr) =
-  let pow = fromJust $ find (powerMatches cmdstr) (powerDefinitions $ currentRoom game) in
-    foldM runAction game (powerActions pow)
-
-
 --- Utilities ---
 -----------------
 
 -- | The command response when a matching power isn't found.
 noSuchCommand :: CommandResponse
 noSuchCommand = Just "error: no matching command found. enqueue headpat."
-
--- | The command response when the power is invalid.
-noSuchPower :: CommandResponse
-noSuchPower = Just "error: command doesn't exist. enqueue headpat."
 
 -- | Set or modify a value in a hash map.
 -- | If the value exists, modify it using the modifier function.
