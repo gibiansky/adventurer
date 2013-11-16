@@ -43,7 +43,7 @@ var str = " # Starter code for your text adventure! \
 \n            move-to end; \
 \n        } \
 \n		else { \
-\n			set failtowin (add failtowin 1); \
+\n			set failtowin `(add failtowin 1)`; \
 \n			if `eq failtowin 1` { \
 \n				respond { \
 \n					You have failed to win `failtowin`  time \
