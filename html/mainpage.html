@@ -234,9 +234,13 @@
               OK = false;
             }
 
-            if (bgColor == "") {
-              $("#bgColor").addClass("btn-danger");
+            if (bg== "") {
+              $("#bg").addClass("btn-danger");
               OK = false;
+            }
+
+            if (bg== "Upload") {
+                bg = bgImage;
             }
 
             if (!OK) { return; }
@@ -244,7 +248,7 @@
             var params = { "name" : name,
               "font-color" : fColor,
               "font-family" : fFamily,
-              "background" : bgColor };
+              "background" : bg};
 
             $.ajax({
                 type: "POST",
