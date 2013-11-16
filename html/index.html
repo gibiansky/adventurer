@@ -151,7 +151,7 @@
                         <li onClick="select('#bg', 'Grey')"><a href="#">Grey</a></li>
                         <li onClick="select('#bg', 'White')"><a href="#">White</a></li>
                         <li class="divider"></li>
-                        <li onClick="upload('#bg', 'Upload')"><a
+                        <li onClick="upload('#bg', 'Upload')"><a id="upload"
                             href="#">Upload</a></li>
                     </ul>
                 </div>
@@ -215,7 +215,7 @@
             $(button).removeClass("btn-danger");
         }
 
-        $('input').change(function() {
+        $('#upload').change(function() {
             
             var fr = new FileReader;
             
