@@ -16,7 +16,7 @@
       return _ref;
     }
 
-    Command.prototype.url = "{name}/run";
+    Command.prototype.url = "/{name}/run";
 
     return Command;
 
@@ -35,7 +35,7 @@
 
     CommandHistory.prototype.model = Command;
 
-    CommandHistory.prototype.url = "{name}/history";
+    CommandHistory.prototype.url = "/{name}/history";
 
     return CommandHistory;
 
