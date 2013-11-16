@@ -8,7 +8,7 @@ var str = " # Starter code for your text adventure! \
 # initialize all variables first, in your state \
 state { \
     variable hasinitializestate 1; \
-    variable descriptionofgame "empty"; \
+    variable descriptionofgame \"empty\"; \
     variable haswon 0; \
     variable failtowin 0; \
     variable shrew 0; \
@@ -86,14 +86,14 @@ location start { \
 			 \
 			Your game is currently `decriptionofgame`. \
 		} \
-		if `eq decriptionofgame "empty"` \
+		if `eq decriptionofgame \"empty\"` \
 		{ \
 			respond { \
 				You should try to add stuff. \
 			} \
 		} \
 		else { \
-			if `eq decriptionofgame "a good start"` { \
+			if `eq decriptionofgame \"a good start\"` { \
 				Almost there! Add commands! \
 			} \
 			else { \
@@ -110,7 +110,7 @@ location start { \
 			 \
 			An elephant shrew appears. \
 		} \
-		set descriptionofgame "a good start"; \
+		set descriptionofgame \"a good start\"; \
 		set shrew 1; \
 	} \
 	command take shrew { \
@@ -118,7 +118,7 @@ location start { \
 			respond { \
 				A shrew! \
 				 \
-				<img src="http://a-z-animals.com/animals/elephant-shrew/"> \
+				<img src=\"http://a-z-animals.com/animals/elephant-shrew/\"> \
 				 \
 			} \
 			set shrew 0; \
@@ -133,7 +133,7 @@ location start { \
 			You add the ability to pull all-nighters! Try the command never sleep. \
 		} \
 		set neversleep 1; \
-		set descriptionofgame "awesome"; \
+		set descriptionofgame \"awesome\"; \
 	} \
 } \
  \
