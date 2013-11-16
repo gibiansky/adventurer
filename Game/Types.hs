@@ -71,14 +71,14 @@ type CommandId = Int
 
 data Location = Location {
   locationName :: LocationName,
-  locationParent :: Maybe Environment,
+  locationParent :: Maybe EnvironmentName,
   locationObjs :: [Obj],
   locationCommands :: [CommandPattern]
   } deriving Show
 
 data Environment = Environment {
   envName :: EnvironmentName,
-  envParent :: Maybe Environment,
+  envParent :: Maybe EnvironmentName,
   envObjs :: [Obj],
   envCommands :: [CommandPattern]
   } deriving Show

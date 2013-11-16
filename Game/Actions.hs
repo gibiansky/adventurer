@@ -8,8 +8,6 @@
 module Game.Actions (
   runCommand, -- Keep a limited external interface.
   getHistory, -- Only include things that the web server actually needs.
-  getItems,
-  initGame
   ) where
 
 import Control.Monad (foldM)
@@ -17,7 +15,7 @@ import Control.Monad.State (State, modify, gets)
 import Control.Monad.Writer (runWriter, Writer, tell)
 import Data.Aeson (encode, decode)
 import Data.List (find)
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, fromMaybe)
 import Data.String.Utils (replace)
 
 import qualified Data.Map as Map
@@ -53,36 +51,6 @@ getHistory _ = do
   -- Encode it as a JSON bytestring.
   return $ encode commands
 
--- | Ignoring the input, return the set of items as JSON.
-getItems :: Lazy.ByteString -> State Game Lazy.ByteString
-getItems _ = do
-  -- Get all items.
-  myItems <- gets items
-
-  -- Encode them as JSON and return.
-  return $ encode myItems
-
--- | Given the map of room names to rooms, create a new game. 
-initGame :: Map.Map RoomName Room -> Game
-initGame roomlist =
-  -- Start in the room named 'init'.
-  let room = fromJust $ Map.lookup "init" roomlist
-      -- Create an empty game.
-      game = Game {
-        history = [],
-        commandCounts = Map.empty,
-        currentRoom = room,
-        rooms = roomlist,
-        lastId = 1,
-        powers = [],
-        items = []
-      }
-      -- Run the the enter actions and generate output.
-      (initializedGame, initOut) = runWriter $ foldM runAction game $ enterActions room in
-
-    -- Add a single command to the history which has the output the enter actions generated.
-    initializedGame { history = [Command 0 "start" $ Just initOut]}
-
 --- Module-private functions ---
 --------------------------------
 
@@ -92,18 +60,14 @@ initGame roomlist =
 run :: Command -> Game -> Game
 run Command { commandString = cmdstr } game = 
   -- Try to find a power matching this command in the power definitions of the current room.
-  case find (powerMatches cmdstr) (powerDefinitions $ currentRoom game) :: Maybe Power of
+  case findMatchingCommand cmdstr game of
        -- If we don't find anything, return an error.
-       Nothing -> 
-         let powerName = head $ words cmdstr
-             hasPowerWithName = powerName `elem` powers game
-             errResponse = if hasPowerWithName then noSuchCommand else noSuchPower
-             errcmd = Command (lastId game) cmdstr errResponse in
+       Nothing -> let errcmd = Command (lastId game) cmdstr noSuchCommand in
            -- Add the error to the history and increment the last ID.
            game {history = history game ++ [errcmd], lastId = 1 + lastId game}
 
        -- If we manage to find the power, run the triggered actions.
-       Just pow -> 
+       Just (Pattern _ actions) -> 
          -- Run the actions triggered.
          -- runAction will run a single action, and we use the monadic fold (foldM) to 
          -- run all of the actions while keeping the state (the game) in the background.
@@ -111,79 +75,73 @@ run Command { commandString = cmdstr } game =
          --
          -- We use a writer to keep track of action output, which is why we need the monadic fold.
          -- See 'runAction' for more detail.
-         let (game', cmdOutput) = runWriter $ foldM runAction game $ powerActions pow
+         let (game', cmdOutput) = runWriter $ foldM runAction game actions
              -- Create the new command with the command output and a new ID.
-             newCommand = Command (lastId game) cmdstr $ Just cmdOutput
-
-             -- Update the counts for this power in the command counts.
-             newCounts = setOrModify 1 (+1) (powerName pow) $ commandCounts game'  in
+             newCommand = Command (lastId game) cmdstr $ Just cmdOutput in
 
            -- Create the new game with updated history, command counts, and last used ID.
-           game' {history = history game ++ [newCommand], lastId = 1 + lastId game, commandCounts = newCounts}
+           game' {history = history game ++ [newCommand], lastId = 1 + lastId game}
 
 -- Convert an evaluated expression into a 1 or 0
 getBool :: Either Int String -> Bool
 getBool expr = 
   case expr of
-    Left i -> if i == 0 then False else True
-    Right s -> if s == "" then False else True
+    Left i -> i /= 0
+    Right s -> s /= ""
+
+getBools game e1 e2 =
+  let evaledExp1 = evaluateExpression game e1
+      evaledExp2 = evaluateExpression game e2
+      truthVal1 = getBool evaledExp1
+      truthVal2 = getBool evaledExp2 in
+    (truthVal1, truthVal2)
 
 -- | Operations on expressions
-evaluateExpression :: Expression -> Either Int String
-evaluateExpression (Var varName) = 
-  case Map.lookup varName $ gameState game of
-    Nothing -> error $ concat ["No state variable named ", name, "! You be cray."]
-    Just state -> state
+evaluateExpression :: Game -> Expression -> Either Int String
+evaluateExpression game (Var varName) = fromMaybe err (Map.lookup varName $ gameState game)
+  where
+    err = error $ concat ["No state variable named ", varName, "! You be cray."]
  
-evaluateExpression (Add exp1 exp2) = 
-  let evaledExp1 = evaluateExpression exp1
-      evaledExp2 = evaluateExpression exp2 in
+evaluateExpression game (Add exp1 exp2) = 
+  let evaledExp1 = evaluateExpression game exp1
+      evaledExp2 = evaluateExpression game exp2 in
     case (evaledExp1, evaledExp2) of
       (Left i1, Left i2) -> Left $ i1 + i2  
       (Right s1, Right s2) -> Right $ s1 ++ s2
       (Left i1, Right s2) -> Right $ show i1 ++ s2
       (Right s1, Left i2) -> Right $ s1 ++ show i2
      
-evaluateExpression (Sub exp1 exp2) = 
-  let evaledExp1 = evaluateExpression exp1
-      evaledExp2 = evaluateExpression exp2 in
+evaluateExpression game (Sub exp1 exp2) = 
+  let evaledExp1 = evaluateExpression game exp1
+      evaledExp2 = evaluateExpression game exp2 in
     case (evaledExp1, evaledExp2) of
       (Left i1, Left i2) -> Left $ i1 - i2  
       (Right s1, Right s2) -> Left 0
       (Left i1, Right s2) -> Left 0
       (Right s1, Left i2) -> Left 0
 
-evaluateExpression (And exp1 exp2) = 
-  let evaledExp1 = evaluateExpression exp1
-      evaledExp2 = evaluateExpression exp2 
-      truthVal1 = getBool evaledExp1 
-      truthVal2 = getBool evaledExp2 in
-    Left $ if truthVal1 && truthVal2 then 1 else 0
+evaluateExpression game (And exp1 exp2) = 
+    Left $ if uncurry (&&) $ getBools game exp1 exp2 then 1 else 0
 
-evaluateExpression (Or exp1 exp2) = 
-  let evaledExp1 = evaluateExpression exp1
-      evaledExp2 = evaluateExpression exp2 
-      truthVal1 = getBool evaledExp1 
-      truthVal2 = getBool evaledExp2 in
-    Left $ if truthVal1 || truthVal2 then 1 else 0
+evaluateExpression game (Or exp1 exp2) = 
+    Left $ if uncurry (||) $ getBools game exp1 exp2 then 1 else 0
 
-evaluateExpression (Not exp) = 
-  let evaledExp = evaluateExpression exp 
-      truthiness = getBool evaled Exp in
+evaluateExpression game (Not exp) = 
+  let evaledExp = evaluateExpression game exp 
+      truthiness = getBool evaledExp in
     Left $ if truthiness then 1 else 0
 
-evaluateExpression (Equal exp1 exp2) = 
-  let evaledExp1 = evaluateExpression exp1
-      evaledExp2 = evaluateExpression exp2 in
+evaluateExpression game (Equal exp1 exp2) = 
+  let evaledExp1 = evaluateExpression game exp1
+      evaledExp2 = evaluateExpression game exp2 in
     case (evaledExp1, evaledExp2) of
-      (Left i1, Left i2) -> Left $ i1 == i2  
-      (Right s1, Right s2) -> Right $ s1 == s2
-      (Left i1, Right s2) -> Right $ show i1 == s2
-      (Right s1, Left i2) -> Right $ s1 == show i2
+      (Left i1, Left i2) -> Left $ if i1 == i2 then 1 else 0
+      (Right s1, Right s2) -> Left $ if s1 == s2 then 1 else 0
+      _ -> Left 0
 
-evaluateExpression (StringVal string) = string
+evaluateExpression _ (StringVal string) = Right string
 
-evaluateExpression (IntVal int) = int
+evaluateExpression _ (IntVal int) = Left int
 
 -- | Run an action on a game and return the new game.
 -- | Keep track of the output of the action using the Writer monad.
@@ -196,46 +154,18 @@ runAction :: Game -> Action -> Writer String Game
 -- Just output the given string.
 -- Return the game unchanged.
 runAction game (Print string) = do
-  tell string
+  tell $ evalInterpolation game string
   return game
 
--- Update the state of the game by assigning expr to predefined variable var
--- within the state.
-runAction game (Assign var expr) = do
-  afterExitGame <- foldM runAction game (exitActions $ currentRoom game)
-  case Map.lookup var $ gameState game of
-    Nothing -> error $ concat ["No state variable named ", name, "! You be cray."]
-    Just stateToUpdate -> do
-      let stateToUpdate = evaluateExpression expr
-  return game
-
-runAction game (IfExpr expr thenActs elseActs) = do
-  afterExitGame <- foldM runAction game (exitActions)
-  let truthiness = getBool $ evaluateExpression expr
-
-  return game
-
--- Move to a new room.
--- The changes to the game are as follows:
---   1. Run the exit actions of the current room.
---   2. Change to the new room.
---   3. Run the enter actions of the new room.
-runAction game (MoveToRoom name) = do
-  afterExitGame <- foldM runAction game (exitActions $ currentRoom game)
-  case Map.lookup name $ rooms game of
-    Nothing -> error $ concat ["No room named ", name, " in room list!"]
-    Just room -> do
-      -- Move to the next room.
-      let newRoomDescrip = room
-      nextRoomGame = afterExitGame { currentRoom = room, commandCounts = Map.empty }
-      -- Run the new room enter actions.
-      foldM runAction nextRoomGame $ enterActions room
-
--- Check if the item is in the inventory.
--- If it is, run the first set of actions.
--- If it isn't, run the second set of items.
-runAction game (IfPosessingItem itemName thenActs elseActs) =
-  foldM runAction game (if itemName `elem` items game then thenActs else elseActs)
+evalInterpolation :: Game -> InterpolatedString -> String
+evalInterpolation game (Interpolate interp) = foldl (joinInterp game) "" interp
+  where
+    joinInterp :: Game -> String -> Either String Expression -> String
+    joinInterp _ str (Left nextStr) = str ++ nextStr
+    joinInterp game str (Right expr) = str ++ evalStr (evaluateExpression game expr)
+      where
+        evalStr (Left int) = show int
+        evalStr (Right str) = str
 
 --- Utilities ---
 -----------------
@@ -244,17 +174,36 @@ runAction game (IfPosessingItem itemName thenActs elseActs) =
 noSuchCommand :: CommandResponse
 noSuchCommand = Just "error: no matching command found. enqueue headpat."
 
--- | Set or modify a value in a hash map.
--- | If the value exists, modify it using the modifier function.
--- | If there is no such key, add the value.
-setOrModify :: Ord k => a -> (a -> a) -> k -> Map.Map k a -> Map.Map k a
-setOrModify val modifier key hashmap =
-  case Map.lookup key hashmap of
-       Nothing -> Map.insert key val hashmap
-       Just oldval -> Map.insert key (modifier oldval) hashmap
+findMatchingCommand :: String -> Game -> Maybe CommandPattern
+findMatchingCommand cmdstr game = findMatchingCommand' cmdstr game (currentRoom game)
 
--- | Check whether the command string matches the given power.
-powerMatches :: String -> Power -> Bool
-powerMatches str Power { powerName = name, powerArgs = args } =
-  -- This power is a match if its name and arguments match the words in the string. 
-  words str == name : args
+findMatchingCommand' :: String -> Game -> Location -> Maybe CommandPattern
+findMatchingCommand' cmdstr game loc = 
+  let cmds = locationCommands loc
+      match = find (cmdMatches cmdstr) cmds in
+    case match of
+      Just cmd -> Just cmd
+      Nothing -> case locationParent loc of
+        Nothing -> Nothing
+        Just parentName -> 
+          let parentEnv = findEnvWithName parentName game in
+            findMatchingCommand'' cmdstr game parentEnv
+
+
+findMatchingCommand'' :: String -> Game -> Environment -> Maybe CommandPattern
+findMatchingCommand'' cmdstr game loc = 
+  let cmds = envCommands loc
+      match = find (cmdMatches cmdstr) cmds in
+    case match of
+      Just cmd -> Just cmd
+      Nothing -> case envParent loc of
+        Nothing -> Nothing
+        Just parentName -> 
+          let parentEnv = findEnvWithName parentName game in
+            findMatchingCommand'' cmdstr game parentEnv
+
+cmdMatches :: String -> CommandPattern -> Bool
+cmdMatches str (Pattern pat _) = words str == pat
+
+findEnvWithName :: EnvironmentName -> Game -> Environment
+findEnvWithName name game = fromJust $ find ((== name) . envName) $ environments $ episode game

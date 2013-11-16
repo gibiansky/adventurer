@@ -25,7 +25,7 @@ import System.Environment
 -- My imports.
 import Game.Types
 import Game.Parser
---import Game.Actions
+import Game.Actions
 
 -- Qualified imports.
 import qualified Data.Map as Map
