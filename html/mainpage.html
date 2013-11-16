@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>Adventure Generator</title>
-        <meta name="editor">
+        <meta name="editor" charset=utf-8>
 
         <!-- JQuery -->
         <script src="http://code.jquery.com/jquery.js"></script>
@@ -12,7 +12,7 @@
         media="screen">
         <script src="bootstrap/js/bootstrap.min.js"> </script>
 
-        <!-- Bootstrap Prettifications -->
+
         <style>
 
             #editor {
@@ -67,7 +67,7 @@
          <div class="row">
             <div class="col-md-12 submit-link">
 
-                 <div class="alert alert-success alert-dismissable ">
+                 <div class="alert alert-success alert-dismissable hidden">
                     <button type="button" class="close" data-dismiss="alert"
                         aria-hidden="true">&times;</button>
                     <strong>Success!</strong> Click 
@@ -133,22 +133,31 @@
                 </div>
 
                 <div class="btn-group-vertical btn-block">
-                    <button id="bgColor" type="button" class="btn btn-default dropdown-toggle
-                        btn-sidebar" data-toggle="dropdown"> Background Color
+                    <button id="bg" type="button" class="btn btn-default dropdown-toggle
+                        btn-sidebar" data-toggle="dropdown"> Background 
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu btn-sidebar" role="menu">
-                        <li><a href="#">Background Color</a></li>
+                        <li><a href="#">Background</a></li>
                         <li class="divider"></li>
-                        <li onClick="select('#bgColor', 'Black')"><a href="#">Black</a></li>
-                        <li onClick="select('#bgColor', 'Grey')"><a href="#">Grey</a></li>
-                        <li onClick="select('#bgColor', 'White')"><a href="#">White</a></li>
+                        <li onClick="select('#bg', 'Black')"><a href="#">Black</a></li>
+                        <li onClick="select('#bg', 'Grey')"><a href="#">Grey</a></li>
+                        <li onClick="select('#bg', 'White')"><a href="#">White</a></li>
+                        <li class="divider"></li>
+                        <li onClick="upload('#bg', 'Upload')"><a
+                            href="#">Upload</a></li>
                     </ul>
                 </div>
 
-                <div class="btn-group-vertical btn-block">
+                <div id="uploadField" class="container hidden sidebar">
+                    <input type="file"> </input>
+                    <canvas id='cvs'></canvas>
+                </div>
+
+                <div class="btn-group-vertical btn-block sidebar">
                   <button id="submit" type="button" class="btn btn-primary">Submit</button>
                 </div>
+
             </div>
 
              <!-- MAIN DOOOP -->
@@ -177,13 +186,40 @@
             $(button).text(newVar);
             $(button).val(newVar);
             $(button).removeClass("btn-danger");
+            $(uploadField).addClass("hidden");
         }
+
+        function upload(button, newVar) {
+            $(button).text(newVar);
+            $(button).val(newVar);
+            $(button).removeClass("btn-danger");
+            $(uploadField).removeClass("hidden");
+        }
+
+        $('input').change(function() {
+            
+            var fr = new FileReader;
+            
+            fr.onloadend = function() {
+                var img = new Image;
+                
+                img.src = fr.result;
+                var bgImage = img.src;
+                
+                var c=document.getElementById("cvs");
+                var ctx=c.getContext("2d");
+                ctx.drawImage(img,0,0,200,180);
+            };
+            
+            fr.readAsDataURL(this.files[0]);
+            
+        });
 
         $("#submit").click(function(){
             var name = $('#id').val();
             var fFamily = $('#fFamily').val();
             var fColor = $('#fFamily').val();
-            var bgColor = $('#bgColor').val();
+            var bg= $('#bg').val();
             var editor = ace.edit("editor");
             var code = editor.getSession().getValue();
             var OK = true;
