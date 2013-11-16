@@ -46,13 +46,13 @@ define(function(require, exports, module) {
                    ],
        "backtick" : [
                      {
-                     token: "func",
-                     regex: "\\badd\\b|\\bsub\\b|\\bor\\b|\\band\\b|\\beq\\b"
-                     },
-                     {
                      token : "backtick", // single line
                      regex : ".*`",
                      next: "start"
+                     },
+                     {
+                     token: "func",
+                     regex: "\\badd\\b|\\bsub\\b|\\bor\\b|\\band\\b|\\beq\\b"
                      }
                      
                      ]

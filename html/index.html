@@ -8,9 +8,9 @@
         <script src="http://code.jquery.com/jquery.js"></script>
 
         <!-- Bootstrap-->
-        <link href="/static/thirdparty/bootstrap/css/bootstrap.min.css" rel="stylesheet"
+        <link href="../static/thirdparty/bootstrap/css/bootstrap.min.css" rel="stylesheet"
         media="screen">
-        <script src="/static/thirdparty/bootstrap/js/bootstrap.min.js"> </script>
+        <script src="../static/thirdparty/bootstrap/js/bootstrap.min.js"> </script>
 
         <style>
 
@@ -156,7 +156,7 @@
                 </div>
 
             <div id="uploadField" class="container hidden sidebar">
-                <input type="file"> </input>
+                <input id="uploadImg" type="file"> </input>
                 <canvas id='cvs'></canvas>
             </div>
 
@@ -176,12 +176,12 @@
                      </div>
                  </div>
              
-                 <script src="/static/AdvEditor/ace-builds/src-noconflict/ace.js"
+                 <script src="../static/AdvEditor/ace-builds/src-noconflict/ace.js"
                     type="text/javascript" charset="utf-8"></script>
-                 <script src="/static/AdvEditor/require.js" type="text/javascript" charset="utf-8"></script>
+                 <script src="../static/AdvEditor/require.js" type="text/javascript" charset="utf-8"></script>
              
-                 <script data-main="/static/AdvEditor/scripts/editorForAdventures.js"
-                     src="/static/AdvEditor/scripts/require.js"></script>
+                 <script data-main="../static/AdvEditor/scripts/editorForAdventures.js"
+                     src="../static/AdvEditor/scripts/require.js"></script>
              </div>
              <div class="col-md-2">
                 <h3>Formatting</h3>
@@ -214,7 +214,7 @@
             $(button).removeClass("btn-danger");
         }
 
-        $('#upload').change(function() {
+        $('#uploadImg').change(function() {
             
             var fr = new FileReader;
             
@@ -230,7 +230,6 @@
             };
             
             fr.readAsDataURL(this.files[0]);
-            
         });
 
         $("#submit").click(function(){
