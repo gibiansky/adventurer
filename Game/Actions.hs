@@ -8,6 +8,7 @@
 module Game.Actions (
   runCommand, -- Keep a limited external interface.
   getHistory, -- Only include things that the web server actually needs.
+  run
   ) where
 
 import Control.Monad (foldM)
