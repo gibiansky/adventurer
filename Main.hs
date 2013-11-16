@@ -36,24 +36,16 @@ gameDirectory = "rooms"
 
 main :: IO ()
 main = do
-  -- Before starting the server, load and parse all the rooms.
-  -- Get all room files (only ones which end with ".room").
-  files <- getDirectoryContents gameDirectory
-  let roomFiles = filter (endswith ".room") files
-      roomFilePaths = map ((gameDirectory ++ "/") ++) roomFiles
+  args <- getArgs
+  case args of
+    ["parse", filename] -> parseFile filename
+    ["serve"] -> do
+      -- Create a mutable variable where we store all game state.
+      -- An MVar is a mutable variable which you can access inside the IO monad.
+      st <- newMVar initGame
 
-  -- Read contents of all room files. 
-  roomContents <- mapM readFile roomFilePaths
-
-  -- Parse the rooms and load them into a dictionary accessible by room name.
-  let gameRooms = Map.fromList $ zipWith parseRoom roomContents roomFiles
-
-  -- Create a mutable variable where we store all game state.
-  -- An MVar is a mutable variable which you can access inside the IO monad.
-  st <- newMVar $ initGame gameRooms
-
-  -- Serve the site.
-  quickHttpServe $ site st
+      -- Serve the site.
+      quickHttpServe $ site st
 
 site :: MVar Game -> Snap ()
 site st =
