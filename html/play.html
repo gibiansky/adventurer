@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title></title>
+
+        <!-- JQuery -->
+        <script src="http://code.jquery.com/jquery.js"></script>
+
+        <!-- Bootstrap -->
+        <link href="../static/thirdparty/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <script src="../static/thirdparty/bootstrap/js/bootstrap.min.js"></script>
+
+        <!-- Backbone -->
+        <script src="../static/thirdparty/backbone/js/underscore.min.js"></script>
+        <script src="../static/thirdparty/backbone/js/backbone.min.js"></script>
+
+        <!-- My scripts -->
+        <script src="../static/js/adventure.js"></script>
+
+        <!-- Bootstrap customizations -->
+        <link href="../static/css/stylesheet.css" rel="stylesheet"></script>
+
+        <script type="text/template" id="command-template">
+            <div class="command">
+              <span class="prompt-entered"><%= command %>
+            </div>
+            <div class="response">
+                <%= response %>
+            </div>
+        </script>
+
+        <script type="text/template" id="text-entry-template">
+            <div id="main-text-field">
+                <span class="prompt">&gt;&gt; <%= text %>
+            </div>
+        </script>
+
+    </head>
+
+    <body onload="loadGame();">
+        <div class="container">
+            <div class="row">
+                <div class="span8 offset4 fill">
+                    <div id="main" class="rounded-box"> </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
