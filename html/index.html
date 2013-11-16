@@ -159,7 +159,6 @@
                     </ul>
                 </div>
 
-
             <div id="uploadField" class="container hidden sidebar">
                 <input type="file"> </input>
                 <canvas id='cvs'></canvas>
@@ -170,7 +169,6 @@
             </div>
 
             </div>
-
              <!-- MAIN DOOOP -->
              <div class="col-md-9 content">
                  <div class="panel panel-default">
@@ -244,15 +242,6 @@
               OK = false;
             }
 
-            if (bg == "") {
-              $("#bg").addClass("btn-danger");
-              OK = false;
-            }
-
-            if (bg == "Upload") {
-                bf = bgImage;
-            }
-
             if (!OK) { return; }
 
             var params = { "name" : name,
@@ -261,7 +250,6 @@
               "background" : bg,
               "code" : code };
 
-            $('.alert-link').href = "http://enquack.com/" + name + "/test"
 
             $.ajax({
                 type: "POST",
@@ -270,6 +258,10 @@
                 data: JSON.stringify(params),
                 success: $(".alert-success").removeClass("hidden")
               })
+
+            console.log($('.alert-link'));
+            $('.alert-link').href = "www.enquack.com/" + name + "/test"
+            console.log($('.alert-link'));
         });
     </script>
   </body>

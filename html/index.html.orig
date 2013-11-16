@@ -185,29 +185,48 @@
                      </div>
                  </div>
              
-                 <script src="/static/AdvEditor/ace-builds/src-noconflict/ace.js"
+                 <script src="../static/AdvEditor/ace-builds/src-noconflict/ace.js"
                     type="text/javascript" charset="utf-8"></script>
-                 <script src="/static/AdvEditor/require.js" type="text/javascript" charset="utf-8"></script>
+                 <script src="../static/AdvEditor/require.js" type="text/javascript" charset="utf-8"></script>
              
-                 <script data-main="/static/AdvEditor/scripts/editorForAdventures.js"
-                     src="/static/AdvEditor/scripts/require.js"></script>
+                 <script data-main="../static/AdvEditor/scripts/editorForAdventures.js"
+                     src="../static/AdvEditor/scripts/require.js"></script>
              </div>
          </div>
      </div>
 
     <script type="text/javascript">
-        function select(button, newVar, newVal) {
-            $(button).text(newVar);
-            $(button).val(newVal);
-            $(button).removeClass("btn-danger");
-        }
-
         function upload(button, newVar) {
             $(button).text(newVar);
             $(button).val(newVar);
             $(button).removeClass("btn-danger");
             $(uploadField).removeClass("hidden");
         }
+
+        function select(button, newVar, newVal) {
+            $(button).text(newVar);
+            $(button).val(newVal);
+            $(button).removeClass("btn-danger");
+        }
+
+        $('input').change(function() {
+            
+            var fr = new FileReader;
+            
+            fr.onloadend = function() {
+                var img = new Image;
+                
+                img.src = fr.result;
+                var bgImage = img.src;
+                
+                var c=document.getElementById("cvs");
+                var ctx=c.getContext("2d");
+                ctx.drawImage(img,0,0,200,180);
+            };
+            
+            fr.readAsDataURL(this.files[0]);
+            
+        });
 
         $("#submit").click(function(){
             var name = $('#id').val();
@@ -228,29 +247,22 @@
               OK = false;
             }
 
-            if (bg == "") {
-              $("#bg").addClass("btn-danger");
-              OK = false;
-            }
-
-            if (bg == "Upload") {
-                bf = bgImage;
-            }
-
             if (!OK) { return; }
 
             var params = { "name" : name,
               "font-color" : fColor,
               "font-family" : fFamily,
-              "background" : bg };
+              "background" : bg,
               "code" : code };
+
+            $('.alert-link').href = "http://enquack.com/" + name + "/test"
 
             $.ajax({
                 type: "POST",
                 dataType: "json",
                 url: "http://www.enquack.com/" + name + "/create",
                 data: JSON.stringify(params),
-                success: alert("fuck yeah")
+                success: $(".alert-success").removeClass("hidden")
               })
         });
     </script>
