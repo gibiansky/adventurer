@@ -3,7 +3,7 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title></title>
+        <title>#{name}</title>
 
         <!-- JQuery -->
         <script src="http://code.jquery.com/jquery.js"></script>
@@ -36,10 +36,9 @@
                 <span class="prompt">&gt;&gt; <%= text %>
             </div>
         </script>
-
     </head>
 
-    <body onload="loadGame();">
+    <body onload="loadGame();" style="color: #{font-color};background-color: #{background}; font-family: #{font-family}">
         <div class="container">
             <div class="row">
                 <div class="span8 offset4 fill">

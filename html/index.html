@@ -8,9 +8,9 @@
         <script src="http://code.jquery.com/jquery.js"></script>
 
         <!-- Bootstrap-->
-        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
+        <link href="/static/thirdparty/css/bootstrap.min.css" rel="stylesheet"
         media="screen">
-        <script src="bootstrap/js/bootstrap.min.js"> </script>
+        <script src="/static/thirdparty/css/bootstrap/js/bootstrap.min.js"> </script>
 
         <!-- Bootstrap Prettifications -->
         <style>
@@ -41,9 +41,20 @@
             .sidebar{
                 padding:10px;
                 }
-            .content{
+            .content {
                 padding:10px;
                 }
+
+            .serif { font-family: serif;
+            }
+
+            .sans-serif {
+              font-family: sans-serif;
+            }
+
+            .monospace {
+              font-family: monospace;
+            }
         </style>
 
     </head>
@@ -108,12 +119,12 @@
                     <ul class="dropdown-menu btn-sidebar" role="menu">
                         <li><a href="#">Font Family</a></li>
                         <li class="divider"></li>
-                        <li onClick="select('#fFamily', 'Serif')"><a
-                            href="#">Serif</a></li>
-                        <li onClick="select('#fFamily', 'Sans Serif')"><a
-                            href="#">Sans Serif</a></li>
-                        <li onClick="select('#fFamily', 'Monospace')"><a
-                            href="#">Monospace</a></li>
+                        <li onClick="select('#fFamily', 'Serif', 'serif')"><a
+                            href="#" class="serif">Serif</a></li>
+                        <li onClick="select('#fFamily', 'Sans Serif', 'sans-serif')"><a
+                            href="#" class="sans-serif">Sans Serif</a></li>
+                        <li onClick="select('#fFamily', 'Monospace', 'monospace')"><a
+                            href="#" class="monospace">Monospace</a></li>
                     </ul>
                 </div>
 
@@ -126,9 +137,9 @@
                         role="menu">
                         <li><a href="#">Font Color</a></li>
                         <li class="divider"></li>
-                        <li onClick="select('#fColor', 'Black')"><a href="#">Black</a></li>
-                        <li onClick="select('#fColor', 'Grey')"><a href="#">Grey</a></li>
-                        <li onClick="select('#fColor', 'White')"><a href="#">White</a></li>
+                        <li onClick="select('#fColor', 'Black', 'black')"><a href="#">Black</a></li>
+                        <li onClick="select('#fColor', 'Grey', 'grey')"><a href="#">Grey</a></li>
+                        <li onClick="select('#fColor', 'White', 'white')"><a href="#">White</a></li>
                     </ul>
                 </div>
 
@@ -140,9 +151,9 @@
                     <ul class="dropdown-menu btn-sidebar" role="menu">
                         <li><a href="#">Background Color</a></li>
                         <li class="divider"></li>
-                        <li onClick="select('#bgColor', 'Black')"><a href="#">Black</a></li>
-                        <li onClick="select('#bgColor', 'Grey')"><a href="#">Grey</a></li>
-                        <li onClick="select('#bgColor', 'White')"><a href="#">White</a></li>
+                        <li onClick="select('#bgColor', 'Black', 'black')"><a href="#">Black</a></li>
+                        <li onClick="select('#bgColor', 'Grey', 'grey')"><a href="#">Grey</a></li>
+                        <li onClick="select('#bgColor', 'White', 'white')"><a href="#">White</a></li>
                     </ul>
                 </div>
 
@@ -173,9 +184,9 @@
      </div>
 
     <script type="text/javascript">
-        function select(button, newVar) {
+        function select(button, newVar, newVal) {
             $(button).text(newVar);
-            $(button).val(newVar);
+            $(button).val(newVal);
             $(button).removeClass("btn-danger");
         }
 
