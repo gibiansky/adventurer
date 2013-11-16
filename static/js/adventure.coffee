@@ -1,11 +1,11 @@
 ### Models ###
 class Command extends Backbone.Model
-    url: "{name}/run"
+    url: "/{name}/run"
 
 ### Collections ###
 class CommandHistory extends Backbone.Collection
     model: Command
-    url: "{name}/history"
+    url: "/{name}/history"
 
 ### Views ###
 class AdventureView extends Backbone.View
