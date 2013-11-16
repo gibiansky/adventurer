@@ -97,11 +97,6 @@ site st =
     createGame state = do
       input <- readRequestBody 1000000
       name <- fmap (Chars.unpack . fromJust) $ getParam "name"
-      liftIO $ print input
-      case eitherDecode input :: Either String GameCreation of
-        Left err -> liftIO $ putStrLn err
-        Right success -> liftIO $ print success
-
       let Just creation = decode input
       out <- liftIO $ modifyMVar state $ \st -> 
         case parseString (gameCode creation) of

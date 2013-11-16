@@ -139,7 +139,7 @@ instance FromJSON GameCreation where
     where
     readBg = do
       bgString <- v .: "background"
-      return $ if startswith "data" bgString
+      return $ if startswith "data" (bgString :: String)
          then "background: url(" ++ bgString ++ ")"
          else  "background-color: " ++ bgString
 
