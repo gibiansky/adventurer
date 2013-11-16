@@ -39,7 +39,7 @@ main = do
   args <- getArgs
   case args of
     ["parse", filename] -> parseFile filename >>= putStrLn
-    ["serve"] -> do
+    _ -> do
       -- Create a mutable variable where we store all game state.
       -- An MVar is a mutable variable which you can access inside the IO monad.
       st <- newMVar Map.empty

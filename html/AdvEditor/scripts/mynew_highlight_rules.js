@@ -10,11 +10,11 @@ define(function(require, exports, module) {
        "start" :  [
                    {
                    token: "keyword",
-                   regex: "location|object|environment|synonym|state",
+                   regex: "location|object|environment|synonym|state|set|command",
                    },
                    {
                    token: "call",
-                   regex: "respond",
+                   regex: "respond|move-to|init|start",
                    },
                    {
                    token: "cond",
@@ -22,7 +22,7 @@ define(function(require, exports, module) {
                    },
                    {
                    token: "func",
-                   regex: " add| sub| or| and| variable",
+                   regex: "add|sub|or|and|variable|eq",
                    },
                    {
                    token : "string", // single line
@@ -35,7 +35,11 @@ define(function(require, exports, module) {
                    {
                    token : "backtick", // single line
                    regex : "[`](?:(?:\\\\.)|(?:[^'\\\\]))*?[`]"
-                   }
+                   },
+                   {
+                   token : "comment",
+                   regex : "^[' ']*\\#.*$"
+                   },
                    ]
        };
        
