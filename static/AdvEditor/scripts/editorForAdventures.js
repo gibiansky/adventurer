@@ -4,147 +4,147 @@ define(['require', 'editorLanguage'], function (require) {
        editor.setTheme("ace/theme/monokai");
 
 var str = " # Starter code for your text adventure! \
- \
-# initialize all variables first, in your state \
-state { \
-    variable hasinitializestate 1; \
-    variable descriptionofgame \"empty\"; \
-    variable haswon 0; \
-    variable failtowin 0; \
-    variable shrew 0; \
-    variable hasshrew 0; \
-    variable neversleep 0; \
-} \
- \
-# add synonyms next so users have multiple options of what words they can type \
-synonym \"look\" \"examine\" \"look at\" \
-synonym \"go\" \"move to\" \"got to\" \
-synonym \"stuff\" \"things\" \
- \
-# required starting area. Command start is automatically run when game begins. \
-location init { \
-    command start { \
-        respond { \
-            You begin writing your text adventure game! \
-        } \
-        #move yourself to starting area \
-        move-to start \
-    } \
-} \
- \
-location start { \
-	command win { \
-        # inside commands you can use conditionals \
-        if `haswon` { \
-            # using `s, you can  \
-            respond { \
-                You win this `descriptionofgame` game! \
-            } \
-            move-to end \
-        } \
-		else { \
-			set failtowin (add failtowin 1); \
-			if `eq failtowin 1` { \
-				respond { \
-					You have failed to win `failtowin`  time \
-				} \
-			} \
-		else { \
-			respond { \
-				You have failed to win `failtowin`  times \
-			} \
-		} \
-    } \
-     \
-    command look shrew { \
-    	if `or hasshrew shrew` { \
-    		respond { \
-    			It's adorable! \
-    		} \
-    	} \
-    	else { \
-    		respond { \
-    			What shrew? \
-    		} \
-    	} \
-    } \
-    command never sleep { \
-    	if `neversleep` { \
-    		respond { \
-    			With the powers of neversleep, you stay up all night to hackathon! \
-    		} \
-    	} \
-    	else { \
-    		respond { \
-    			You try to neversleep, but zzzzzzzzzzzzz. \
-    		} \
-    	} \
-    } \
-	command look { \
-		respond { \
-			You are at the start of your game! \
-			 \
-			Your game is currently `decriptionofgame`. \
-		} \
-		if `eq decriptionofgame \"empty\"` \
-		{ \
-			respond { \
-				You should try to add stuff. \
-			} \
-		} \
-		else { \
-			if `eq decriptionofgame \"a good start\"` { \
-				Almost there! Add commands! \
-			} \
-			else { \
-				respond { \
-					Now you can win! Try it! \
-				} \
-				set haswon 1; \
-			} \
-		} \
-	} \
-	command add stuff { \
-		respond { \
-			You add some locations with objects you can interact with. \
-			 \
-			An elephant shrew appears. \
-		} \
-		set descriptionofgame \"a good start\"; \
-		set shrew 1; \
-	} \
-	command take shrew { \
-		if `shrew` { \
-			respond { \
-				A shrew! \
-				 \
-				<img src=\"http://a-z-animals.com/animals/elephant-shrew/\"> \
-				 \
-			} \
-			set shrew 0; \
-			set hasshrew 1; \
-		} \
-		else { \
-			What shrew? \
-		} \
-	} \
-	command add commands { \
-		respond { \
-			You add the ability to pull all-nighters! Try the command never sleep. \
-		} \
-		set neversleep 1; \
-		set descriptionofgame \"awesome\"; \
-	} \
-} \
- \
-# End state! You won! \
-location end in global { \
-	command look {  \
-		respond { \
-		You won!  \
-		} \
-	} \
-}";
+\n \
+\n# initialize all variables first, in your state \
+\nstate { \
+\n    variable hasinitializestate 1; \
+\n    variable descriptionofgame \"empty\"; \
+\n    variable haswon 0; \
+\n    variable failtowin 0; \
+\n    variable shrew 0; \
+\n    variable hasshrew 0; \
+\n    variable neversleep 0; \
+\n} \
+\n \
+\n# add synonyms next so users have multiple options of what words they can type \
+\nsynonym \"look\" \"examine\" \"look at\" \
+\nsynonym \"go\" \"move to\" \"got to\" \
+\nsynonym \"stuff\" \"things\" \
+\n \
+\n# required starting area. Command start is automatically run when game begins. \
+\nlocation init { \
+\n    command start { \
+\n        respond { \
+\n            You begin writing your text adventure game! \
+\n        } \
+\n        #move yourself to starting area \
+\n        move-to start \
+\n    } \
+\n} \
+\n \
+\nlocation start { \
+\n	command win { \
+\n        # inside commands you can use conditionals \
+\n        if `haswon` { \
+\n            # using `s, you can  \
+\n            respond { \
+\n                You win this `descriptionofgame` game! \
+\n            } \
+\n            move-to end \
+\n        } \
+\n		else { \
+\n			set failtowin (add failtowin 1); \
+\n			if `eq failtowin 1` { \
+\n				respond { \
+\n					You have failed to win `failtowin`  time \
+\n				} \
+\n			} \
+\n		else { \
+\n			respond { \
+\n				You have failed to win `failtowin`  times \
+\n			} \
+\n		} \
+\n    } \
+\n     \
+\n    command look shrew { \
+\n    	if `or hasshrew shrew` { \
+\n    		respond { \
+\n    			It's adorable! \
+\n    		} \
+\n    	} \
+\n    	else { \
+\n    		respond { \
+\n    			What shrew? \
+\n    		} \
+\n    	} \
+\n    } \
+\n    command never sleep { \
+\n    	if `neversleep` { \
+\n    		respond { \
+\n    			With the powers of neversleep, you stay up all night to hackathon! \
+\n    		} \
+\n    	} \
+\n    	else { \
+\n    		respond { \
+\n    			You try to neversleep, but zzzzzzzzzzzzz. \
+\n    		} \
+\n    	} \
+\n    } \
+\n	command look { \
+\n		respond { \
+\n			You are at the start of your game! \
+\n			 \
+\n			Your game is currently `decriptionofgame`. \
+\n		} \
+\n		if `eq decriptionofgame \"empty\"` \
+\n		{ \
+\n			respond { \
+\n				You should try to add stuff. \
+\n			} \
+\n		} \
+\n		else { \
+\n			if `eq decriptionofgame \"a good start\"` { \
+\n				Almost there! Add commands! \
+\n			} \
+\n			else { \
+\n				respond { \
+\n					Now you can win! Try it! \
+\n				} \
+\n				set haswon 1; \
+\n			} \
+\n		} \
+\n	} \
+\n	command add stuff { \
+\n		respond { \
+\n			You add some locations with objects you can interact with. \
+\n			 \
+\n			An elephant shrew appears. \
+\n		} \
+\n		set descriptionofgame \"a good start\"; \
+\n		set shrew 1; \
+\n	} \
+\n	command take shrew { \
+\n		if `shrew` { \
+\n			respond { \
+\n				A shrew! \
+\n				 \
+\n				<img src=\"http://a-z-animals.com/animals/elephant-shrew/\"> \
+\n				 \
+\n			} \
+\n			set shrew 0; \
+\n			set hasshrew 1; \
+\n		} \
+\n		else { \
+\n			What shrew? \
+\n		} \
+\n	} \
+\n	command add commands { \
+\n		respond { \
+\n			You add the ability to pull all-nighters! Try the command never sleep. \
+\n		} \
+\n		set neversleep 1; \
+\n		set descriptionofgame \"awesome\"; \
+\n	} \
+\n} \
+\n \
+\n# End state! You won! \
+\nlocation end in global { \
+\n	command look {  \
+\n		respond { \
+\n		You won!  \
+\n		} \
+\n	} \
+\n}";
 
        editor.setValue(str);
 
