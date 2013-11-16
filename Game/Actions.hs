@@ -17,6 +17,7 @@ import Control.Monad.Writer (runWriter, Writer, tell)
 import Data.Aeson (encode, decode)
 import Data.List (find)
 import Data.Maybe (fromJust, fromMaybe)
+import Debug.Trace
 
 import qualified Data.Map as Map
 import qualified Data.ByteString.Lazy as Lazy
@@ -188,10 +189,17 @@ evalInterpolation game (Interpolate interp) = foldl (joinInterp game) "" interp
 
 -- | The command response when a matching power isn't found.
 noSuchCommand :: CommandResponse
-noSuchCommand = Just "error: no matching command found. enqueue headpat."
+noSuchCommand = Just "error: command unavailable."
 
 findMatchingCommand :: String -> Game -> Maybe CommandPattern
-findMatchingCommand cmdstr game = findMatchingCommand' cmdstr game (currentRoom game)
+findMatchingCommand cmdstr game = case words cmdstr of
+  "look":objwords -> case objResult objwords of
+    Nothing -> cmdResult
+    Just (Obj name description) -> Just $ Pattern ["look", name] [Print description]
+  _ -> cmdResult
+  where
+    cmdResult = findMatchingCommand' cmdstr game $ currentRoom game
+    objResult objwords = findMatchingObject objwords game $ currentRoom game
 
 findMatchingCommand' :: String -> Game -> Location -> Maybe CommandPattern
 findMatchingCommand' cmdstr game loc = 
@@ -217,6 +225,32 @@ findMatchingCommand'' cmdstr game loc =
         Just parentName -> 
           let parentEnv = findEnvWithName parentName game in
             findMatchingCommand'' cmdstr game parentEnv
+
+findMatchingObject objwords game room = 
+  let objs = locationObjs room
+      match = find (objMatches objwords) objs in
+    case match of
+      Just obj -> Just obj
+      Nothing -> case locationParent room of
+        Nothing -> Nothing
+        Just parentName -> 
+          let parentEnv = findEnvWithName parentName game in
+            findMatchingObject' objwords game parentEnv
+
+findMatchingObject' objwords game room = 
+  let objs = envObjs room
+      match = find (objMatches objwords) objs in
+    case match of
+      Just obj -> Just obj
+      Nothing -> case envParent room of
+        Nothing -> Nothing
+        Just parentName -> 
+          let parentEnv = findEnvWithName parentName game in
+            findMatchingObject' objwords game parentEnv
+
+
+objMatches :: [String] -> Obj -> Bool
+objMatches objwords (Obj objname _) = objwords == words objname
 
 cmdMatches :: String -> CommandPattern -> Bool
 cmdMatches str (Pattern pat _) = words str == pat
