@@ -9,6 +9,7 @@ module Game.Types where
 import Control.Applicative ((<$>), (<*>))
 import Control.Monad (mzero)
 import Data.Aeson
+import Debug.Trace
 import Data.String.Utils (startswith)
 
 import qualified Data.Map as Map
@@ -127,17 +128,22 @@ data GameProperties = GameProperties {
 data CreationResult = CreationError Int Int | CreationSuccess String
 
 instance FromJSON GameCreation where
-  parseJSON (Object v) = CreateGame <$> v .: "name"
-                                    <*> readBg
-                                    <*> v .: "font-color"
-                                    <*> v .: "font-family"
-                                    <*> v .: "code"
-    where
-      readBg = do
-        bgString <- v .: "background"
-        if startswith "data" bgString
-           then return $ "background: url(" ++ bgString ++ ")"
-           else return $ "background-color: " ++ bgString
+  parseJSON (Object v) = do
+    name <- v .: "name"
+    background <- (trace (show name) $ v .: "background")
+    fcolor <- trace (show background) $ v .: "font-color"
+    ffamily <- trace (show fcolor) $ v .: "font-family"
+    code <- trace (show ffamily) $ v .: "code"
+    return $ CreateGame name background fcolor ffamily code
+
+  parseJSON _ = fail "Expecing an object."
+               
+  --where
+  --  readBg = do
+  --    bgString <- v .: "background"
+  --    return $ if startswith "data" bgString
+  --       then "background: url(" ++ bgString ++ ")"
+  --       else  "background-color: " ++ bgString
 
 
 
