@@ -18,7 +18,29 @@
 
         <!-- Bootstrap Prettifications -->
         <style>
-            .sidebar-text{
+
+            #editor {
+                    height: 500px;
+                    width: 600px;
+                }
+
+            .panel {
+                width: 635px !important;
+                }
+            .ace_keyword {
+                color: fuchsia;
+                }
+            .ace_func {
+                color: cyan;
+                }
+            .ace_backtick {
+                color: lightgreen;
+                }
+            .ace_call {
+                color: orange;
+                }
+            .ace_cond {
+                color: violet;
                 }
             .sidebar{
                 padding:10px;
@@ -69,7 +91,7 @@
 
                 <!-- Getting the name.  This will also be the url extension.-->
                 <div class="input-group sidebar-text">
-                    <span class="input-group-addon">@</span>
+                    <span class="input-group-addon">ID</span>
                     <input id="id" type="text" class="form-control" placeholder="Name">
                 </div>
 
@@ -127,32 +149,22 @@
 
              <!-- MAIN DOOOP -->
              <div class="col-md-9 content">
-                 <h3 style="color:white">Write your stuff here!</h3>
-                 <div class="jumbotron">
-
-                    <div class="container">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">Text Adventure Editor</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div id="editor"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    
-                    
-                    <script src="ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-                    <script src="require.js" type="text/javascript" charset="utf-8"></script>
-                    
-                    <script data-main="scripts/editorForAdventures.js" src="scripts/require.js"></script>
-
-                             </div>
-                         </div>
+                 <div class="panel panel-default">
+                     <div class="panel-heading">
+                        <h3 class="panel-title">Text Adventure Editor</h3>
                      </div>
-
+                     <div class="panel-body">
+                        <div id="editor"></div>
+                     </div>
                  </div>
+             
+                 <script src="AdvEditor/ace-builds/src-noconflict/ace.js"
+                    type="text/javascript" charset="utf-8"></script>
+                 <script src="require.js" type="text/javascript" charset="utf-8"></script>
+             
+                 <script data-main="AdvEditor/scripts/editorForAdventures.js"
+                     src="AdvEditor/scripts/require.js"></script>
+             </div>
 
     <script type="text/javascript">
         function select(button, newVar) {
@@ -164,8 +176,10 @@
             var fFamily = $('#fFamily').text();
             var fColor = $('#fFamily').text();
             var bgColor = $('#bgColor').text();
+            var editor = ace.edit("editor");
+            var code = editor.getSession().getValue();
+
             $("#submitLink").removeClass("hidden");
-            //FIXME
         }
     </script>
 
