@@ -84,11 +84,12 @@ data Environment = Environment {
   } deriving Show
 
 type LocationName = String 
+type ObjectName = String 
 type EnvironmentName = String 
 type VariableName = String 
 data CommandPattern = Pattern [String] [Action]
                     deriving Show
-data Obj = Obj InterpolatedString
+data Obj = Obj ObjectName InterpolatedString
          deriving Show
 data InterpolatedString = Interpolate [Either String Expression]
                           deriving Show
