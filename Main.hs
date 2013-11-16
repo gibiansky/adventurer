@@ -16,11 +16,11 @@ import Snap.Http.Server
 import Control.Concurrent.MVar
 import Control.Monad.IO.Class
 import Control.Monad.State
-import Data.ByteString.Lazy hiding (filter, readFile, zipWith, map, putStrLn, zip)
-import Data.String.Utils
-import Data.Tuple
-import System.Directory
+import Data.ByteString.Lazy hiding (filter, readFile, zipWith, map, putStrLn, zip, find)
 import System.Environment
+import Data.Maybe (fromJust)
+import Data.Aeson
+import Data.List (find)
 
 -- My imports.
 import Game.Types
@@ -29,28 +29,31 @@ import Game.Actions
 
 -- Qualified imports.
 import qualified Data.Map as Map
-import qualified Data.ByteString as Unlazy
+import qualified Data.ByteString as Strict
+import qualified Data.ByteString.Char8 as Chars
+
+type ServerState = Map.Map String Game  
 
 main :: IO ()
 main = do
   args <- getArgs
   case args of
     ["parse", filename] -> parseFile filename >>= putStrLn
-    ["serve"] -> return ()
+    ["serve"] -> do
       -- Create a mutable variable where we store all game state.
       -- An MVar is a mutable variable which you can access inside the IO monad.
-      --st <- newMVar initGame
+      st <- newMVar Map.empty
 
       -- Serve the site.
-      --quickHttpServe $ site st
-{-
-site :: MVar Game -> Snap ()
+      quickHttpServe $ site st
+
+site :: MVar ServerState -> Snap ()
 site st =
   -- Order of routes:
   --   First, try the homepage.
   --   Second, serve all static files.
   --   Finally, serve dynamic routes.
-  mainSite <|> staticDir <|> otherRoutes
+  mainSite <|> staticDir <|> createGameRoute <|> otherRoutes
 
   where
     -- Serve up the index.html file as the homepage.
@@ -58,6 +61,31 @@ site st =
 
     -- Serve static files from /static
     staticDir = dir "static" $ serveDirectory "static"
+
+    createGameRoute = route [(toStrict ":name/create", createGame st)]
+
+    createGame :: MVar ServerState -> Snap ()
+    createGame state = do
+      input <- readRequestBody 1000000
+      name <- fmap (Chars.unpack . fromJust) $ getParam "name"
+      let Just creation = decode input
+      out <- liftIO $ modifyMVar state $ \st -> 
+        case parseString (gameCode creation) of
+          Left (line, col) -> return (st, CreationError line col)
+          Right episode -> return (Map.insert name (createGameFromEpisode episode) st, CreationSuccess name)
+      writeLBS $ encode out
+
+    createGameFromEpisode :: Episode -> Game
+    createGameFromEpisode episode = Game {
+      history = [],
+      currentRoom = findRoom episode "init",
+      episode = episode,
+      lastId = 0,
+      gameState = initState episode
+    }
+      where
+        findRoom :: Episode -> String -> Location
+        findRoom episode name = fromJust $ find ((== name) . locationName) (rooms episode)
 
     -- Use dynamic routes to interact with the server via JSON.
     -- The 'route' function takes an association list of bytestrings and handlers.
@@ -75,7 +103,14 @@ site st =
       -- of an MVar, while also producing a output value. Due to the weird
       -- type, we need the output of runState to be swapped and stuck in a
       -- monad in order to use it with modifyMVar.
-      response <- liftIO $ modifyMVar st $ return . swap . runState (rt input)
+      name <- fmap (Chars.unpack . fromJust) $ getParam "name"
+
+      response <- liftIO $ modifyMVar st $ \state -> 
+         case Map.lookup name state of
+           Nothing -> error $ "Could not find name " ++ name
+           Just game -> 
+             let (out, newGame) = runState (rt input) game in
+               return (Map.insert name newGame state, out)
 
       -- Write the response back to the client.
       writeLBS response
@@ -83,10 +118,8 @@ site st =
 -- JSON endpoints. Each of the values in the map is a function that takes an
 -- input bytestring and produces an output bytestring, potentially modifying
 -- the game state while at it.
-routes :: Map.Map Unlazy.ByteString (ByteString -> State Game ByteString)
+routes :: Map.Map Strict.ByteString (ByteString -> State Game ByteString)
 routes = Map.fromList [
-    (toStrict "run", runCommand),
-    (toStrict "history", getHistory),
-    (toStrict "items", getItems)
+    (toStrict ":name/run", runCommand),
+    (toStrict ":name/history", getHistory)
   ]
--}

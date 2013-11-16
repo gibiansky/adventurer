@@ -16,7 +16,6 @@ import Control.Monad.Writer (runWriter, Writer, tell)
 import Data.Aeson (encode, decode)
 import Data.List (find)
 import Data.Maybe (fromJust, fromMaybe)
-import Data.String.Utils (replace)
 
 import qualified Data.Map as Map
 import qualified Data.ByteString.Lazy as Lazy
@@ -89,6 +88,7 @@ getBool expr =
     Left i -> i /= 0
     Right s -> s /= ""
 
+getBools ::  Game -> Expression -> Expression -> (Bool, Bool)
 getBools game e1 e2 =
   let evaledExp1 = evaluateExpression game e1
       evaledExp2 = evaluateExpression game e2
@@ -116,9 +116,7 @@ evaluateExpression game (Sub exp1 exp2) =
       evaledExp2 = evaluateExpression game exp2 in
     case (evaledExp1, evaledExp2) of
       (Left i1, Left i2) -> Left $ i1 - i2  
-      (Right s1, Right s2) -> Left 0
-      (Left i1, Right s2) -> Left 0
-      (Right s1, Left i2) -> Left 0
+      _ -> error "Trying to subtract string"
 
 evaluateExpression game (And exp1 exp2) = 
     Left $ if uncurry (&&) $ getBools game exp1 exp2 then 1 else 0
@@ -156,6 +154,23 @@ runAction :: Game -> Action -> Writer String Game
 runAction game (Print string) = do
   tell $ evalInterpolation game string
   return game
+
+runAction game (MoveToRoom name) = return game { currentRoom = findRoom game name }
+  where
+    findRoom :: Game -> String -> Location
+    findRoom game name = fromJust $ find ((== name) . locationName) (rooms $ episode game)
+
+runAction game (IfExpr expr thens elses) = foldM runAction game $
+  if getBool $ evaluateExpression game expr
+  then thens
+  else elses
+
+runAction game (Assign varname expr) =
+  let result = evaluateExpression game expr in
+    return game { gameState = assign (gameState game) varname result }
+  where
+    assign :: GameState -> String -> Either Int String -> GameState
+    assign state var value = Map.insert var value state
 
 evalInterpolation :: Game -> InterpolatedString -> String
 evalInterpolation game (Interpolate interp) = foldl (joinInterp game) "" interp

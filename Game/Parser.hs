@@ -1,6 +1,7 @@
 -- | Parse room files, which are written in a custom language for adventure gaming.
 module Game.Parser (
-  parseFile -- ^ The only exposed function is one which takes file contents and returns a parsed episode
+  parseFile, -- ^ The only exposed function is one which takes file contents and returns a parsed episode
+  parseString
   ) where
 
 import Control.Monad (void)
@@ -9,6 +10,7 @@ import Text.Parsec.String (Parser)
 import Control.Applicative ((<$>), (<*>))
 
 import Data.String.Utils (replace)
+import qualified Data.Map as Map
 
 import Game.Types
 
@@ -18,6 +20,13 @@ parseFile filename = do
   case parse parseEpisode filename contents of
     Left err -> return $ show err
     Right game -> return $ show game
+
+parseString :: String -> Either (Int, Int) Episode
+parseString contents =
+  case parse parseEpisode "<interactive>" contents of
+    Left err -> Left (sourceLine pos, sourceColumn pos)
+      where pos = errorPos err
+    Right episode -> Right episode
 
 data Decl = SynDecl Synonym
           | EnvDecl Environment
@@ -63,6 +72,7 @@ isCom _ = False
 -- | Parse an entire game.
 parseEpisode :: Parser Episode
 parseEpisode = do
+  stateDecl <- stateParser
   items <- many toplevelItem
 
   -- Done after decls
@@ -73,6 +83,7 @@ parseEpisode = do
       locs = decl2Loc <$> filter isLoc items
       syns = decl2Syn <$> filter isSyn items
   return Episode {
+              initState = stateDecl,
               synonyms = syns,
               environments = envs,
               rooms = locs
@@ -104,7 +115,7 @@ parseStr = do
   return contents
 
 semicolon :: Parser ()
-semicolon = void $ char ';'
+semicolon = void $ whitespace >> char ';' >> whitespace
 
 parseLocation :: String -> Parser Location
 parseLocation name = do
@@ -256,9 +267,7 @@ moveToParser = do
   string "move-to"
   whitespace
   room <- many (noneOf " ;")
-  whitespace
   semicolon
-  whitespace
   return $ MoveToRoom room
 
 -- | Parse a string output action.
@@ -310,6 +319,39 @@ assignParser = do
   whitespace
   exp <- between (char '`') (char '`') parseExpr
   return $ Assign varname exp
+
+stateParser :: Parser GameState
+stateParser = do
+  whitespace
+  string "state"
+  whitespace
+  braced parseAllVariables
+
+parseAllVariables :: Parser GameState
+parseAllVariables = do
+  vars <- many parseVar :: Parser [(String, Either Int String)]
+  return $ foldl (flip $ uncurry Map.insert) Map.empty vars
+
+parseVar :: Parser (String, Either Int String)
+parseVar = do
+  whitespace
+  string "variable"
+  whitespace
+  name <- many $ noneOf " "
+  whitespace
+  val <- parseVal
+  semicolon
+  return (name, val)
+
+parseVal :: Parser (Either Int String)
+parseVal = do
+  value <- many $ noneOf " ;"
+  return $ case (head value, last value) of
+    ('"', '"') -> Right $ init $ tail value 
+    ('"', _) -> error "Unterminated quote in default value"
+    (_, '"') -> error "Unstarted quote in default value"
+    (_, _) -> Left $ read value
+
 
 -- | Parse whitespace, returning nothing.
 whitespace :: Parser ()

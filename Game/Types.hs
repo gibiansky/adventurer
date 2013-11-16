@@ -24,6 +24,7 @@ data Game = Game {
 type GameState = Map.Map String (Either Int String)
 
 data Episode = Episode {
+  initState :: GameState,
   synonyms :: [Synonym],
   environments :: [Environment],
   rooms :: [Location]
@@ -105,3 +106,30 @@ data Expression = Var VariableName
                 | StringVal String
                 | IntVal Int  
                 deriving Show
+
+data GameCreation = CreateGame {
+  gameName :: String,
+  backgroundColor :: String,
+  fontColor :: String,
+  fontFamily :: String,
+  gameCode :: String
+  }
+
+data CreationResult = CreationError Int Int | CreationSuccess String
+
+instance FromJSON GameCreation where
+  parseJSON (Object v) = CreateGame <$> v .: "name"
+                                    <*> v .: "background"
+                                    <*> v .: "font-color"
+                                    <*> v .: "font-family"
+                                    <*> v .: "code"
+
+instance ToJSON CreationResult where
+  toJSON (CreationError line col) = object ["result" .= errstr, "line" .= line, "column" .= col]
+  toJSON (CreationSuccess name) = object ["result" .= successstr, "name" .= name]
+
+errstr :: String
+errstr = "error"
+
+successstr :: String
+successstr = "success"
