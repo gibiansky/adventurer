@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Happy Birthday!</title>
+
+        <!-- JQuery -->
+        <script src="http://code.jquery.com/jquery.js"></script>
+
+        <!-- Bootstrap -->
+        <link href="/static/thirdparty/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <script src="/static/thirdparty/bootstrap/js/bootstrap.min.js"></script>
+
+        <!-- Backbone -->
+        <script src="/static/thirdparty/backbone/js/underscore.min.js"></script>
+        <script src="/static/thirdparty/backbone/js/backbone.min.js"></script>
+
+        <!-- My scripts -->
+        <script src="/static/js/adventure.js"></script>
+
+        <!-- Bootstrap customizations -->
+        <style>
+            * {
+                -moz-box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+
+            html {
+                height: 100%;
+                width: 100%;
+                padding: 0px;
+                margin: 0px;
+            }
+
+            body {
+                background: url("/static/imgs/background.jpg");
+                background-size: 100%;
+                padding: 0px;
+                margin-left: 1.5%;
+                margin-right: 1.5%;
+                height: 100%;
+                width: 97%;
+            }
+
+            .navbar {
+                padding-top: 20px;
+                padding-bottom: 30px;
+                min-height: 70px;
+                margin: 0px;
+                height: 10%;
+            }
+
+            .container {
+                width: 100%;
+                padding-left: 0px;
+                height: 87%;
+                max-height: 87%;
+            }
+
+            .row {
+                height: 100%;
+                margin-left: 0px;
+            }
+
+            .fill {
+                height: 100%;
+            }
+
+            .span3 {
+                width: 21%;
+                margin-left: 0px;
+                float: left;
+            }
+
+            .span9 {
+                margin-left: 0px;
+                width: 77%;
+                float: right;
+            }
+
+            a {
+                text-decoration: underline;
+            }
+        </style>
+
+        <style>
+            .rounded-box {
+                height: 100%;
+                border-radius: 25px;
+                border: 3px solid gray;
+                padding: 25px;
+            }
+
+            .prompt {
+                font-weight: bold;
+            }
+
+            .prompt-entered {
+                color: rgb(150, 150, 150);
+            } 
+
+            #cursor {
+                width: 2px;
+                height: 1em;
+            }
+
+            #sidebar {
+                background-color: rgba(0, 0, 0, 0.6);
+                position: relative;
+            }
+
+            #main {
+                position: relative;
+                background-color: rgba(0, 0, 0, 0.95);
+            }
+
+            #main-text-field {
+                position: absolute;
+                bottom: 10px;
+                font-family: monospace;
+                color: rgb(200, 200, 200);
+            }
+
+            #history-view {
+                position: absolute;
+                top: 10px;
+                bottom: 35px;
+                overflow: hidden;
+                width: 90%;
+            }
+
+            .command {
+                font-family: monospace;
+                color: rgb(150, 150, 250);
+            }
+
+            .response {
+                font-family: monospace;
+                color: rgb(230, 230, 230);
+            }
+
+            .error {
+                color: red;
+            }
+
+            .item {
+              font-weight: bold;
+              color: rgb(200, 200, 235);
+            }
+
+            .inline-image {
+              border: 5px solid black;
+            }
+
+            #hint-text {
+                font-weight: bold;
+                font-family: serif;
+                color: rgb(235, 235, 235);
+                position: absolute;
+                top: 300px;
+                width: 85%;
+                text-align: center;
+                background: rgba(0, 0, 0, 0.75);
+                border-radius: 15px;
+                border: 2px solid rgb(100, 100, 100);
+            }
+        </style>
+
+        <script type="text/template" id="command-template">
+            <div class="command">
+                <span class="prompt-entered">tasha@enquack ~ $</span> <%= command %>
+            </div>
+            <div class="response">
+                <%= response %>
+            </div>
+        </script>
+
+        <script type="text/template" id="text-entry-template">
+            <div id="main-text-field">
+                <span class="prompt">tasha@enquack ~ $</span> <%= text %>
+            </div>
+        </script>
+
+        <script type="text/template" id="hint-text-template">
+            <div id="hint-text">
+                <hr />
+                Remember that you can use the <span style="font-family: monospace; color: rgb(190, 190, 240);">hint</span> command when
+                you're stuck. Don't stay stuck for too long!
+                <hr />
+            </div>
+        </script>
+
+        <script type="text/javascript">
+            window.onbeforeunload = function() {
+                return "Are you sure you want to leave? (Game state is saved.)"
+            };
+        </script>
+    </head>
+
+    <body onload="loadGame();">
+        <div class="navbar navbar-inverse">
+            <div class="navbar-inner">
+                <a class="brand" href="#">Enquack!</a>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+
+                <div class="span3 fill">
+                    <div id="sidebar" class="rounded-box">
+                     
+                    </div>
+                </div>
+
+                <div class="span9 fill">
+                    <div id="main" class="rounded-box"> </div>
+                </div>
+
+            </div>
+        </div>
+    </body>
+</html>
