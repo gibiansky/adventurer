@@ -15,12 +15,18 @@ import qualified Data.Map as Map
 -- | All state and data necessary for the game. 
 data Game = Game {
   history :: [Command],                   -- ^ A list of past commands and their responses.
-  commandCounts :: Map.Map PowerName Int, -- ^ Number of times that each power name has been used in this room.
-  currentRoom :: Room,                    -- ^ The current room the player is in.
-  rooms :: Map.Map RoomName Room,         -- ^ The list of rooms (keyed by their names).
-  powers :: [PowerName],                  -- ^ The list of powers the players can use.
+  currentRoom :: Location,                -- ^ The current room the player is in.
+  episode :: Episode,                     -- ^ The episode this game is for.
   lastId :: CommandId,                    -- ^ The last id assigned to a command.
-  items :: [ItemName]                     -- ^ All items that the player has in their inventory.
+  gameState :: GameState
+  } deriving Show
+
+type GameState = Map.Map String (Either Int String)
+
+data Episode = Episode {
+  synonyms :: [Synonym],
+  environments :: [Environment],
+  rooms :: [Location]
   } deriving Show
 
 -- | A command, before or after being interpreted.
@@ -50,47 +56,51 @@ instance FromJSON Command where
   -- (That is, as opposed to "strings" or ints like 3.)
   parseJSON _ = mzero
 
--- A room. Rooms represent distinct areas of the game, where 
--- powers take on unique meanings. The meaning of a power depends on
--- the definition of that power in the current room.  
-data Room = Room {
-  enterActions :: [Action],   -- ^ Actions to take upon entering a room.
-  exitActions :: [Action],    -- ^ Actions to take upon exiting a room.
-  powerDefinitions :: [Power] -- ^ Definitions of powers in this room.
-  } deriving Show
-
 -- | An action is a unit of things happening in the server.
 -- | A response to a users input involves running many actions which
 -- | can output text to the user or change the game state.
 data Action 
-  = Print String                                -- ^ Just output text to the user.
-  | GainPower PowerName String                  -- ^ Gain use of a power and notify the user about it.
-  | LosePower PowerName String                  -- ^ Lose access to a power and notify the user about it.
-  | ChooseByCount PowerName [String]            -- ^ Output something to the user. Cycle through different 
-                                                -- ^ options, depending on how many times a given power has been used.
+  = Print InterpolatedString                    -- ^ Just output text to the user.
   | MoveToRoom String                           -- ^ Move to a new room, running the relevant exit and enter actions.
-  | GainItem ItemName String                    -- ^ Gain an item and notify the user.
-  | LoseItem ItemName String                    -- ^ Lose an item and notify the user.
-  | IfPosessingItem ItemName [Action] [Action]  -- ^ Choose between a set of actions depending on whether an item is in inventory.
-  | PowerTrigger String                         -- ^ Artificially trigger actions associated with a certain power.  
+  | IfExpr Expression [Action] [Action]         -- ^ If statement. 
+  | Assign VariableName Expression              -- ^ Assign a value to a variable in the global state.
   deriving Show
-
--- | A power triggered by the user typing the power string.
-data Power = Power {
-    powerName :: PowerName,     -- ^ The name of the power (the first word).
-    powerArgs :: [PowerArg],    -- ^ The arguments to the power (all but the first word).
-    powerActions :: [Action]    -- ^ The actions to run upon encountering this power used.
-  } deriving Show
-
--- Define power equality as equality in the name and arguments.
-instance Eq Power where
-  Power powname1 powargs1 _ == Power powname2 powargs2 _ = 
-    (powargs1 == powargs2) && powname1 == powname2
 
 -- Aliases to make type signatures cleaner and easier to read.
 type CommandId = Int  
-type ItemName = String
-type EventName = String
-type RoomName = String
-type PowerName = String
-type PowerArg = String
+
+data Location = Location {
+  locationName :: LocationName,
+  locationParent :: Maybe Environment,
+  locationObjs :: [Obj],
+  locationCommands :: [CommandPattern]
+  } deriving Show
+
+data Environment = Environment {
+  envName :: EnvironmentName,
+  envParent :: Maybe Environment,
+  envObjs :: [Obj],
+  envCommands :: [CommandPattern]
+  } deriving Show
+
+type LocationName = String 
+type EnvironmentName = String 
+type VariableName = String 
+data CommandPattern = Pattern [String] [Action]
+                    deriving Show
+data Obj = Obj InterpolatedString
+         deriving Show
+data InterpolatedString = Interpolate [Either String Expression]
+                          deriving Show
+data Synonym = Synonym String [String]  deriving Show
+
+data Expression = Var VariableName
+                | Add Expression Expression
+                | Sub Expression Expression
+                | And Expression Expression
+                | Or Expression Expression
+                | Not Expression
+                | Equal Expression Expression
+                | StringVal String
+                | IntVal Int  
+                deriving Show

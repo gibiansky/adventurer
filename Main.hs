@@ -20,6 +20,7 @@ import Data.ByteString.Lazy hiding (filter, readFile, zipWith, map, putStrLn, zi
 import Data.String.Utils
 import Data.Tuple
 import System.Directory
+import System.Environment
 
 -- My imports.
 import Game.Types
@@ -29,10 +30,6 @@ import Game.Actions
 -- Qualified imports.
 import qualified Data.Map as Map
 import qualified Data.ByteString as Unlazy
-
--- | The directory with the game specification files.
-gameDirectory :: FilePath
-gameDirectory = "rooms"
 
 main :: IO ()
 main = do
