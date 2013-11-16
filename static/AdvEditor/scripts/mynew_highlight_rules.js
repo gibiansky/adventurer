@@ -10,7 +10,7 @@ define(function(require, exports, module) {
        "start" :  [
                    {
                    token: "keyword",
-                   regex: "location|object|environment|synonym|state|set|command",
+                   regex: "location|object|environment|synonym|state|set|command|in",
                    },
                    {
                    token: "call",
