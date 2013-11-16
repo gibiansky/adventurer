@@ -21,6 +21,7 @@ import System.Environment
 import Data.Maybe (fromJust)
 import Data.Aeson
 import Data.List (find)
+import Data.String.Utils (replace)
 
 -- My imports.
 import Game.Types
@@ -53,7 +54,7 @@ site st =
   --   First, try the homepage.
   --   Second, serve all static files.
   --   Finally, serve dynamic routes.
-  mainSite <|> staticDir <|> createGameRoute <|> otherRoutes
+  mainSite <|> pageCreatorSite <|> staticDir <|> createGameRoute <|> otherRoutes
 
   where
     -- Serve up the index.html file as the homepage.
@@ -61,6 +62,21 @@ site st =
 
     -- Serve static files from /static
     staticDir = dir "static" $ serveDirectory "static"
+
+    -- Serve the page creator
+    pageCreatorSite = route [(toStrict ":name/play", serveGame st)]
+
+    serveGame :: MVar ServerState -> Snap ()
+    serveGame state = do
+      name <- fmap (Chars.unpack . fromJust) $ getParam "name"
+      game <- liftIO $ fmap fromJust $ withMVar state $ \stateval -> return $ Map.lookup name stateval
+      fileData <- liftIO $ readFile "html/play.html"
+      let props = gameProperties game
+          newData = replace "#{name}"        (propertyName props) . 
+                    replace "#{background}"  (propertyBackground props) . 
+                    replace "#{font-color}"  (propertyFontColor props) . 
+                    replace "#{font-family}" (propertyFontFamily props) $ fileData
+      writeBS $ Chars.pack newData
 
     createGameRoute = route [(toStrict ":name/create", createGame st)]
 
@@ -72,17 +88,23 @@ site st =
       out <- liftIO $ modifyMVar state $ \st -> 
         case parseString (gameCode creation) of
           Left (line, col) -> return (st, CreationError line col)
-          Right episode -> return (Map.insert name (createGameFromEpisode episode) st, CreationSuccess name)
+          Right episode -> return (Map.insert name (createGameFromEpisode creation episode) st, CreationSuccess name)
       writeLBS $ encode out
 
-    createGameFromEpisode :: Episode -> Game
-    createGameFromEpisode episode = 
+    createGameFromEpisode :: GameCreation -> Episode -> Game
+    createGameFromEpisode creation episode = 
       let pregame = Game {
             history = [],
             currentRoom = findRoom episode "init",
             episode = episode,
             lastId = 0,
-            gameState = initState episode
+            gameState = initState episode,
+            gameProperties = GameProperties {
+              propertyName = gameName creation,
+              propertyBackground = backgroundColor creation,
+              propertyFontColor = fontColor creation,
+              propertyFontFamily = fontFamily creation
+            }
           } in
         run (Command 0 "start" Nothing) pregame
       where
