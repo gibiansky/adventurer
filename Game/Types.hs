@@ -130,20 +130,21 @@ data CreationResult = CreationError Int Int | CreationSuccess String
 instance FromJSON GameCreation where
   parseJSON (Object v) = do
     name <- v .: "name"
-    background <- (trace (show name) $ v .: "background")
-    fcolor <- trace (show background) $ v .: "font-color"
-    ffamily <- trace (show fcolor) $ v .: "font-family"
-    code <- trace (show ffamily) $ v .: "code"
+    background <-  readBg
+    fcolor <-  v .: "font-color"
+    ffamily <-  v .: "font-family"
+    code <-  v .: "code"
     return $ CreateGame name background fcolor ffamily code
+
+    where
+    readBg = do
+      bgString <- v .: "background"
+      return $ if startswith "data" bgString
+         then "background: url(" ++ bgString ++ ")"
+         else  "background-color: " ++ bgString
 
   parseJSON _ = fail "Expecing an object."
                
-  --where
-  --  readBg = do
-  --    bgString <- v .: "background"
-  --    return $ if startswith "data" bgString
-  --       then "background: url(" ++ bgString ++ ")"
-  --       else  "background-color: " ++ bgString
 
 
 
