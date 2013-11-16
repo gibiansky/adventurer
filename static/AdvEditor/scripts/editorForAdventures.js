@@ -4,40 +4,40 @@ define(['require', 'editorLanguage'], function (require) {
        editor.setTheme("ace/theme/monokai");
 
 var str = "# Initialize variable\
-state { \
- variable integer 0;\
- variable string 1;\
-} \
- \
-# Define synonyms for common actions\
-synonym \"look\" \"examine\" \"look at\"; \
- \
-# required starting area. Command start is automatically run when game begins. \
-location init { \
-    command start { \
-        respond { \
-            You begin writing your text adventure game! \
-        } \
-        \
-        # Move yourself to starting area\
-        move-to start; \
-    } \
-} \
-\
-location start {\
-    command increment {\
-        respond {\
-            You incremented an integer!\
-        }\
-        set integer `add integer 1`;\
-    }\
-    \
-    command see {\
-        respond {\
-            The current integer is `integer`.\
-        }\
-    }\
-}";
+\nstate { \
+\n variable integer 0;\
+\n variable string 1;\
+\n} \
+\n \
+\n# Define synonyms for common actions\
+\nsynonym \"look\" \"examine\" \"look at\"; \
+\n \
+\n# required starting area. Command start is automatically run when game begins. \
+\nlocation init { \
+\n    command start { \
+\n        respond { \
+\n            You begin writing your text adventure game! \
+\n        } \
+\n        \
+\n        # Move yourself to starting area\
+\n        move-to start; \
+\n    } \
+\n} \
+\n\
+\nlocation start {\
+\n    command increment {\
+\n        respond {\
+\n            You incremented an integer!\
+\n        }\
+\n        set integer `add integer 1`;\
+\n    }\
+\n    \
+\n    command see {\
+\n        respond {\
+\n            The current integer is `integer`.\
+\n        }\
+\n    }\
+\n}";
 
        editor.setValue(str);
 
