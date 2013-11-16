@@ -8,11 +8,10 @@
         <script src="http://code.jquery.com/jquery.js"></script>
 
         <!-- Bootstrap-->
-        <link href="../static/thirdparty/bootstrap/css/bootstrap.min.css" rel="stylesheet"
+        <link href="/static/thirdparty/bootstrap/css/bootstrap.min.css" rel="stylesheet"
         media="screen">
-        <script src="../static/thirdparty/bootstrap/js/bootstrap.min.js"> </script>
+        <script src="/static/thirdparty/bootstrap/js/bootstrap.min.js"> </script>
 
-        <!-- Bootstrap Prettifications -->
         <style>
 
             #editor {
@@ -269,8 +268,7 @@
                 dataType: "json",
                 url: "http://www.enquack.com/" + name + "/create",
                 data: JSON.stringify(params),
-                success: 
-                  $(".alert-success").removeClass("hidden");
+                success: $(".alert-success").removeClass("hidden")
               })
         });
     </script>
