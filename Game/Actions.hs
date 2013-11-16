@@ -17,6 +17,7 @@ import Control.Monad.Writer (runWriter, Writer, tell)
 import Data.Aeson (encode, decode)
 import Data.List (find)
 import Data.Maybe (fromJust, fromMaybe)
+import Debug.Trace
 
 import qualified Data.Map as Map
 import qualified Data.ByteString.Lazy as Lazy
@@ -188,7 +189,7 @@ evalInterpolation game (Interpolate interp) = foldl (joinInterp game) "" interp
 
 -- | The command response when a matching power isn't found.
 noSuchCommand :: CommandResponse
-noSuchCommand = Just "error: no matching command found. enqueue headpat."
+noSuchCommand = Just "error: command unavailable."
 
 findMatchingCommand :: String -> Game -> Maybe CommandPattern
 findMatchingCommand cmdstr game = case words cmdstr of
