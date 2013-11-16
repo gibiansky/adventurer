@@ -243,11 +243,12 @@
               "font-color" : fColor,
               "font-family" : fFamily,
               "background" : bg };
+              "code" : code };
 
             $.ajax({
                 type: "POST",
                 dataType: "json",
-                url: "enquack.com/" + name + "/create",
+                url: "http://www.enquack.com/" + name + "/create",
                 data: JSON.stringify(params),
                 success: alert("fuck yeah")
               })
