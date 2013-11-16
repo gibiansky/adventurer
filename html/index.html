@@ -149,6 +149,18 @@
                         <li onClick="select('#bg', 'Black', 'black')"><a href="#">Black</a></li>
                         <li onClick="select('#bg', 'Grey', 'grey')"><a href="#">Grey</a></li>
                         <li onClick="select('#bg', 'White', 'white')"><a href="#">White</a></li>
+                        <li onClick="select('#bg', 'Red', 'red')"><a
+                            href="#">Red</a></li>
+                        <li onClick="select('#bg', 'Orange', 'orange')"><a
+                            href="#">Orange</a></li>
+                        <li onClick="select('#bg', 'Yellow', 'yellow')"><a
+                            href="#">Yellow</a></li>
+                        <li onClick="select('#bg', 'Green', 'green')"><a
+                            href="#">Green</a></li>
+                        <li onClick="select('#bg', 'Blue', 'blue')"><a
+                            href="#">Blue</a></li>
+                        <li onClick="select('#bg', 'Purple', 'purple')"><a
+                            href="#">Purple</a></li>
                         <li class="divider"></li>
                         <li onClick="upload('#bg', 'Upload')"><a id="upload"
                             href="#">Upload</a></li>
@@ -250,6 +262,16 @@
               $("#fFamily").addClass("btn-danger");
               OK = false;
             }
+
+            if (bg == "") {
+              $("#bg").addClass("btn-danger");
+              OK = false;
+            }
+
+            if (bg == "Upload") {
+                bg = bgImage;
+            }
+
 
             if (!OK) { return; }
 
