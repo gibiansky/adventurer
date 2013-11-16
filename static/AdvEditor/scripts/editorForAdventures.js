@@ -17,9 +17,9 @@ var str = " # Starter code for your text adventure! \
 \n} \
 \n \
 \n# add synonyms next so users have multiple options of what words they can type \
-\nsynonym \"look\" \"examine\" \"look at\" \
-\nsynonym \"go\" \"move to\" \"got to\" \
-\nsynonym \"stuff\" \"things\" \
+\nsynonym \"look\" \"examine\" \"look at\"; \
+\nsynonym \"go\" \"move to\" \"got to\"; \
+\nsynonym \"stuff\" \"things\"; \
 \n \
 \n# required starting area. Command start is automatically run when game begins. \
 \nlocation init { \
@@ -28,7 +28,7 @@ var str = " # Starter code for your text adventure! \
 \n            You begin writing your text adventure game! \
 \n        } \
 \n        #move yourself to starting area \
-\n        move-to start \
+\n        move-to start; \
 \n    } \
 \n} \
 \n \
@@ -40,7 +40,7 @@ var str = " # Starter code for your text adventure! \
 \n            respond { \
 \n                You win this `descriptionofgame` game! \
 \n            } \
-\n            move-to end \
+\n            move-to end; \
 \n        } \
 \n		else { \
 \n			set failtowin (add failtowin 1); \
@@ -138,7 +138,7 @@ var str = " # Starter code for your text adventure! \
 \n} \
 \n \
 \n# End state! You won! \
-\nlocation end in global { \
+\nlocation end { \
 \n	command look {  \
 \n		respond { \
 \n		You won!  \
