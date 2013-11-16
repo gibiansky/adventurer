@@ -16,12 +16,8 @@
 
             #editor {
                     height: 500px;
-                    width: 600px;
                 }
 
-            .panel {
-                width: 635px !important;
-                }
             .ace_keyword {
                 color: fuchsia;
                 }
@@ -81,7 +77,7 @@
                     <button type="button" class="close" data-dismiss="alert"
                         aria-hidden="true">&times;</button>
                     <strong>Success!</strong> Click 
-                    <a href="#" class="alert-link">here</a> 
+                    <a id="link" href="#" class="alert-link">here</a> 
                     to play your game!
                  </div>
 
@@ -98,7 +94,7 @@
          <div class="row">
 
              <!-- SIDEBAR -->
-            <div class="col-md-3 sidebar">
+            <div class="col-md-2 sidebar">
                 <h3>Properties</h3>
 
                 <!-- Getting the name.  This will also be the url extension.-->
@@ -170,7 +166,7 @@
 
             </div>
              <!-- MAIN DOOOP -->
-             <div class="col-md-9 content">
+             <div class="col-md-8 content">
                  <div class="panel panel-default">
                      <div class="panel-heading">
                         <h3 class="panel-title">Text Adventure Editor</h3>
@@ -186,6 +182,20 @@
              
                  <script data-main="/static/AdvEditor/scripts/editorForAdventures.js"
                      src="/static/AdvEditor/scripts/require.js"></script>
+             </div>
+             <div class="col-md-2">
+                <h3>Formatting</h3>
+                The first thing in the file is the <b>state</b>, which lists variable defaults.
+                <br><br>
+                This is followed by <b>location</b> definitions.
+                <br><br>
+                <b>Locations</b> are reified forms of <b>environments</b>, which contain lists of
+                available <b>objects</b> and <b>commands</b>.
+                <br><br>
+                An <b>object</b> has a <b>description</b> and can be picked up by the player.
+                <br><br>
+                A <b>command</b> is of the form verb noun, and can include conditionals based on
+                state.
              </div>
          </div>
      </div>
@@ -259,9 +269,7 @@
                 success: $(".alert-success").removeClass("hidden")
               })
 
-            console.log($('.alert-link'));
-            $('.alert-link').href = "www.enquack.com/" + name + "/test"
-            console.log($('.alert-link'));
+            $('#link').attr("href", "http://www.enquack.com/" + name + "/play")
         });
     </script>
   </body>
