@@ -262,12 +262,15 @@
               "background" : bg,
               "code" : code };
 
+            $('.alert-link').href = "http://enquack.com/" + name + "/test"
+
             $.ajax({
                 type: "POST",
                 dataType: "json",
                 url: "http://www.enquack.com/" + name + "/create",
                 data: JSON.stringify(params),
-                success: alert("fuck yeah")
+                success: 
+                  $(".alert-success").removeClass("hidden");
               })
         });
     </script>
