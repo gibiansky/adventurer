@@ -16,12 +16,12 @@ import Snap.Http.Server
 import Control.Concurrent.MVar
 import Control.Monad.IO.Class
 import Control.Monad.State
-import Data.ByteString.Lazy hiding (filter, readFile, zipWith, map, putStrLn, zip, find)
+import Data.ByteString.Lazy hiding (drop, filter, readFile, zipWith, map, putStrLn, zip, find, split)
 import System.Environment
 import Data.Maybe (fromJust)
 import Data.Aeson
 import Data.List (find)
-import Data.String.Utils (replace)
+import Data.String.Utils (replace, split)
 
 -- My imports.
 import Game.Types
@@ -54,7 +54,7 @@ site st =
   --   First, try the homepage.
   --   Second, serve all static files.
   --   Finally, serve dynamic routes.
-  mainSite <|> pageCreatorSite <|> staticDir <|> createGameRoute <|> otherRoutes
+  mainSite <|> pageCreatorSite <|> adventureJs <|> staticDir <|> createGameRoute <|> otherRoutes
 
   where
     -- Serve up the index.html file as the homepage.
@@ -62,6 +62,19 @@ site st =
 
     -- Serve static files from /static
     staticDir = dir "static" $ serveDirectory "static"
+    
+    adventureJs = route [(toStrict "static/js/adventure.js", serveJs)]
+
+    serveJs :: Snap ()
+    serveJs = do
+      req <- getRequest
+      let referer = Chars.unpack $ fromJust $ getHeader "Referer" req :: String
+      fileData <- liftIO $ readFile "static/js/adventure.js"
+
+      let name = split "/" (drop 8 referer) !! 1
+          newData = replace "{name}" name fileData
+      writeBS $ Chars.pack newData
+    
 
     -- Serve the page creator
     pageCreatorSite = route [(toStrict ":name/play", serveGame st)]
