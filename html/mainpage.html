@@ -12,10 +12,6 @@
         media="screen">
         <script src="bootstrap/js/bootstrap.min.js"> </script>
 
-        <!-- Backbone -->
-        <script src="/static/thirdparty/backbone/js/underscore.min.js"></script>
-        <script src="/static/thirdparty/backbone/js/backbone.min.js"></script>
-
         <!-- Bootstrap Prettifications -->
         <style>
 
@@ -48,13 +44,10 @@
             .content{
                 padding:10px;
                 }
-            .submit-link{
-                float:none;
-                margin:0 auto;
-                }
         </style>
 
     </head>
+
     <body>
 
      <div class="navbar navbar-inverse">
@@ -64,11 +57,7 @@
               </div>
          <div class="collapse navbar-collapse navHeaderCollapse"
              id="navHeaderCollapse">
-            <ul class="nav navbar-nav navbar-right">
-               <li class="active">
-                  <a href="#" onclick="submit()">Submit</a>
-               </li>
-            </ul>
+          <ul class="nav navbar-nav navbar-right"> </ul>
          </div>
 
          </div>
@@ -144,7 +133,9 @@
                     </ul>
                 </div>
 
-                </br>
+                <div class="btn-group-vertical btn-block">
+                  <button id="submit" type="button" class="btn btn-primary">Submit</button>
+                </div>
             </div>
 
              <!-- MAIN DOOOP -->
@@ -169,20 +160,48 @@
     <script type="text/javascript">
         function select(button, newVar) {
             $(button).text(newVar);
+            $(button).val(newVar);
         }
 
-        function submit() {
-            var id = $('#id').text();
-            var fFamily = $('#fFamily').text();
-            var fColor = $('#fFamily').text();
-            var bgColor = $('#bgColor').text();
+        $("#submit").click(function(){
+            var name = $('#id').val();
+            var fFamily = $('#fFamily').val();
+            var fColor = $('#fFamily').val();
+            var bgColor = $('#bgColor').val();
             var editor = ace.edit("editor");
             var code = editor.getSession().getValue();
+            var OK = true;
 
-            $("#submitLink").removeClass("hidden");
-        }
+            if (fFamily == "") {
+              $("#fColor").addClass("btn-danger");
+              OK = false;
+            }
+
+            if (fColor == "") {
+              $("#fFamily").addClass("btn-danger");
+              OK = false;
+            }
+
+            if (bgColor == "") {
+              $("#bgColor").addClass("btn-danger");
+              OK = false;
+            }
+
+            if (!OK) { return; }
+
+            var params = { "name" : name,
+              "font-color" : fColor,
+              "font-family" : fFamily,
+              "background" : bgColor };
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "enquack.com" + name + "/create",
+                data: JSON.stringify(params),
+                success: alert("fuck yeah")
+                })
+        });
     </script>
-
-    </body>
-
+  </body>
 </html>
