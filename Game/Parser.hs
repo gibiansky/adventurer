@@ -85,7 +85,6 @@ parseEpisode = do
       syns = decl2Syn <$> filter isSyn items
   return Episode {
               initState = stateDecl,
-              synonyms = syns,
               environments = envs,
               rooms = locs
   }
@@ -93,15 +92,22 @@ parseEpisode = do
 
 toplevelItem :: Parser Decl 
 toplevelItem = do
-  declType <- parseDeclType ["location", "environment", "synonym"]
-  name <- case declType of
-    "synonym" -> parseStr
-    _ -> many (noneOf " ;{")
+  declType <- parseDeclType ["location", "environment"]
+  name <- many (noneOf " ;{")
   whitespace
+  let parseParent = option Nothing $ do
+        par <- many $ noneOf " ;{"
+        return $ if null par
+                 then Nothing
+                 else Just par
+
   case declType of
-    "location" -> LocDecl <$> braced (parseLocation name)
-    "environment" -> EnvDecl <$> braced (parseEnvironment name)
-    "synonym" -> SynDecl <$> parseSynonym name
+    "location" -> do
+      parent <- parseParent
+      LocDecl <$> braced (parseLocation name parent)
+    "environment" -> do
+      parent <- parseParent
+      EnvDecl <$> braced (parseEnvironment name parent)
 
 parseSynonym :: String -> Parser Synonym
 parseSynonym name = do
@@ -120,30 +126,22 @@ parseStr = do
 semicolon :: Parser ()
 semicolon = void $ whitespace >> char ';' >> whitespace
 
-parseLocation :: String -> Parser Location
-parseLocation name = do
-  items <- many locItem
+parseLocation :: String -> Maybe EnvironmentName -> Parser Location
+parseLocation name parent = Location <$> parseEnvironment name parent
+
+parseEnvironment :: String -> Maybe EnvironmentName -> Parser Environment
+parseEnvironment name parent = do
+  items <- many envItem
 
   let objs = decl2Obj <$> filter isObj items
       coms = decl2Com <$> filter isCom items
-  return Location {
-              locationParent = Nothing,
-              locationObjs = objs,
-              locationCommands = coms,
-              locationName = name
-  }
-
-parseEnvironment :: String -> Parser Environment
-parseEnvironment name = do
-  items <- many locItem
-
-  let objs = decl2Obj <$> filter isObj items
-      coms = decl2Com <$> filter isCom items
+      syns = decl2Syn <$> filter isSyn items
   return Environment {
-              envParent = Nothing,
+              envParent = parent,
               envObjs = objs,
               envCommands = coms,
-              envName = name
+              envName = name,
+              envSynonyms = syns
   }
 
 parseDeclType :: [String] -> Parser String 
@@ -153,13 +151,16 @@ parseDeclType options = do
     whitespace
     return result
 
-locItem :: Parser Decl
-locItem = do
-  declType <- parseDeclType ["object", "command"]
-  name <- many (noneOf " ;{")
+envItem :: Parser Decl
+envItem = do
+  declType <- parseDeclType ["object", "command", "synonym"]
+  name <- case declType of
+    "synonym" -> parseStr
+    _ -> many (noneOf " ;{")
   whitespace
   case declType of
     "object" -> ObjDecl <$> braced (parseObject name)
+    "synonym" -> SynDecl <$> parseSynonym name
     "command" -> do
       pat <- parseCommandPat
       ComDecl <$> braced (parseCommand pat name)

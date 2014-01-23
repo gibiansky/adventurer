@@ -28,7 +28,6 @@ type GameState = Map.Map String (Either Int String)
 
 data Episode = Episode {
   initState :: GameState,
-  synonyms :: [Synonym],
   environments :: [Environment],
   rooms :: [Location]
   } deriving Show
@@ -73,18 +72,13 @@ data Action
 -- Aliases to make type signatures cleaner and easier to read.
 type CommandId = Int  
 
-data Location = Location {
-  locationName :: LocationName,
-  locationParent :: Maybe EnvironmentName,
-  locationObjs :: [Obj],
-  locationCommands :: [CommandPattern]
-  } deriving Show
-
+newtype Location = Location {unLoc :: Environment } deriving Show
 data Environment = Environment {
   envName :: EnvironmentName,
   envParent :: Maybe EnvironmentName,
   envObjs :: [Obj],
-  envCommands :: [CommandPattern]
+  envCommands :: [CommandPattern],
+  envSynonyms :: [Synonym]
   } deriving Show
 
 type LocationName = String 

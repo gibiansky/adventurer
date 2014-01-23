@@ -11,7 +11,8 @@ module Game.Actions (
   run
   ) where
 
-import Control.Monad (foldM)
+import Control.Monad (foldM, join)
+import Control.Applicative
 import Control.Monad.State (State, modify, gets)
 import Control.Monad.Writer (runWriter, Writer, tell)
 import Data.Aeson (encode, decode)
@@ -160,7 +161,7 @@ runAction game (Print string) = do
 runAction game (MoveToRoom name) = return game { currentRoom = findRoom game name }
   where
     findRoom :: Game -> String -> Location
-    findRoom game name = fromJust $ find ((== name) . locationName) (rooms $ episode game)
+    findRoom game name = fromJust $ find ((== name) . envName . unLoc) (rooms $ episode game)
 
 runAction game (IfExpr expr thens elses) = foldM runAction game $
   if getBool $ evaluateExpression game expr
@@ -198,62 +199,29 @@ findMatchingCommand cmdstr game = case words cmdstr of
     Just (Obj name description) -> Just $ Pattern ["look", name] [Print description]
   _ -> cmdResult
   where
-    cmdResult = findMatchingCommand' cmdstr game $ currentRoom game
-    objResult objwords = findMatchingObject objwords game $ currentRoom game
+    cmdResult = findMatchingCommand' cmdstr game $ unLoc $ currentRoom game
+    objResult objwords = findMatchingObject objwords game $ unLoc $ currentRoom game
 
-findMatchingCommand' :: String -> Game -> Location -> Maybe CommandPattern
+findMatchingCommand' :: String -> Game -> Environment -> Maybe CommandPattern
 findMatchingCommand' cmdstr game loc = 
-  let cmds = locationCommands loc
-      match = find (cmdMatches cmdstr) cmds in
-    case match of
-      Just cmd -> Just cmd
-      Nothing -> case locationParent loc of
-        Nothing -> Nothing
-        Just parentName -> 
-          let parentEnv = findEnvWithName parentName game in
-            findMatchingCommand'' cmdstr game parentEnv
+  find (cmdMatches cmdstr loc) cmds <|>
+    join (findMatchingCommand' cmdstr game <$> parentEnv)
+  where
+    cmds = envCommands loc
+    parentEnv = flip findEnvWithName game <$> envParent loc
 
+findMatchingObject objwords game loc = 
+  find (objMatches objwords loc) objs <|>
+  join (findMatchingObject objwords game <$> parentEnv)
+  where
+    objs = envObjs loc
+    parentEnv = flip findEnvWithName game <$> envParent loc
 
-findMatchingCommand'' :: String -> Game -> Environment -> Maybe CommandPattern
-findMatchingCommand'' cmdstr game loc = 
-  let cmds = envCommands loc
-      match = find (cmdMatches cmdstr) cmds in
-    case match of
-      Just cmd -> Just cmd
-      Nothing -> case envParent loc of
-        Nothing -> Nothing
-        Just parentName -> 
-          let parentEnv = findEnvWithName parentName game in
-            findMatchingCommand'' cmdstr game parentEnv
+objMatches :: [String] -> Environment -> Obj  -> Bool
+objMatches objwords env (Obj objname _) = objwords == words objname
 
-findMatchingObject objwords game room = 
-  let objs = locationObjs room
-      match = find (objMatches objwords) objs in
-    case match of
-      Just obj -> Just obj
-      Nothing -> case locationParent room of
-        Nothing -> Nothing
-        Just parentName -> 
-          let parentEnv = findEnvWithName parentName game in
-            findMatchingObject' objwords game parentEnv
-
-findMatchingObject' objwords game room = 
-  let objs = envObjs room
-      match = find (objMatches objwords) objs in
-    case match of
-      Just obj -> Just obj
-      Nothing -> case envParent room of
-        Nothing -> Nothing
-        Just parentName -> 
-          let parentEnv = findEnvWithName parentName game in
-            findMatchingObject' objwords game parentEnv
-
-
-objMatches :: [String] -> Obj -> Bool
-objMatches objwords (Obj objname _) = objwords == words objname
-
-cmdMatches :: String -> CommandPattern -> Bool
-cmdMatches str (Pattern pat _) = words str == pat
+cmdMatches :: String -> Environment -> CommandPattern -> Bool
+cmdMatches str env (Pattern pat _) = words str == pat
 
 findEnvWithName :: EnvironmentName -> Game -> Environment
 findEnvWithName name game = fromJust $ find ((== name) . envName) $ environments $ episode game
