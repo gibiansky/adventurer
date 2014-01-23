@@ -1,6 +1,6 @@
 -- | Parse room files, which are written in a custom language for adventure gaming.
 module Game.Parser (
-  parseFile, -- ^ The only exposed function is one which takes file contents and returns a parsed episode
+  parseFile,
   parseString
   ) where
 
@@ -17,13 +17,24 @@ import Debug.Trace
 
 import Game.Types
 
-parseFile :: String -> IO String
+data Decl = SynDecl { decl2Syn :: Synonym }
+          | EnvDecl { decl2Env :: Environment }
+          | LocDecl { decl2Loc :: Location }
+          | ObjDecl { decl2Obj :: Obj }
+          | ComDecl { decl2Com :: CommandPattern }
+
+
+-- | Given a file, parse it, and either display the parsed result or an
+-- error. Useful for debugging only.
+parseFile :: FilePath -> IO String
 parseFile filename = do
   contents <- readFile filename
   case parse parseEpisode filename (removeComments contents) of
     Left err -> return $ show err
     Right game -> return $ show game
 
+-- | Given a data string, parse it, and return the parsed episode.
+-- If there is an error, return the line and column number.
 parseString :: String -> Either (Int, Int) Episode
 parseString contents =
   case parse parseEpisode "<interactive>" (removeComments contents) of
@@ -32,32 +43,11 @@ parseString contents =
     Right episode -> Right episode
 
 removeComments :: String -> String
-removeComments = unlines . filter (not . isComment) . lines
+removeComments = unlines . map removeComment . lines
   where 
-    isComment line = case dropWhile (== ' ') line of
-      '#':_ -> True
-      _ -> False
-
-data Decl = SynDecl Synonym
-          | EnvDecl Environment
-          | LocDecl Location 
-          | ObjDecl Obj
-          | ComDecl CommandPattern
-
-decl2Env :: Decl -> Environment
-decl2Env (EnvDecl e) = e
-
-decl2Loc :: Decl -> Location
-decl2Loc (LocDecl e) = e
-
-decl2Syn :: Decl -> Synonym
-decl2Syn (SynDecl e) = e
-
-decl2Obj :: Decl -> Obj
-decl2Obj (ObjDecl e) = e
-
-decl2Com :: Decl -> CommandPattern
-decl2Com (ComDecl e) = e
+    removeComment ('\\':'#':xs) = '#':removeComment xs
+    removeComment ('#':_) = ""
+    removeComment (x:xs) = x:removeComment xs
 
 isEnv :: Decl -> Bool
 isEnv (EnvDecl _) = True
@@ -318,8 +308,9 @@ ifParser = do
   exp <- between (char '`') (char '`') parseExpr
 
   thenActs <- braced $ many $ try parseAction
-  whitespace >> string "else" >> whitespace
-  elseActs <- braced $ many $ try parseAction
+  elseActs <- option [] $ do
+    whitespace >> string "else" >> whitespace
+    braced $ many $ try parseAction
   return $ IfExpr exp thenActs elseActs
 
 assignParser :: Parser Action
