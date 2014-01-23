@@ -67,6 +67,7 @@ data Action
   | MoveToRoom String                           -- ^ Move to a new room, running the relevant exit and enter actions.
   | IfExpr Expression [Action] [Action]         -- ^ If statement. 
   | Assign VariableName Expression              -- ^ Assign a value to a variable in the global state.
+  | Trigger String                              -- ^ Trigger a command as if the user entered it.
   deriving Show
 
 -- Aliases to make type signatures cleaner and easier to read.

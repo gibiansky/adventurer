@@ -266,7 +266,7 @@ parseAction :: Parser Action
 parseAction = whitespace >> choice (map try actionParsers) -- Choose one of the possible actions.
   where
     -- All possible actions.
-    actionParsers = [respondParser, moveToParser,ifParser, assignParser]
+    actionParsers = [respondParser, moveToParser,ifParser, assignParser, triggerParser]
 
 -- | Parse a room switching action.
 -- | These look like this:
@@ -279,6 +279,18 @@ moveToParser = do
   room <- many (noneOf " ;")
   semicolon
   return $ MoveToRoom room
+
+-- | Parse a trigger action.
+-- | These look like this:
+-- |   trigger word1 word2 ... wordn;
+triggerParser :: Parser Action
+triggerParser = do
+  whitespace
+  string "trigger"
+  whitespace
+  cmd <- many (noneOf ";")
+  semicolon
+  return $ Trigger cmd
 
 -- | Parse a string output action.
 -- | These look like this:
