@@ -140,6 +140,28 @@ evaluateExpression game (Equal exp1 exp2) =
       (Right s1, Right s2) -> Left $ if s1 == s2 then 1 else 0
       _ -> Left 0
 
+evaluateExpression game (GreaterThan exp1 exp2) =
+  let evaledExp1 = evaluateExpression game exp1
+      evaledExp2 = evaluateExpression game exp2 in
+    case (evaledExp1, evaledExp2) of
+      (Left i1, Left i2) -> Left $ if i1 > i2 then 1 else 0
+      (Right s1, Right s2) -> Left $ if s1 > s2 then 1 else 0
+      _ -> Left 0
+
+evaluateExpression game (LessThan exp1 exp2) =
+  let evaledExp1 = evaluateExpression game exp1
+      evaledExp2 = evaluateExpression game exp2 in
+    case (evaledExp1, evaledExp2) of
+      (Left i1, Left i2) -> Left $ if i1 < i2 then 1 else 0
+      (Right s1, Right s2) -> Left $ if s1 < s2 then 1 else 0
+      _ -> Left 0
+
+evaluateExpression game (GreaterThanEq exp1 exp2) = evaluateExpression game $
+  Or (GreaterThan exp1 exp2) (Equal exp1 exp2)
+
+evaluateExpression game (LessThanEq exp1 exp2) = evaluateExpression game $
+  Or (LessThan exp1 exp2) (Equal exp1 exp2)
+
 evaluateExpression _ (StringVal string) = Right string
 
 evaluateExpression _ (IntVal int) = Left int
@@ -174,6 +196,11 @@ runAction game (Assign varname expr) =
   where
     assign :: GameState -> String -> Either Int String -> GameState
     assign state var value = Map.insert var value state
+
+runAction game (Trigger cmdstr) =
+  case findMatchingCommand cmdstr game of
+       Nothing -> error $ "Broken trigger: " ++ cmdstr
+       Just (Pattern _ actions) -> foldM runAction game actions
 
 evalInterpolation :: Game -> InterpolatedString -> String
 evalInterpolation game (Interpolate interp) = foldl (joinInterp game) "" interp
