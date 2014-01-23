@@ -48,6 +48,7 @@ removeComments = unlines . map removeComment . lines
     removeComment ('\\':'#':xs) = '#':removeComment xs
     removeComment ('#':_) = ""
     removeComment (x:xs) = x:removeComment xs
+    removeComment [] = []
 
 isEnv :: Decl -> Bool
 isEnv (EnvDecl _) = True
@@ -200,7 +201,8 @@ parseExpr = do
      else return $ if isValue word then makeValue word else Var word
   where
     parseWord = many1 (noneOf " `();")
-    functions = ["add", "sub", "and", "or", "not", "eq"]
+    functions = ["add", "sub", "and", "or", "not", "eq",
+                 "neq", "gt", "gte", "lt", "lte"]
 
 isValue :: String -> Bool
 isValue (first:_) = isDigit first || first == '"'
@@ -220,6 +222,11 @@ parseFun "and" = And <$> parseArg <*> parseArg
 parseFun "or" = Or <$> parseArg <*> parseArg
 parseFun "not" = Not <$> parseArg
 parseFun "eq" = Equal <$> parseArg <*> parseArg
+parseFun "neq" = Not <$> (Equal <$> parseArg <*> parseArg)
+parseFun "gt" = GreaterThan <$> parseArg <*> parseArg
+parseFun "gte" = GreaterThanEq <$> parseArg <*> parseArg
+parseFun "lt" = LessThan <$> parseArg <*> parseArg
+parseFun "lte" = LessThanEq <$> parseArg <*> parseArg
 parseFun fun = error $ "Unknown function " ++ fun
 
 parseArg :: Parser Expression

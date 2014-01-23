@@ -106,6 +106,10 @@ data Expression = Var VariableName
                 | Or Expression Expression
                 | Not Expression
                 | Equal Expression Expression
+                | GreaterThan Expression Expression
+                | GreaterThanEq Expression Expression
+                | LessThan Expression Expression
+                | LessThanEq Expression Expression
                 | StringVal String
                 | IntVal Int  
                 deriving Show
