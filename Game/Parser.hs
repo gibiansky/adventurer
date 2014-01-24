@@ -380,7 +380,7 @@ parseVal :: Parser (Either Int String)
 parseVal = parseString <|> parseInt
   where
     parseInt = try $ do
-      value <- many $ noneOf " ;"
+      value <- many $ noneOf " ()`;{}"
       return $ Left $ read value
     parseString = try $ do
       char '"'
