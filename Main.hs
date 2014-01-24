@@ -122,7 +122,7 @@ site st =
         run (Command 0 "start" Nothing) pregame
       where
         findRoom :: Episode -> String -> Location
-        findRoom episode name = fromJust $ find ((== name) . locationName) (rooms episode)
+        findRoom episode name = fromJust $ find ((== name) . envName . unLoc) (rooms episode)
 
     -- Use dynamic routes to interact with the server via JSON.
     -- The 'route' function takes an association list of bytestrings and handlers.
