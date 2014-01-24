@@ -223,7 +223,7 @@ findMatchingCommand :: String -> Game -> Maybe CommandPattern
 findMatchingCommand cmdstr game = case words cmdstr of
   "look":objwords -> case objResult objwords of
     Nothing -> cmdResult
-    Just (Obj name description) -> Just $ Pattern ["look", name] [Print description]
+    Just (Obj name description) -> Just $ Pattern ("look":name) [Print description]
   _ -> cmdResult
   where
     cmdResult = findMatchingCommand' cmdstr game $ unLoc $ currentRoom game
@@ -245,7 +245,7 @@ findMatchingObject objwords game loc =
     parentEnv = flip findEnvWithName game <$> envParent loc
 
 objMatches :: [String] -> Environment -> Obj  -> Bool
-objMatches objwords env (Obj objname _) = wordsMatch objwords $ words objname
+objMatches objwords env (Obj objname _) = wordsMatch objwords objname
 
 cmdMatches :: String -> Game -> Environment -> CommandPattern -> Bool
 cmdMatches str game env (Pattern pat _) = 

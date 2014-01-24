@@ -1859,7 +1859,7 @@ location living-room house {
 }
 
 # just outside the house
-location outdoors in global {
+location outdoors global {
     synonym "inside" "house" "indoors";
     synonym "open car" "get in car" "drive car";
     synonym "go to" "drive to" "drive" "go";
@@ -1976,7 +1976,7 @@ location outdoors in global {
     }
 }
 
-location emily-house in global {
+location emily-house global {
     synonym "plant" "potted plant" "dead plant";
     synonym "knock" "knock on door";
     synonym "open door" "enter";
@@ -2055,7 +2055,7 @@ location emily-house in global {
     }
 }
 
-location postoffice in global {
+location postoffice global {
     synonym "man" "employee" "worker" "Kleisthenes" "person" "guy";
     synonym "scream" "yell";
     synonym "wave arms" "wave your arms" "flail";
@@ -2340,7 +2340,7 @@ location postoffice in global {
     }
 }
 
-location robertson-front-door in global {
+location robertson-front-door global {
     synonym "bush" "bushes";
     synonym "remove" "take off";
     synonym "open door" "enter";
@@ -2530,7 +2530,7 @@ location robertson-front-door in global {
     }
 }
 
-location backyard in global {
+location backyard global {
     synonym "reindeer" "Christmas reindeer";
     synonym "take" "pet" "touch" "ride";
     synonym "go back" "return" "go through bushes" "go bushes";
@@ -2617,7 +2617,7 @@ location backyard in global {
     }
 }
 
-environment puzzle-room in global{
+environment puzzle-room global{
     synonym "rock collection" "rocks" "collection" "rock";
     synonym "bookshelf" "books";
     synonym "read Passion in Paradise" "read Passion in a Pot" "read Passion in a Poppy Field" "read Passion in Pompeii";
@@ -3012,7 +3012,7 @@ environment puzzle-room in global{
     }
 }
 
-location room-one in puzzle-room {
+location room-one puzzle-room {
     synonym "use flint on chair" "burn chair" "start fire" "use flint on armchair" "burn armchair"; 
     command look { 
         respond {
@@ -3175,7 +3175,7 @@ location room-one in puzzle-room {
     }
 }
 
-location room-two in puzzle-room {
+location room-two puzzle-room {
     synonym "couch" "cushion" "cushions";
     synonym "search" "search through" "search in";
     synonym "note" "love note" "letter" "love letter" "heart-shaped note";
@@ -3662,7 +3662,7 @@ location room-two in puzzle-room {
     }
 }
 
-location room-three in puzzle-room {
+location room-three puzzle-room {
     synonym "cat food" "food";
     
     command look {
