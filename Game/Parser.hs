@@ -266,7 +266,7 @@ parseAction :: Parser Action
 parseAction = whitespace >> choice (map try actionParsers) -- Choose one of the possible actions.
   where
     -- All possible actions.
-    actionParsers = [respondParser, moveToParser,ifParser, assignParser, triggerParser]
+    actionParsers = [respondParser, moveToParser, ifParser, assignParser, triggerParser]
 
 -- | Parse a room switching action.
 -- | These look like this:

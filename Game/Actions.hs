@@ -16,9 +16,9 @@ import Control.Applicative
 import Control.Monad.State (State, modify, gets)
 import Control.Monad.Writer (runWriter, Writer, tell)
 import Data.Aeson (encode, decode)
-import Data.List (find)
+import Data.List (find, foldl', isInfixOf)
+import Data.List.Utils (replace)
 import Data.Maybe (fromJust, fromMaybe)
-import Debug.Trace
 
 import qualified Data.Map as Map
 import qualified Data.ByteString.Lazy as Lazy
@@ -231,7 +231,7 @@ findMatchingCommand cmdstr game = case words cmdstr of
 
 findMatchingCommand' :: String -> Game -> Environment -> Maybe CommandPattern
 findMatchingCommand' cmdstr game loc = 
-  find (cmdMatches cmdstr loc) cmds <|>
+  find (cmdMatches cmdstr game loc) cmds <|>
     join (findMatchingCommand' cmdstr game <$> parentEnv)
   where
     cmds = envCommands loc
@@ -245,10 +245,37 @@ findMatchingObject objwords game loc =
     parentEnv = flip findEnvWithName game <$> envParent loc
 
 objMatches :: [String] -> Environment -> Obj  -> Bool
-objMatches objwords env (Obj objname _) = objwords == words objname
+objMatches objwords env (Obj objname _) = wordsMatch objwords $ words objname
 
-cmdMatches :: String -> Environment -> CommandPattern -> Bool
-cmdMatches str env (Pattern pat _) = words str == pat
+cmdMatches :: String -> Game -> Environment -> CommandPattern -> Bool
+cmdMatches str game env (Pattern pat _) = 
+  let allSyns = findSynonyms env in 
+      words (applySynonyms allSyns str) == pat
+  where
+    findSynonyms :: Environment -> [Synonym]
+    findSynonyms env =
+      envSynonyms env ++ 
+        case flip findEnvWithName game <$> envParent env of
+          Nothing -> []
+          Just env' -> findSynonyms env'
+
+wordsMatch :: [String] -> [String] -> Bool
+wordsMatch _ ("*":_) = True
+wordsMatch (x:xs) (y:ys) = x == y && wordsMatch xs ys
+wordsMatch _ _ = False
+
+applySynonyms :: [Synonym] -> String -> String
+applySynonyms syns str =
+  let applicable = filter isApplicable syns in
+    case applicable of 
+      [] -> str
+      syns' -> applySynonyms syns $ foldl' doApply str syns'
+
+  where
+    isApplicable (Synonym to from) = any (`isInfixOf` str) from
+    doApply string (Synonym to from) =
+      let replacer s rep = replace rep to s in
+        foldl' replacer str from
 
 findEnvWithName :: EnvironmentName -> Game -> Environment
 findEnvWithName name game = fromJust $ find ((== name) . envName) $ environments $ episode game
