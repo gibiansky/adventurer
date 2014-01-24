@@ -26,12 +26,9 @@ data Decl = SynDecl { decl2Syn :: Synonym }
 
 -- | Given a file, parse it, and either display the parsed result or an
 -- error. Useful for debugging only.
-parseFile :: FilePath -> IO String
 parseFile filename = do
   contents <- readFile filename
-  case parse parseEpisode filename (removeComments contents) of
-    Left err -> return $ show err
-    Right game -> return $ show game
+  return $ parseString contents
 
 -- | Given a data string, parse it, and return the parsed episode.
 -- If there is an error, return the line and column number.
