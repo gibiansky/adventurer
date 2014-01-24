@@ -36,8 +36,9 @@ state {
     variable onChat 0;
     # Delivered that package that belongs to Emily to here door
     variable returnedEmilyPackage 0;
-    variable chatemily 0;
-    variable hasemilypackage 0;
+    # You're in the middle of a conversation with Emily on chat
+    variable chatEmily 0;
+    variable hasEmilyPackage 0;
     variable donePostOffice 0;
     variable attentionAttempts 0;
     variable catPresent 0;
@@ -1577,7 +1578,7 @@ location living-room house {
                 farewells to Emily. That was kind of rude.
             }
             set onChat 0;
-            set chatemily 0;
+            set chatEmily 0;
         }
         else {
             respond {
@@ -1630,7 +1631,7 @@ location living-room house {
     }
     command talk Emily {
         if `onChat` {
-            set chatemily 1;
+            set chatEmily 1;
             respond {
                 What would you like to say?
                 
@@ -1658,7 +1659,7 @@ location living-room house {
         } 
     }
     command say 1 {
-        if `chatemily` {
+        if `chatEmily` {
             respond {
                 You type in "hi" with an appropriate emoticon. 
                 Your emoticon appears merely as a generic winky 
@@ -1681,7 +1682,7 @@ location living-room house {
         }
     }
     command say 2 {
-        if `chatemily` {
+        if `chatEmily` {
             respond {
                 "I'm Emily" she responds to your inquiry. 
                 The additional piece of information is incredibly
@@ -1705,7 +1706,7 @@ location living-room house {
         }
     }
     command say 3 {
-        if `chatemily` {
+        if `chatEmily` {
             respond {
                 You inquire about the status of her, to 
                 which Emily responds, "Life is pretty ideal," 
@@ -1723,7 +1724,7 @@ location living-room house {
         }
     }
     command say 4 {
-        if `chatemily` {
+        if `chatEmily` {
             respond {
                 "Yeah, I know," Emily says. "Like if trashcans became
                 sentient or something. That would be ideal."
@@ -1739,7 +1740,7 @@ location living-room house {
         }
     }
     command say 5 {
-        if `chatemily` {
+        if `chatEmily` {
             respond {
                 You type your farewell, and Emily responds 
                 with an emoticon of a waving smiley face. 
@@ -1747,7 +1748,7 @@ location living-room house {
                 expressions. You close the chat room, bringing you
                 back to the desktop.
             }
-            set `chatemily` 0;
+            set `chatEmily` 0;
             set `onChat` 0;
         }
         else {
@@ -1759,7 +1760,7 @@ location living-room house {
         }
     }
     command say 6 {
-        if `chatemily` {
+        if `chatEmily` {
             if `and returnedEmilyPackage (not (or hasTeapot hasYourPackage))` {
                 respond {
                     "Hey, that's funny," she responds. "I just got a package 
