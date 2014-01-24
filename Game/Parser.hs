@@ -196,39 +196,36 @@ parseInterpolated = Interpolate <$> many (choice [strParser, exprParser])
 parseExpr :: Parser Expression
 parseExpr = do
   whitespace
-  word <- parseWord
-  if word `elem` functions
-     then parseFun word
-     else return $ if isValue word then makeValue word else Var word
+  foldl1 (<|>) $ map try $ 
+     map parseFun functions ++ [parseExprVal]
   where
-    parseWord = many1 (noneOf " `();")
     functions = ["add", "sub", "and", "or", "not", "eq",
                  "neq", "gt", "gte", "lt", "lte"]
 
-isValue :: String -> Bool
-isValue (first:_) = isDigit first || first == '"'
-
-makeValue :: String -> Expression
-makeValue str = 
-  case (head str, last str) of
-    ('"', '"') -> StringVal $ init $ tail str 
-    ('"', _) -> error "Unterminated quote in expression"
-    (_, '"') -> error "Unstarted quote in expression"
-    (_, _) -> IntVal $ read str
+parseExprVal :: Parser Expression
+parseExprVal = do
+  val <- parseVal
+  return $ case val of
+    Left int -> IntVal int
+    Right str -> StringVal str
 
 parseFun :: String -> Parser Expression
-parseFun "add" = Add <$> parseArg <*> parseArg
-parseFun "sub" = Sub <$> parseArg <*> parseArg
-parseFun "and" = And <$> parseArg <*> parseArg
-parseFun "or" = Or <$> parseArg <*> parseArg
-parseFun "not" = Not <$> parseArg
-parseFun "eq" = Equal <$> parseArg <*> parseArg
-parseFun "neq" = Not <$> (Equal <$> parseArg <*> parseArg)
-parseFun "gt" = GreaterThan <$> parseArg <*> parseArg
-parseFun "gte" = GreaterThanEq <$> parseArg <*> parseArg
-parseFun "lt" = LessThan <$> parseArg <*> parseArg
-parseFun "lte" = LessThanEq <$> parseArg <*> parseArg
-parseFun fun = error $ "Unknown function " ++ fun
+parseFun word = do
+  string word
+  go word
+  where
+    go "add" = Add <$> parseArg <*> parseArg
+    go "sub" = Sub <$> parseArg <*> parseArg
+    go "and" = And <$> parseArg <*> parseArg
+    go "or" = Or <$> parseArg <*> parseArg
+    go "not" = Not <$> parseArg
+    go "eq" = Equal <$> parseArg <*> parseArg
+    go "neq" = Not <$> (Equal <$> parseArg <*> parseArg)
+    go "gt" = GreaterThan <$> parseArg <*> parseArg
+    go "gte" = GreaterThanEq <$> parseArg <*> parseArg
+    go "lt" = LessThan <$> parseArg <*> parseArg
+    go "lte" = LessThanEq <$> parseArg <*> parseArg
+    go fun = error $ "Unknown function " ++ fun
 
 parseArg :: Parser Expression
 parseArg = do
@@ -344,9 +341,7 @@ assignParser = do
   exp <- if nextChar == '`'
         then between (char '`') (char '`') parseExpr
         else if isDigit nextChar || nextChar == '"'
-             then do 
-                word <- many1 (noneOf " ;")
-                return $ makeValue word
+             then parseExprVal
              else error "Expecting values or backticks."
   semicolon
 
