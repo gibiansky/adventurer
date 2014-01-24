@@ -1,0 +1,4048 @@
+state {
+    variable hasPen 0;
+    variable dresserOpen 0;
+    variable frontDoor "closed";
+    # The door must be opened before you leave the entryway
+    # in order to get your package
+    variable openedDoorFirst 0;
+    # Mail person begins at your door, then leaves after giving 
+    # you your package
+    variable mailWomanPresent 1;
+    # Make the doorbell ring the first time you enter the entryway
+    variable enteredEntry 0;
+    # After chatting with Emily, she returns your package to your door
+    variable gotPackageFromEmily 0;
+    # Received the final package that actually belongs to you
+    variable hasYourPackage 0;
+    # Text changes if you bother to learn mail person's name
+    variable mailPersonName "the woman";
+    # Received package that begins game, but haven't destroyed it yet
+    variable hasOrigPackage 0;
+    # You've ripped open the original package, and so know it
+    # doesn't belong to you
+    variable origPackageOpen 0;
+    variable hasMedallion 0;
+    # From ripped open package in beginning
+    variable hasEmptyBox 0;
+    variable hasTeapot 0;
+    # Get address form ripped box to find Robertson
+    variable hasSeenAddress 0;
+    variable hasKeys 0;
+    variable fridgeOpen 0;
+    variable computerState "off";
+    # Are you currently browning Swifts.com?
+    variable onSwifts 0;
+    # Are you logged into the chat room?
+    variable onChat 0;
+    # Delivered that package that belongs to Emily to here door
+    variable returnedEmilyPackage 0;
+    variable chatemily 0;
+    variable hasemilypackage 0;
+    variable donePostOffice 0;
+    variable attentionAttempts 0;
+    variable catPresent 0;
+    variable hasFlint 0;
+    variable placedBook 0;
+    variable heldBook "None";
+    variable roomOnFire 0;
+    variable hasNote 0;
+    variable hasPapers 0;
+    variable pinkRight 0;
+    variable whiteRight 0;
+    variable greenRight 0;
+    variable blueRight 0;
+    variable yellowRight 0;
+    variable hasCatFood 0;
+    variable beganConv 0;
+}
+
+location init {
+    command start {
+        respond {
+            You wake up, ready for another normal day of
+            your normal life in your normal little village.
+        }
+        move-to bedroom;
+        trigger look;
+    }
+}
+
+environment global {
+
+    synonym "look" "examine" "x" "look at";
+    synonym "take off jacket" "strip" "remove jacket";
+    synonym "go" "move to" "go to";
+    synonym "" "the" "a";
+    synonym "living room" "livingroom";
+    synonym "close" "shut";
+    synonym "take" "pick up";
+    synonym "empty box" "ripped box" "opened box" "torn box" "empty package" "torn package" "opened package";
+    
+    command look pen {
+        if `hasPen` {
+            respond {
+                "GET TO THE ROOT OF THE PROBLEM! BERT'S TREE TRIMMING"
+            }
+        }
+        else {
+            respond {
+                Pen? What pen?
+            }
+        }
+    }
+
+    command look package {
+        if `hasYourPackage` {
+            respond {
+                This one has your name and address. Finally.
+            }
+        }
+        else {
+            if `and hasOrigPackage (not origPackageOpen)` {
+                respond {
+                    An ordinary brown cardboard package with an 
+                    address scribbled in red ink.
+                    The address reads–oh who cares! You have a
+                    package! Packages are meant to be opened!
+
+                    You rip open the packaging, excited to discover
+                    what present lay in its depth. You love surprises.
+                    Well, to be honest, you had ordered this
+                    package for yourself, but that was 
+                    over a week ago and
+                    who remembers what they ordered a week ago?
+                    You have a busy life to lead.
+                    
+                    After struggling with the packing tape
+                    for about a minute (it's difficult,
+                    really!) you manage to
+                    open the box. Inside, beneath a 
+                    layer a packaging peanuts, sits a smooth 
+                    black medallion
+                    with the embossed image of a 
+                    narrow, yellow eye. You're pretty sure that's not
+                    something you would have ordered,
+                    but maybe your decorative medallion tastes changed
+                    drastically in the past week. 
+                    You pocket the strange object anyway.
+                }
+                set origPackageOpen 1;
+                set hasOrigPackage 0;
+                set hasMedallion 1;
+                set hasEmptyBox 1;
+            }
+            else {
+                if `hasemilypackage` {
+                    respond {
+                        A beautiful package. Well, all packages are
+                        beautiful. You check the address, ready to see
+                        your name written in beautiful black ink.
+                        But it's not there. This package belongs
+                        to Emily. Really? Again? At least she lives
+                        near your house this time. And no more trying
+                        the stupid post office.
+                    }
+                }
+                else {
+                    respond {
+                        What package? You wish you had a package.
+                        Packages make life better.
+                    }
+                }
+            }
+        }
+    }
+
+    command open package {
+        if `hasYourPackage` {
+            respond {
+                It took a lot of effort to get your
+                hands on this package, you think
+                to yourself as you unwrap
+                it. It better be worth it, whatever
+                it is. Oh, that's right. A teapot
+                shaped like a head of
+                fresh cabbage falls into your lap.
+                Perfect. How could you have forgotten about ordering
+                this? Just looking at it makes
+                you want to drink tea, so you search the bottom of the
+                package for some teabags. Nothing.
+                Apparently you ordered a teapot
+                but no tea. Good job, you.
+                You allow a moment of sheer disappointment
+                to flood over you before you remember that
+                Swifts sells some really good tea. You
+                should order some.
+            }
+            set hasyourpackage 0;
+            set hasTeapot 1;
+        }
+        else {
+            if `and hasOrigPackage (not origPackageOpen)` {
+                respond {
+                    You rip open the packaging, excited
+                    to discover what present lay in
+                    its depth. You love surprises.
+                    Well, to be honest, you had ordered this
+                    package for yourself, but that was over
+                    a week ago and
+                    who remembers what they ordered a week ago?
+                    You have a busy life to lead.
+                    
+                    After struggling with the packing tape
+                    for about a minute (it's difficult,
+                    really!) you manage to
+                    open the box. Inside, beneath a layer
+                    a packaging peanuts, sits a smooth black medallion
+                    with the embossed image of a
+                    narrow, yellow eye. You're pretty
+                    sure that's not
+                    something you would have ordered,
+                    but maybe your decorative medallion tastes changed
+                    drastically in the past week.
+                    You pocket the strange object anyway.
+                }
+                set origPackageOpen 1;
+                set hasOrigPackage 0;
+                set hasMedallion 1;
+                set hasEmptyBox 1;
+            }
+            else {
+                if `hasemilypackage`  {
+                    respond {
+                        You figure this time you might want to check
+                        the address before ripping the package to
+                        shreds. But even this package doesn't belong
+                        to you. It belongs to Emily, you know that
+                        girl that only ever talks to you in the
+                        internet chatroom even though she lives
+                        practically next door? I mean, really.
+                    }
+                }
+                else {
+                    respond {
+                        What package? You wish you had a package. 
+                        Packages make life better.
+                    }
+                }
+            }
+        }
+    }
+
+    command look teapot {
+        if `hasTeapot` {
+            respond {
+                It's shaped like a head of cabbage. You're
+                not sure anything in the world could be
+                more perfect. Except, maybe, if it had
+                tea in it. You should order some.
+            }
+        }
+        else {
+            respond {
+                You don't see a teapot. You could use a
+                teapot. You wonder if you ordered one.
+            }
+        }
+    }
+    command look medallion {
+        if `hasMedallion` {
+            respond {
+                A smooth, black medallion with
+                a somewhat creepy yellow eye. The eye
+                seems to follow you with its gaze.
+            }
+            if `hasSeenAddress` {
+                respond {
+                    Sadly, the medallion does not belong
+                    to you. You should probably return
+                    it to its owner.
+                }
+            }
+        }
+        else {
+            respond {
+                A medallion! That would be cool to look at.
+                Unfortunately, you don't have one.
+            }
+        }
+    }
+
+    command lick medallion {
+        if `hasMedallion` {
+            respond {
+                You lick the medallion.
+            }
+        }
+        else {
+            respond {
+                A medallion! That would be cool to lick.
+                Unfortunately, you don't have one.
+            }
+        }
+    }
+    command look lighter {
+        respond { 
+            Your trusty lighter! You take it everywhere.
+        }
+    }
+    command look empty box {
+        if `hasEmptyBox` {
+            respond {
+                The cardboard box has been torn
+                to shreds by your previous eagerness
+                to open the package.
+                You really wanted that material good.
+                However, you can still piece together the cardboard
+                well enough to read the address.
+                In legible red ink, it reads:
+                
+                Mr. Robertson
+                
+                13310 Podwoic Avenue
+                
+                Hey, that's not your address! The post office
+                must have mistakenly delivered you
+                the wrong package.
+                You should probably return the
+                creepy medallion to its owner since it
+                isn't actually yours.
+                You're a little disappointed since you've grown
+                somewhat attached to the creepy eye
+                during the brief moments you've shared with it,
+                but hey, this just means your actual package
+                is still on its way!
+            }
+            if `not hasSeenAddress` {
+                respond {
+                    You should return this to the post
+                    office. It's a short drive.
+                }
+                set hasSeenAddress 1;
+            }
+        }
+        else {
+            respond {
+                You wish you had an empty box.
+                That would mean you once had a full box.
+            }
+        }
+    }
+}
+    
+
+environment house global {
+    command go living-room{
+        move-to living-room;
+        trigger look;
+    }
+    command go kitchen{
+        move-to kitchen;
+        trigger look;
+    }
+    command go entryway{
+        move-to entryway;
+        trigger look;
+        if `not enteredEntry` {
+            respond {
+                The doorbell rings! That must be your package!
+            }
+            set enteredEntry 1;
+        }
+    }
+    command go bathroom{
+        move-to bathroom;
+        trigger look;
+    }
+    command go bedroom{
+        move-to bedroom;
+        trigger look;
+    }
+    command go outside{
+        if `and mailWomanPresent (eq frontDoor "open")` {
+            respond {
+                It seems rude to just walk past `mailPersonName`
+                while she is trying to
+                deliver your package. Who knows how long she
+                will stand there, waiting for you to sign?
+            }
+        }
+        else {
+            if `eq frontDoor "closed"` {
+                respond {
+                    The front door is closed. How can you
+                    ever go outside?
+                }
+            }
+            else {
+                if `returnedEmilyPackage` {
+                    respond {
+                        You really have no desire to leave your
+                        house even one more time today. You're
+                        going to stay right here even if the world
+                        crumbles around you. Especially if the world
+                        crumbles around you.
+                    }
+                }
+                else {
+                    respond {
+                        Ah, the great outdoors. As freezing cold
+                        and inhospitable as ever.
+                        To be honest, standing outside
+                        in the middle of winter staring vacantly into
+                        space is not one of your favorite
+                        activities. Being inside would be much better.
+                        Your car is sitting in the driveway,
+                        waiting. Good car.
+                    }
+                    move-to outdoors;
+                }
+            }
+        }
+    }
+}
+
+location bedroom house {
+
+    synonym "night-table" "night-stand" "table";
+    synonym "top drawer" "drawer";
+    synonym "open closet" "clamber over furniture";
+    
+    command look {
+        respond {
+                You've done a really great job decorating.
+                Your dirty clothes make a very modern,
+                chic floor covering.
+                Really accents your Swedish self-assembled furniture.
+
+                Most of the room is taken up by your
+                bed, but you've managed to
+                squeeze in a dresser and a night table.
+                There's a closet in the back corner only
+                accessible by clambering over your
+                furniture. So stylish.
+
+                Your bedroom opens up onto the living room.
+        }
+    }
+    command take blankets {
+        respond {
+            There doesn't really seem to be a point to doing this.
+            You're already wearing a jacket, 
+            and you don't want to mess up their current placement.
+            It's pretty damn cozy.
+        }
+    }
+    command take off jacket {
+        respond {
+            Being cold is against your general life strategy.
+        }
+    }
+    command sleep {
+        respond {
+            Remember how you just woke up? You don't
+            feel tired enough to go to sleep right now.
+        }
+    }
+    command open top drawer {
+        if `dresserOpen` {
+            respond {
+                The drawer is already open.
+            }
+        }
+        else {
+            if `hasPen` {
+                respond {
+                    The drawer is empty.
+                }
+            }
+            else{
+                respond { 
+                    The only thing you found worth putting in this
+                    drawer was a cheap plastic pen
+                    advertising BERT'S TREE TRIMMING. Too 
+                    bad you don't have any trees to trim.
+                }
+                set dresserOpen 1;
+                set hasPen 1;
+            }
+        }
+    }
+    command close top drawer {
+        if `dresserOpen` {
+            respond {
+                You close the dresser drawer.
+            }
+            set dresserOpen 0;
+        }
+        else {
+            respond {
+                Your dresser is already open.
+            }
+        }
+    }
+    command clean room {
+        respond {
+            You pick up a shirt and put it down again.
+            It's so much easier to find clothing 
+            when it's spread out, covering everything,
+            like some sort of locust plague.
+            You become too busy contemplating locust plagues
+            to continue cleaning.
+        }
+    }
+    command pick up clothes {
+        trigger clean room;
+    }
+    command open closet{
+        respond {
+            The word 'closet' traces its origins back
+            to Greek tamieion, 'chamber, secret room.'
+            But you are certain there is not and will
+            never be anything secret about your closet.
+            There's no compelling reason to go over
+            there right now - the day is fresh, there are
+            better things to be doing!
+        }
+    }
+    object clothes{
+        Look like you, smell like you. Are tragically not corporeal.
+        }
+    object dresser {
+        A nice two drawer unit. It would be nicer
+        if the second drawer actually opened,
+        but you weren't at your best when you assembled
+        this. Given your current organizational system,
+        this dresser's purpose is more decorative
+        than functional. Yet another part of your elaborate
+        fiction concerning your ability to act as a responsible adult.
+        Oh, it's not a fiction? My mistake.
+
+        At least the top drawer works.
+    }
+    object closet {
+        The word 'closet' traces its origins back to
+        Greek tamieion, 'chamber, secret room.'
+        But you are certain there is not and will
+        never be anything secret about your closet.
+        There's no compelling reason to
+        go over there right now - the day is fresh, there are
+        better things to be doing!
+    }
+    object night-table {
+        That's a nice box you've got there.
+    } 
+    object bed {
+        There are so many blankets. You may be cold blooded.
+    }
+    object blankets {
+        Blue. Carefully piled.
+    }
+
+}
+
+# Set up for entryway
+location entryway house {
+    synonym "woman" "mailwoman" "mailperson" "Patty";
+    synonym "peanuts" "packaging peanuts" "peanut";
+    
+    command look {
+        respond {
+            You stand in the entryway of your
+            apartment. From here you can access your bedroom,
+            the kitchen, or the greater outside world,
+            but the room itself is small, bare,
+            and empty. You think this room should
+            be a metaphor for something, but you're
+            not quite sure what. The front door
+            is `frontDoor`. Maybe also a metaphor.
+        }
+    }
+    command open door {
+        if `eq frontDoor "open"` {
+            respond {
+                The door is alread open!
+            }
+        }
+        else {
+            set frontDoor "open";
+            if `mailwomanPresent` {
+                respond {
+                    A young woman carrying a brown package
+                    under her arm stands in the doorway,
+                    holding a clipboard.
+
+                    "You've got mail!" she says,
+                    holding out a clipboard. "Please
+                    sign for your package."
+                }
+                set openedDoorFirst 1;
+            }
+            else {
+                if `gotPackageFromEmily` {
+                    respond {
+                        Strangely, no one is here. You can't
+                        even spot a person walking
+                        away or a car driving off. Strange.
+                        Oh well. Package! Sometimes you feel
+                        there is nothing more beautiful than a
+                        cardboard package bearing your name
+                        on the address. You double check the
+                        address. Yes, this one actually does
+                        have your name. You pick up the package.
+                    }
+                    set gotPackageFromEmily 0;
+                    set hasYourPackage 1;
+                }
+                else {
+                    respond {
+                        You open the door, which offers you a
+                        portal into the cold, harsh, outside world.
+                        There may be adventures to be had out there,
+                        but the snow on the ground makes it clear that,
+                        outside, there certainly isn't central heating.
+                    }
+                }
+            }
+        }
+    }
+    command sign for package {
+        if `or (eq frontDoor "closed") (not mailWomanPresent)` {
+            respond {
+                What package?
+            }
+        }
+        else {
+            if `hasPen` {
+                respond {
+                    With your BERT'S TREE TRIMMING pen, you sign
+                    your name expertly on
+                    the line just beneath where 
+                    Mr. Robertson scrawled out
+                    a neat signature of his own. You admire your work.
+                    Unlike Mr. Robertson,
+                    you've perfected your signature to the point
+                    that even the most expert handwriting
+                    analysts would not be able decipher your
+                    actual name from all the ornamental loops
+                    and crosses.
+                    Then `mailPersonName` smiles and hands
+                    you your package. Before you 
+                    can thank her, she runs
+                    off to her truck and drives away. You
+                    suppose she couldn't have just stood around
+                    waiting for you all day.
+                }
+                set hasOrigPackage 1;
+                set mailWomanPresent 0;
+            }
+            else {
+                respond {
+                    You don't have a pen. You would think
+                    the woman would provide you with a pen,
+                    but she does not seem to care about
+                    your human needs.
+                }
+            }
+        }
+    }
+    command talk woman {
+        if `or (not mailWomanPresent) (eq frontDoor "closed")` {
+            respond {
+                You don't see anyone to talk to.
+            }
+        }
+        else {
+            respond {
+                You open your mouth to speak. Presumably,
+                your mouth can form semi-intelligible words
+                that may be accurately interpreted by
+                the woman in front of you. What would you like to say?
+
+                (say 1) Nice to meet you!
+                
+                (say 2) May I borrow a pen?
+                
+                (say 3) Bow down to me, mortal!
+            }
+        }
+    }
+    command say 1 {
+        respond {
+            At first, `mailPersonName` appears startled that
+            you have responded to her presence
+            with a cordial greeting,
+            as if you see her as an actual human
+            being and not just a convenient outside-world-to-home
+            delivery system for packages. But
+            she closes her mouth and recovers quickly.
+            
+            "Nice to meet you too," she says.
+            "My name is Patty. You've got mail!"
+            
+            You nod in agreement. 
+        }
+        set mailPersonName "Patty";
+    }
+
+    command say 2 {
+        respond {
+            In response, `mailPersonName` checks her pockets,
+            which appear to be empty.
+            "Sorry," she says. "Lending customers
+            objects is against company standards.
+            Please sign for your package."
+
+            Well, that makes sense, but you still need a pen.
+        }
+    }
+    command say 3 {
+        respond {
+            After looking at you, `mailPersonName` sighs
+            heavily. "May I check your post office
+            membership card?" she asks.
+            You check your pockets, but find nothing
+            that could help you in this situation.
+            As far as you know, you are not a member of
+            the esteemed post office club.
+            
+            "I only bow down to members of the
+            post office club," she says. "Maybe after you order a
+            few more packages you'll get your membership card."
+        }
+    }
+
+    command close door {
+        if `eq frontDoor "closed"` {
+            respond {
+                The door is alread closed.
+            }
+        }
+        else {
+            set frontDoor "closed";
+            if `mailWomanPresent` {
+                respond {
+                    You politely close the door in the
+                    `mailPersonName`'s face. She doesn't
+                    seem to mind, and makes no indication
+                    that she will leave. After all, she has
+                    your package.
+                }
+            }
+            else {
+                respond {
+                    You close the door, sealing yourself
+                    away from all sunshine and fresh air.
+                    Actually, it's cold and snowy outside.
+                    You aren't missing much.
+                }
+            }
+        }
+    }
+
+    command look peanuts {
+        if `origPackageOpen` {
+            respond {
+                The intense butchering of the cardboard
+                left a splattering of packaging
+                peanut entrails across the floor of your entryway.
+            }
+        }
+        else {
+            respond {
+                Peanuts! But you can't see any.
+            }
+        }
+    }
+
+    command take peanuts {
+        if `origPackageOpen` {
+            respond {
+                Unlike their nut relatives, packaging
+                peanuts are not edible and are 
+                therefore of little interest to you.
+            }
+        }
+        else {
+            respond {
+                Peanuts! But you can't see any.
+            }
+        }
+    }
+    command go living-room {
+        if `openedDoorFirst`{
+            if `hasOrigPackage` {
+                respond {
+                    Your mind is singularly focused on the
+                    package and its contents.
+                    You are temporarily unaware that any world
+                    exists outside of the universe of you
+                    and your package.
+                }
+            }
+            else{
+                set frontDoor "closed";
+                move-to living-room;
+                trigger look;
+            }
+        }
+        else {
+            respond {
+                Package package package!
+            }
+        }
+    }
+    command go kitchen{
+        if `openedDoorFirst`{
+            if `hasOrigPackage` {
+                respond {
+                    Your mind is singularly focused on
+                    the package and its contents.
+                    You are temporarily unaware that
+                    any world exists outside of the universe
+                    of you and your package.
+                }
+            }
+            else{
+                set frontDoor "closed";
+                move-to kitchen;
+                trigger look;
+            }
+        }
+        else {
+            respond {
+                Package package package!
+            }
+        }
+    }
+    command go bedroom{
+        if `openedDoorFirst`{
+            if `hasOrigPackage` {
+                respond {
+                    Your mind is singularly focused on the
+                    package and its contents.
+                    You are temporarily unaware that any
+                    world exists outside of the universe
+                    of you and your package.
+                }
+            }
+            else {
+                set frontDoor "closed";
+                move-to bedroom;
+                trigger look;
+            }
+        }
+        else {
+            respond {
+                Package package package!
+            }
+        }
+    }
+    command go bathroom{
+        if `openedDoorFirst`{
+            if `hasOrigPackage` {
+                respond {
+                    Your mind is singularly focused on the
+                    package and its contents.
+                    You are temporarily unaware that
+                    any world exists outside of the
+                    universe of you and your package.
+                }
+            }
+            else {
+                set frontDoor "closed";
+                move-to bathroom;
+                trigger look;
+            }
+        }
+        else {
+            respond{
+                Package package package!
+            }
+        }
+    }
+    command go outside{
+        if `and mailWomanPresent (eq frontDoor "open")` {
+            respond {
+                It seems rude to just walk past `mailPersonName`
+                while she is trying to
+                deliver your package. Who knows how long she
+                will stand there, waiting for you to sign?
+            }
+        }
+        else {
+            if `eq frontDoor "closed"` {
+                respond {
+                    The front door is closed. How can you
+                    ever go outside?
+                }
+            }
+            else {
+                if `returnedEmilyPackage` {
+                    respond {
+                        You really have no desire to leave your
+                        house even one more time today. You're
+                        going to stay right here even if the world
+                        crumbles around you. Especially if the world
+                        crumbles around you.
+                    }
+                }
+                else {
+                    if `hasOrigPackage` {
+                        respond {
+                            Your mind is singularly focused on the
+                            package and its contents.
+                            You are temporarily unaware that
+                            any world exists outside of the
+                            universe of you and your package.
+                        }
+                    }
+                    else {
+                        respond {
+                            Ah, the great outdoors. As freezing cold
+                            and inhospitable as ever.
+                            To be honest, standing outside
+                            in the middle of winter staring vacantly into
+                            space is not one of your favorite
+                            activities. Being inside would be much better.
+                            Your car is sitting in the driveway,
+                            waiting. Good car.
+                        }
+                        set frontDoor "closed";
+                        move-to outdoors;
+                    }
+                }
+            }
+        }
+    }
+}
+
+location kitchen house {
+
+    synonym "stove" "stains";
+    synonym "food" "bread" "pasta" "cookies";
+    synonym "tomato-sauce" "tomato sauce" "tomatosauce";
+    synonym "take food" "eat food" "take bread" "eat bread" "take pasta" "eat pasta" "take cookies" "eat cookies";
+    synonym "fridge" "refrigerator" "fridge door" "refrigerator door";
+    synonym "boxes" "box" "cheese";
+    synonym "butter" "butter dish" "butter dish thing" "little butter dish thing";
+    synonym "jar" "jars" "jam" "jams" "marmalade" "condiments";
+    
+    command look {
+        respond {
+            Your kitchen looks exceptionally clean today. 
+            Last night you remembered to put all of the
+            perishable food back in the refrigerator, so it 
+            smells better than usual as well. You only
+            have half of the pantry spread out across the counters 
+            in an elaborate pyramid of food, and
+            these are the food items that are convenient to have 
+            right beside you. Well, most of them.
+            The stove only has three major stains, and two of them are
+            never coming off, so it's not fair
+            to count those. The sink might be overflowing with dishes,
+            but you still have one or two clean plates,
+            and who needs more than that?
+        }
+    }
+    command clean stove {
+        respond {
+            You look for a sponge, but it's probably 
+            somewhere underneath the pile of dishes,
+            and it's not time to clean the dishes yet.
+            You still have a couple of clean plates left.
+        }
+    }
+    command wash dishes {
+        respond {
+            Why would you waste your time washing
+            dishes when you have clean plates?
+        }
+    }
+    command take food {
+        respond {
+            Everything is balanced as such a perfect
+            structure that it would be a shame to move anything.
+        }
+    }
+    command look fridge {
+        if `fridgeOpen` {
+            respond {
+                You've got a kind of fossil record going on here. 
+                Layers of food from different time periods. 
+                The immediately accessible layer is comprised mostly of
+                take out boxes and cheese. Just the necessities. 
+                At least the shelves on the door are easily accessible.
+            }
+        }
+        else {
+            respond {
+                Your fridge is closed. On some people's fridges, they
+                proudly display cute picture drawn by their 
+                four-year-olds alongside the report card alongside the
+                report card pronouncing the mediocre achievements of
+                their middle schooler. But you don't have and kids.
+                And if you did, you certainly wouldn't want to show off
+                whatever monstrosity you brought forth into the world.
+                So your refrigerator door is empty.
+            }
+        }
+    }
+    command close fridge {
+        if `not fridgeOpen` {
+            respond {
+                The fridge is already closed.
+            }
+        }
+        else {
+            set fridgeOpen 0;
+            respond {
+                You close the refrigerator. 
+                You'd prefer to avoid an excessive electricity bill 
+                this month.  Unlike last month, when you tried to 
+                incubate that alligator egg with all of those heat 
+                lamps. Everything about that was a mistake
+            }
+        }
+    }
+    command open fridge {
+        if `fridgeOpen` {
+            respond {
+                The fridge is open. That's why it's so cold in here.
+            }
+        }
+        else {
+            set fridgeOpen 1;
+            trigger look fridge;
+        }
+    }
+    command clean fridge {
+        if `not fridgeOpen` {
+            respond {
+                The door is alread completely clean of garbage like
+                stupid kid pictures.
+            }
+        }
+        else {
+            respond {
+                The prospect of undertaking any kind of excavation 
+                fills you with a vague sense of dread and guilt. 
+                Not now, you think.
+                
+                If "not now" were a mantra repeated to reanimate 
+                the dead or summon demons, your apartment would be full 
+                to bursting with the recently resurrected and/or 
+                unspeakably horrible monsters. Good thing it's not.  
+            }
+        }
+    }
+    command take cheese {
+        if `fridgeOpen` {
+            trigger clean fridge;
+        }
+        else {
+            respond {
+                Where?
+            }
+        }
+    }
+    command look shelves {
+        if `fridgeOpen` {
+            respond {
+                 All of your jams and condiments are just so. 
+                 Arranging jars of marmalade is an art you take 
+                 seriously. You have spent a lot of time moving 
+                 these jars around because you really dislike 
+                 throwing them out. What would usually be 
+                 termed "empty" is to you merely a challenge. 
+                 Needless to say you are an expert at scraping 
+                 marmalade dregs from jars. At the top of the 
+                 shelf is the little butter dish thing. It's closed. 
+                 You wonder if there is a formal name for the 
+                 little butter dish thing. 
+            }
+        }
+        else {
+            respond {
+                Shelves? Like those things used for organization? Ha.
+            }
+        }
+    }
+    command look butter
+    {
+        if `fridgeOpen` {
+            respond {
+                A little butter dish thing. You're not quite sure
+                how you could be more descriptive than that. It's white
+                and plastic, and like most little butter dish things,
+                the lid comes all the way off.
+            }
+        }
+        else {
+            respond {
+                What are you talking about?
+            }
+        }
+    }
+    command look jars
+    {
+        if `fridgeOpen` {
+            respond {
+                A perfect arrangement made by a perfect person.
+                (That's referring to you, in case it wasn't clear.)
+            }
+        }
+        else {
+            respond {
+                What are you talking about?
+            }
+        }
+    }
+    command take jars {
+        if `fridgeOpen` {
+            respond {
+               No! Don't touch the perfect arrangement!
+            }
+        }
+        else {
+            respond {
+                What are you talking about?
+            }
+        }
+    }
+    command eat condiments {
+        trigger take jars;
+    }
+    command take butter {
+        if `fridgeOpen` {
+            if `hasKeys` {
+                respond {
+                    There wasn't actually any butter in
+                    there, remember?
+                    Yum butter...
+                }
+            }
+            else {
+                respond {
+                    You're not positive there's actually butter inside
+                    of that. Come to think of it, you can't remember
+                    the last time you bought butter. You sure hope
+                    there isn't butter inside of that.
+                }
+            }
+        }
+        else {
+            respond {
+                What are you talking about?
+            }
+        }
+    }
+    command eat butter {
+        trigger take butter;
+    }
+    command open butter dish {
+        if `hasKeys` {
+            respond {
+                It's empty.
+            }
+        }
+        else {
+            respond {
+                Your keys! Just where they always are.
+                
+                You stash the keys in your jacket pocket.
+            }
+            set hasKeys 1;
+        }
+    }
+    object stove {
+        Three stains artfully decorate your stove.
+        The one in the shape of a dinosaur has been
+        there since before you can remember, and
+        you fondly refer to the one near the back left
+        burner as Steve. The tomato sauce stain
+        across the entire front of the stove is
+        a more recent acquisition.
+    }
+    object Steve {
+        Steve has been with you from the
+        day you spilled a failed attempt
+        at a cream sauce and refused to clean it up for a month.
+    }
+    object dinosaur {
+        A stain in the shape of a triceratops.
+        You've forgotten what artful substance
+        created it; it just looks sort of blackish now.
+    }
+    object tomato-sauce {
+        You made this stain only two days ago.
+        You could probably remove it with some
+        scrubbing, but that sounds like work.
+    }
+    object sink {
+        That's a lot of dirty dishes. Luckily,
+        you have enough plates and silverware
+        to feed about twenty.
+        Also lucky, you never have guests.
+        Guests. That's a terrifying thought.
+        Please don't invite anyone into this
+        apartment, ok? Anyway, you have dishes to spare,
+        so don't worry about cleaning these.
+    }
+    object dishes {
+        That's a lot of dirty dishes. Luckily, you
+        have enough plates and silverware to
+        feed about twenty.
+        Also lucky, you never have guests.
+        Guests. That's a terrifying thought.
+        Please don't invite anyone into
+        this apartment, ok? Anyway, you have dishes to spare,
+        so don't worry about cleaning these.
+    }
+    object food {
+        It's just masterful how that stale
+        loaf of bread balances on an empty box of
+        pasta and a package of cookies.
+    }
+    
+}
+
+location bathroom house {
+    synonym "wash" "clean";
+    synonym "tile" "floor" "tiles" "tile floor";
+    synonym "take shower" "turn on shower";
+    synonym "clean room" "clean shower" "clean mirror" "clean toilet" "clean sink";
+    command look {
+        respond {
+            It's a bathroom. What did you expect? You see typical 
+            bathroom things like a toilet, sink, shower, mirror, 
+            and dirty clothes on the floor.
+        }
+    }
+    command wash hands {
+        respond {
+            You put your hands under the sink and turn on the tap.
+            Water pours over your hands. You turn off the tap. 
+            Your hands are clean now, right?
+        }
+    }
+    command take shower {
+        respond {
+            You turn on the showerhead, spraying yourself with a 
+            stream of water. Good job. We are all so proud. 
+            You turn off the water.
+        }
+    }
+    command take clothes {
+        respond {
+            That pile of clothes is exactly where is should be. 
+            You don't want to move your perfectly formed bath mat.
+        }
+    }
+    command clean room {
+        respond {
+            This is the room where you go to get cleaned.
+            You don't have to clean it, it cleans you!
+        }
+    }
+    command clean clothes {
+        trigger take clothes;
+    }
+    command take sweatshirt {
+        trigger take clothes;
+    }
+    command clean sweatshirt {
+        trigger take clothes;
+    }
+    object clothes {
+        A pile of dirty clothes cushion the hard, tile floor. 
+        An especially fluffy sweater sits on top, 
+        acting as the perfect bath mat for the rare occasion 
+        that you would actually use one.
+    }
+    object sweatshirt {
+        Green, fluffy, and perfect for your feet.
+    }
+    object floor {
+        Kind of hard to see beneath all the dirty clothes. You think
+        you spot a tile somewhere over there.
+    }
+    object toilet {
+        Really? Why?
+    }
+    object shower {
+        The thing you stand under to become clean. Slightly underused.
+    }
+    object sink {
+        Kind of grimy. May or may not make hands cleaner.
+    }
+    object mirror {
+        You see your reflection staring blankly back at you.
+    }
+    object reflection {
+        You, perfect in all your imperfections.
+    }
+}
+
+location living-room house {
+    synonym "couch" "sofa" "loveseat";
+    synonym "dust" "dust bunnies" "dust bunny";
+    synonym "cushion" "cushions";
+    synonym "leg" "legs" "desk legs";
+    synonym "read words" "read paper" "read papers";
+    synonym "computer" "desktop";
+    synonym "monitor" "screen";
+    synonym "take computer" "take desktop" "take mouse" "take monitor" "take keyboard";
+    synonym "turn on tv" "watch tv" "play tv";
+    synonym "open" "navigate" "navigate to" "click";
+    synonym "Swifts" "browser" "internet" "the internet" "google";
+    synonym "giant pen" "giant pens";
+    synonym "something" "anything" "random item" "random thing" "stuff";
+    synonym "close" "leave" "exit";
+    synonym "chatroom" "chat" "talk";
+    
+    command look {
+        respond {
+            The living room lies in the center of the apartment,
+            as if it were the center of a community, and that 
+            community consisted only of you. From here you 
+            can reach the bedroom, bathroom, entryway, and kitchen.
+            
+            A rather comfortable couch stands along one wall 
+            and a chair and desk with a computer lean against 
+            the other wall. A TV stands in the center of the 
+            room, an island of reality shows and sports games 
+            that you don't have to participate in.
+        }
+    }
+    command take dust bunnies {
+        respond {
+            Your house has enough dust already. 
+            Let's keep this dust where it belongs, right here.
+        }
+    }
+    command take quarter {
+        respond {
+            That's your laundry money and you don't want to do 
+            laundry now, so let's just leave it there until you run 
+            out of clean clothes.
+        }
+    }
+    command sit on couch {
+        respond {
+            Comfy! You yawn, stretch out your arms, 
+            and caress the soft cushions. Then you get up again.
+        }
+    }
+    command read words {
+        trigger look words;
+    }
+    command take papers {
+        respond {
+            You don't want to think about those papers. 
+            Just keep them on the desk where you can forget about
+            them until they're so late they don't matter anymore.
+        }
+    }
+    command take computer {
+        respond {
+            It's a desktop, so it goes on your desk, not your lap.
+        }
+    }
+    command turn on computer {
+        if `eq computerState "off"` {
+            set comupterstate "on";
+            respond {
+                The computer takes about a minute to turn on, 
+                during which time you stare at the screen, 
+                waiting for the bright lights to flash at your face. 
+                The desktop loads, showing you two shortcuts on your
+                screen: one to the internet chat room and one to your
+                favorite online store, Swifts.
+            }
+        }
+        else {
+            respond {
+                Your computer is already on. That's why all those
+                bright lights are flashing in your face.
+            }
+        }
+    }
+    command turn off computer {
+        if `eq computerState "on"` {
+            set comupterstate "off";
+            set onSwifts 0;
+            set onChat 0;
+            respond {
+                All the bright, pretty colors of the monitor fade to
+                black. By fade we mean instantly vanish from existence,
+                and where the once was brightness, light, joy, and
+                meaning, now there is none. Such is life. At least
+                there's still the TV.
+            }
+        }
+        else {
+            respond {
+                Your computer is already off. At least, you think
+                that's why the screen is black and doesn't respond
+                when you click the mouse two hundred times.
+            }
+        }
+    }
+    command turn on tv {
+        respond {
+            It would be so great to watch TV right now. Just sit on
+            the couch and do nothing. What a life. You don't
+            know where they remote is, though, and finding it seems
+            like so much effort.
+        }
+    }
+    command turn of tv {
+        respond {
+            You're pretty sure your TV is off. Or maybe it's broken!
+            That would be the worst.  Where would you watch your
+            football games? What would you do with yourself?
+            no, you're pretty sure it's just off.
+        }
+    }
+    command open swifts {
+        if `eq computerState "off"` {
+            respond {
+                You first turn on your computer, because you
+                hear that helps.
+            }
+            set computerState "on";
+        }
+        respond {
+            You open to swifts.com. Man, you love this store.
+            Right now giant pens are on sale for half price!
+        }
+        set onSwifts 1;
+    }
+    command buy giant pens {
+        if `onSwifts` {
+            respond {
+                That price is tempting, but you resist the temptation.
+                You know how to practice self control when it comes 
+                to purchasing items online.
+            }
+        }
+        else {
+            respond {
+                I bet Swifts sells those! You should check!
+            }
+        }
+    }
+    command browse Swifts {
+        if `onSwifts` {
+            respond {
+                The baby clothes look really cute. 
+                Too bad you don't have a child, have any desire
+                to have a child, know anyone with a child, or have
+                any desire to know anyone with a child.
+            }
+        }
+        else {
+            respond {
+                You should go on Swifts and see what they're selling!
+            }
+        }
+    }
+    command buy baby clothes {
+        if `onSwifts` {
+            respond {
+                That yellow onesie with an orange duckbill 
+                on the top of the hood probably wouldn't fit you.
+            }
+        }
+        else {
+            respond {
+                I bet Swifts sells those! You should check!
+            }
+        }
+    }
+    command buy something {
+        if `onSwifts` {
+            respond {
+                Sadly, Swifts recently disabled the Random Buy!
+                button after they ended up shipping a crate of
+                explosives to a nursing home
+            }
+        }
+        else {
+            respond {
+                You love to buy things! Maybe Swifts is selling something
+                interesting today!
+            }
+        }
+    }
+    command buy explosives {
+        if `onSwifts` {
+            respond {
+                Swifts' license for selling explosives was 
+                recently revoked.
+            }
+        }
+        else {
+            respond {
+                I bet Swifts sells those! You should check!
+            }
+        }
+    }
+    command buy teapot {
+        if `onSwifts` {
+            respond {
+                You have some vague memory of buying a
+                teapot at some point. Kind of odd, but it
+                makes you feel like you shouldn't buy one
+                right now, just in case.
+            }
+        }
+        else {
+            respond {
+                I bet Swifts sells those! You should check!
+            }
+        }
+    }
+    command buy tea {
+        if `onSwifts` {
+            if `hasTeapot` {
+                respond {
+                    The fifty pound bag of tea is currently a dollar 
+                    off today! What a great purchase. You click the Buy
+                    Now! button, confident that, this time, your 
+                    package will arrive safely to your doorstep. 
+                    But that day is still a little while off. For 
+                    now, you're satisfied with your successful day's 
+                    work.
+                    
+                    Congratulations! You've won!
+                }
+            }
+            else {
+                respond {
+                    You don't really need tea. You don't even 
+                    own a teapot. Silly you.
+                }
+            }
+        }
+        else {
+            respond {
+                I bet Swifts sells those! You should check!
+            }
+        }
+    }
+    command close Swifts {
+        if `onSwifts` {
+            respond {
+                You close your browser, bringing you back to 
+                the desktop with its icons for Swifts and the
+                internet chatroom.
+            }
+            set onSwifts 0;
+        }
+        else {
+            respond {
+                You aren't even on Swifts. Why aren't you on Swifts?
+                Swifts has so many great things!
+            }
+        }
+    }
+    command open chatroom {
+        if `onChat` {
+            respond {
+                You're already on chat. Look! Emily wants to talk to
+                you!
+            }
+        }
+        else {
+            if `eq computerState "off"` {
+                respond {
+                    You first turn on your computer, because you
+                    hear that helps.
+                }
+                set computerState "on";
+            }
+            set onChat 1;
+            respond {
+                Emily is online! She says "hi!" with one of 
+                those emoticons with an inscrutable expressions.
+            }
+        }
+    }
+    command close chatroom {
+        if `onChat` {
+            respond {
+                You exit the chat room without saying any
+                farewells to Emily. That was kind of rude.
+            }
+            set onChat 0;
+            set chatemily 0;
+        }
+        else {
+            respond {
+                You aren't even on chat. Just how much do you
+                not want to interact with other humans or their
+                chatroom counterparts?
+            }
+        }
+    }
+    command look emoticon {
+        if `onChat` {
+            respond {
+                One eye appears to be closed while the other is 
+                open. It might be smiling, or maybe just grimacing.
+                It's difficult to tell.
+            }
+        }
+        else {
+            respond {
+                You don't see an emoticon, but you sure are smiling!
+            }
+        } 
+    }
+    command look Emily {
+        if `onChat` {
+            respond {
+                Well, Emily is on chat, so you can't actually see her.
+                Her avatar is a cute picture of a kitten, though.
+            }
+        }
+        else {
+            respond {
+                Emily isn't here. She's probably on chat, though!
+            }
+        } 
+    }
+    command look kitten {
+        if `onChat` {
+            respond {
+                Such a cute kitten. So, so fluffy. You wonder just
+                how Emily might have aquired a picture of such a
+                cute kitten.
+            }
+        }
+        else {
+            respond {
+                Kittens? Kittens! You see no kittens, sadly.
+            }
+        } 
+    }
+    command talk Emily {
+        if `onChat` {
+            set chatemily 1;
+            respond {
+                What would you like to say?
+                
+                (say 1) "hi! ;)"
+                
+                (say 2) "Who are you?"
+                
+                (say 3) "What's up?"
+                
+                (say 4) "Man, I wish something interesting would happen in this town."
+                
+                (say 5) "g2g! ttyl!"
+            }
+            if `and returnedEmilyPackage (not (or hasTeapot hasYourPackage))` {
+                respond {
+                    (say 6) "Hey, your package was sent to 
+                    the wrong house. I put it on your doorstep."
+                }
+            }
+        }
+        else {
+            respond {
+                Emily isn't here. She's probably on chat, though!
+            }
+        } 
+    }
+    command say 1 {
+        if `chatemily` {
+            respond {
+                You type in "hi" with an appropriate emoticon. 
+                Your emoticon appears merely as a generic winky 
+                face, and you wonder just how Emily manages to 
+                portray a sophisticated range of emotions through
+                this medium.
+                
+                She responds with another emoticon. This face 
+                looks slightly more happy and has both eyes open.
+
+            }
+            trigger talk Emily;
+        }
+        else {
+            respond {
+                Who are you talking to? Yourself again?
+                You should stop doing that. It makes everyone
+                stare.
+            }
+        }
+    }
+    command say 2 {
+        if `chatemily` {
+            respond {
+                "I'm Emily" she responds to your inquiry. 
+                The additional piece of information is incredibly
+                useful since, above you, the chat box displays
+                the message "Emily says…" But she continues,
+                saying, "I live in the apartment next to you. 
+                Don't you remember? You should come visit me. 
+                That would be ideal." You recall having known 
+                this information before, but somehow you have
+                no mental concept of Emily as a person outside
+                of the virtual realm of your computer.
+            }
+            trigger talk Emily;
+        }
+        else {
+            respond {
+                Who are you talking to? Yourself again?
+                You should stop doing that. It makes everyone
+                stare.
+            }
+        }
+    }
+    command say 3 {
+        if `chatemily` {
+            respond {
+                You inquire about the status of her, to 
+                which Emily responds, "Life is pretty ideal," 
+                she types back. "I got to play video games all day."
+                "That's cool," you respond.
+            }
+            trigger talk Emily;
+        }
+        else {
+            respond {
+                Who are you talking to? Yourself again?
+                You should stop doing that. It makes everyone
+                stare.
+            }
+        }
+    }
+    command say 4 {
+        if `chatemily` {
+            respond {
+                "Yeah, I know," Emily says. "Like if trashcans became
+                sentient or something. That would be ideal."
+            }
+            trigger talk Emily;
+        }
+        else {
+            respond {
+                Who are you talking to? Yourself again?
+                You should stop doing that. It makes everyone
+                stare.
+            }
+        }
+    }
+    command say 5 {
+        if `chatemily` {
+            respond {
+                You type your farewell, and Emily responds 
+                with an emoticon of a waving smiley face. 
+                You wish you had that much control of your online 
+                expressions. You close the chat room, bringing you
+                back to the desktop.
+            }
+            set `chatemily` 0;
+            set `onChat` 0;
+        }
+        else {
+            respond {
+                Who are you talking to? Yourself again?
+                You should stop doing that. It makes everyone
+                stare.
+            }
+        }
+    }
+    command say 6 {
+        if `chatemily` {
+            if `and returnedEmilyPackage (not (or hasTeapot hasYourPackage))` {
+                respond {
+                    "Hey, that's funny," she responds. "I just got a package 
+                    that was meant for you. I'll send it over!"
+                }
+                set gotPackageFromEmily 1;
+            }
+            else {
+                respond {
+                    Emily seems very confused, judging by the string
+                    of gibberish she left on the screen.
+                }
+            }
+            
+            trigger talk Emily;
+        }
+        else {
+            respond {
+                Who are you talking to? Yourself again?
+                You should stop doing that. It makes everyone
+                stare.
+            }
+        }
+    }
+    
+    object couch {
+        A couch with two cushions. It's called a loveseat by 
+        some people, which you suppose is an accurate name 
+        because you really love to sit on this seat, eating 
+        snacks and watching TV all by yourself. The dark gap 
+        of shadows between the bottom of the couch and the 
+        floor might contain some terrifying monster if you 
+        lived in a horror story.
+    }
+    object gap {
+        No monster here, only a bunch of dust bunnies and a lost quarter.
+    }
+    object dust bunnies {
+        Misnomer: these are not actually bunnies, 
+        just clumps of dust that are not even alive. Disappointing.
+    }
+    object quarter {
+        That's where last month's laundry money went!
+    }
+    object cushion {
+        So, so cushy.
+    }
+    object chair {
+        A sturdy wooden chair where you can sit while you 
+        use the computer.
+    }
+    object desk {
+        You're pretty sure it's a desk because of the four 
+        wooden legs that hold it up from the floor, but the 
+        surface is so covered in random papers and computer 
+        that it's hard to know for sure.
+    }
+    object legs {
+        Probably desk legs, definitely not spider legs.
+    }
+    object papers {
+        Papers with words. Probably something about bills you 
+        should pay or Christmas cards you should send to people 
+        whose names you only remember because you have to send them 
+        Christmas cards every year. You'll deal with that later.
+    }
+    object words {
+        Words, words, words, you read. Except that's probably
+        not what the words really say, because you don't want
+        to actually read words.
+    }
+    object computer {
+        A clunky old desktop with a small monitor, a mouse,
+        and a keyboard. It's `computerState` right now.
+    }
+    object monitor {
+        Kind of a small screen, but it lights up when
+        you press the on button.
+    }
+    object keyboard {
+        Your typical QWERTY keyboard, except the Q is missing, 
+        so it's more of a WERTY keyboard. Q is a pretty 
+        useless letter though, so you don't mind the limitations 
+        imposed on you by a keyboard with no Q.
+    }
+    object Q {
+        It's gone. Q does not exist in the universe of this keyboard.
+        It's sad how little that even matters.
+    }
+    object mouse {
+        A two button mouse. It looks more like a large 
+        beetle than a mouse it you had to compare your hardware 
+        to living creatures.
+    }
+    
+}
+
+# just outside the house
+location outdoors in global {
+    synonym "inside" "house" "indoors";
+    synonym "open car" "get in car" "drive car";
+    synonym "go to" "drive to" "drive" "go";
+    synonym "Emily" "Emily's" "Emily's house"
+    command look {
+        respond {
+            Ah, the great outdoors. As freezing cold and inhospitable 
+            as ever.To be honest, standing outside in the middle of 
+            winter staring vacantly into space is not one of your 
+            favorite activities. Being inside would be much better. 
+            Your car is sitting in the driveway, waiting. Good car.
+        }
+    }
+    command go inside {
+        respond { 
+            It's warm in there. Good idea.
+        }
+        move-to entryway;
+        trigger look;
+    }
+    command look at car {
+        respond {
+            It has four wheels and it drives places. 
+            This is exactly what you wanted in a car.
+        }
+    }
+    command drive car {
+        if `not hasKeys` {
+            respond {
+                You walk over the car and yank on the door handle.
+                The door is locked. You search your pockets for keys, 
+                unsuccessfully. You must have left them inside. 
+                They're probably in the place where they always are.
+            }
+        }
+        else {
+            respond {
+                You open the car door, insert the keys into the
+                ignition, and hum for a while. Then you forget why
+                you are sitting in a car. Did you ever know why you are
+                sitting in a car? You remove the keys and exit the
+                vehicle.
+            }
+        }
+    }
+    command got to Swifts {
+        respond {
+            Swifts exists only in the ethereal world 
+            of the internet. Your car does not yet have 
+            the ability to take you to that magical land.
+        }
+    }
+    command go to post office {
+        if `not hasKeys` {
+            trigger drive car;
+        }
+        else {
+            if `hasSeenAddress and (not donePostOffice)` {
+                respond {
+                    You unlock the door and climb into your car. 
+                    The entire world is within your reach. At least,
+                    the part that you have enough gasoline to get to,
+                    and that isn't on another continent. It's a shame
+                    you're so single minded about getting to the post
+                    office. 
+
+                    You drive through the normal streets of your normal
+                    town. The sky is bleak and threatening snow again.
+                    Each house you pass looks somewhat like the one
+                    before it, windows spilling orange light out onto
+                    snowcovered yards. There must be happy, well 
+                    adjusted people inside of all of those houses. 
+                    They are probably having the grandest time, 
+                    without you.
+
+                    What a peaceful, ordinary town. You can't believe
+                    how boring it is here.
+
+                    You pull into the post office parking lot. The 
+                    sound of snow crunching under your tires is 
+                    extremely satisfying to you, and you consider 
+                    backing up and driving forward several more times.
+                    This is of course stupid, as so many of your 
+                    ideas are. You park and get out of the car, then
+                    enter the post office.
+                }
+                move-to postoffice;
+                trigger look;
+            }
+            else {
+                respond {
+                    You have no reason to go to the post office.
+                    They should send stuff to you! That's what
+                    they're good for.
+                }
+            }
+        }
+    }
+    command go to Emily {
+        if `not hasKeys` {
+            trigger drive car;
+        }
+        else {
+            respond {
+                You get in your car, start the ignition, 
+                and drive to the opposite side of the parking lot. 
+                In retrospect, you probably could have walked that 
+                distance, but it's cold outside, ok? You walk up 
+                to Emily's front door.
+            }
+            move-to emily-house;
+            trigger look;
+        }
+    }
+}
+
+location emily-house in global {
+    synonym "plant" "potted plant" "dead plant";
+    synonym "knock" "knock on door";
+    synonym "open door" "enter";
+    synonym "deliver package" "leave package" "give Emily package" "give package" "drop package";
+    command look {
+        respond {
+            A small apartment with a door but no windows 
+            facing you. A wilting, frozen, potted plant sits
+            on the porch.
+        }
+    }
+    command knock {
+        respond {
+            You get no response. Through the thin 
+            door, you think you can hear someone typing 
+            furiously on a keyboard, but you can't be 
+            entirely sure.
+        }
+    }
+    command open door {
+        respond {
+            You probably shouldn't break into Emily's house.
+            Breaking into other people's houses seems rude.
+        }
+    }
+    command deliver package {
+        if `hasemilypackage` {
+            respond {
+                You set the package on Emily's doorstep 
+                and ring the doorbell. You wait around a while, 
+                but no one answers. Oh well, maybe you can tell her
+                on chat.
+            }
+            set returnedEmilyPackage 1;
+            set hasemilypackage 0;
+        }
+        else {
+            respond {
+                You don't have a package for Emily. 
+                Your stuff belongs to you, not Emily. 
+            }
+        }
+    }
+    command drive home {
+        respond {
+            You walk back to your car, drive across the parking
+            lot, and arrive at your door step.
+        }
+        move-to entryway;
+        trigger look;
+    }
+    command drive post office {
+        if `hasSeenAddress and (not donePostOffice)` {
+            respond {
+                Good idea. You should return that package like an
+                outstanding citizen.
+            }
+        }
+        else {
+            respond {
+                Why would you go to the post office?
+            }
+        }
+    }
+    object plant {
+        It's pretty dead. You're not sure the owner has ever 
+        watered it, but the coating of ice probably means that
+        doesn't matter anymore.
+    }
+    object pot {
+        Blue, with a dead plant.
+    }
+    object door {
+        A slab of wood that separates Emily's house from the cold,
+        cold outside. It's surprisingly effective.
+    }
+}
+
+location postoffice in global {
+    synonym "man" "employee" "worker" "Kleisthenes" "person" "guy";
+    synonym "scream" "yell";
+    synonym "wave arms" "wave your arms" "flail";
+    synonym "hit" "punch" "slap" "hurt" "harm" "kill" "murder";
+    synonym "burn the post office down" "burn down" "burn post office" "burn" "start fire" "light fire";
+    synonym "buy" "purchase" "take";
+    synonym "peanuts" "packaging peanuts";
+    synonym "boxes" "box";
+    synonym "chocolate" "chocolate bar" "chocolate bars" "packaging chocolate";
+    synonym "steal" "eat";
+    synonym "drive" "go" "drive to";
+    synonym "eye" "creepy eye" "yellow eye" "yellow creepy eye";
+    synonym "game" "solitaire";
+    synonym "home" "back";
+    synonym "address" "address on package" "package address" "Mr. Robertson" "Mr. Robertson's house" "Robertson's house" "Robertson" "13310 Podwoic Avenue";
+    
+    command look {
+        respond {
+            The bell at the top of the door signals your arrival. 
+            Across the room, a man is sitting behind the counter,
+            focused intently on something in front of him. 
+            He doesn't even look up. Did he even notice the bell?
+
+            Besides the counter and inattentive employee, the 
+            room contains some shelves of packing and shipping
+            necessities.
+        }
+    }
+    command look man {
+        respond {
+            There's a plastic name pin on his shirt that reads
+            'KLEISTHENES', which you are sure no one has been
+            named, ever. Certainly not this guy, anyway. 
+            He is really focused on a game of solitaire right 
+            now. You can tell just by looking at his face that 
+            no matter what you do, he is not going to acknowledge
+            your presence in any way. Screaming, waving your arms,
+            punching him, burning down the post office - 
+            all useless. 
+            I-will-ignore-burning-buildings-to-finish-this-game
+            is written all over his face. You are good at reading
+            faces, you think.
+        }
+    }
+    command scream {
+        respond {
+            You let out a primal scream. 
+            The clerk doesn't react, which makes you
+            feel a little sad about the lack of power
+            you seem to have to affect change in your own life.
+            On the bright side, at least your face reading prowess
+            has been partially confirmed.
+        }
+        set attentionAttempts `attentionAttempts + 1`;
+        if `gt attentionAttempts 3` {
+            respond {
+                Ok. A game of cards is more interesting than you. Ok,
+                that's fine, you can deal with that. You just wanted
+                to do a good thing. You just wanted to return the
+                creepy medallion. 
+
+                This clearly isn't going to happen unless you take
+                matters into your own hands. But you can do this. 
+                You are going to set your life in order. You are going
+                to stop waiting for something to change. The thing
+                that needs to change is you. You feel so much resolve,
+                so much personal agency right now.
+
+                You will drive to the address on the package and
+                personally deliver it to its rightful owner.
+            }
+            set donePostOffice 1;
+        }
+    }
+    command wave your arms {
+        respond {
+            You flail wildly. Nothing happens.
+        }
+        set attentionAttempts `attentionAttempts + 1`;
+        if `gt attentionAttempts 3` {
+            respond {
+                Ok. A game of cards is more interesting than you. Ok,
+                that's fine, you can deal with that. You just wanted
+                to do a good thing. You just wanted to return the
+                creepy medallion. 
+
+                This clearly isn't going to happen unless you take
+                matters into your own hands. But you can do this. 
+                You are going to set your life in order. You are going
+                to stop waiting for something to change. The thing
+                that needs to change is you. You feel so much resolve,
+                so much personal agency right now.
+
+                You will drive to the address on the package and
+                personally deliver it to its rightful owner.
+            }
+            set donePostOffice 1;
+        }
+    }
+    command punch man {
+        respond {
+            You can't bring yourself to do violence
+            to a random stranger, as awful as he may be.
+        }
+        set attentionAttempts `attentionAttempts + 1`;
+        if `gt attentionAttempts 3` {
+            respond {
+                Ok. A game of cards is more interesting than you. Ok,
+                that's fine, you can deal with that. You just wanted
+                to do a good thing. You just wanted to return the
+                creepy medallion. 
+
+                This clearly isn't going to happen unless you take
+                matters into your own hands. But you can do this. 
+                You are going to set your life in order. You are going
+                to stop waiting for something to change. The thing
+                that needs to change is you. You feel so much resolve,
+                so much personal agency right now.
+
+                You will drive to the address on the package and
+                personally deliver it to its rightful owner.
+            }
+            set donePostOffice 1;
+        }
+    }
+    command burn the post office down {
+        respond {
+            This seems really inadvisable. You should at 
+            least wait until you receive your real package.
+        }
+        set attentionAttempts `attentionAttempts + 1`;
+        if `gt attentionAttempts 3` {
+            respond {
+                Ok. A game of cards is more interesting than you. Ok,
+                that's fine, you can deal with that. You just wanted
+                to do a good thing. You just wanted to return the
+                creepy medallion. 
+
+                This clearly isn't going to happen unless you take
+                matters into your own hands. But you can do this. 
+                You are going to set your life in order. You are going
+                to stop waiting for something to change. The thing
+                that needs to change is you. You feel so much resolve,
+                so much personal agency right now.
+
+                You will drive to the address on the package and
+                personally deliver it to its rightful owner.
+            }
+            set donePostOffice 1;
+        }
+    }
+    command buy tape {
+        respond {
+            You don't need that. You bought a value pack of 250
+            rolls from Swifts three years ago. It was quite a deal!
+        }
+    }
+    command buy peanuts {
+        respond {
+            You still have the packaging peanuts scattered across
+            your floor from the last package. The one you're trying
+            to return to its rightful owner, remember? You don't need
+            these.
+        }
+    }
+    command buy boxes {
+        respond {
+            Those would make an excellent fort. But Swifts is
+            pretty good about giving you boxes with your purchases.
+            You probably have at least a hundred somewhere in your
+            apartment, not counting the ones you've mutilated. You
+            don't need more boxes.
+        }
+    }
+    command buy chocolate {
+        respond {
+            You pick up a packing chocolate. 
+            This is so necessary. You walk over and set it on
+            the counter, but the clerk ignores you. You are 
+            devastated. This is probably the worst thing that 
+            will happen to you today.
+        }
+    }
+    command steal chocolate {
+        respond {
+            It's tempting. But you have more self restraint than
+            that. A tiny, tiny bit more. You hold up your thumb 
+            and forefinger, a centimeter apart, to demonstrate this
+            tiny bit.
+        }
+    }
+    command eat peanuts {
+        respond {
+            They're actually not tasty, so why would you? 
+            You've tried them before.
+        }
+    }
+    command drive home {
+        if `donePostOffice` 0 {
+            respond {
+                YOU FEEL SO MUCH RESOLVE, SO MUCH PERSONAL AGENCY 
+                RIGHT NOW.
+
+                YOU WILL DRIVE TO THE ADDRESS ON THE PACKAGE AND
+                PERSONALLY DELIVER IT TO ITS RIGHTFUL OWNER.
+            }
+        }
+        else {
+            respond {
+                You still need to return that package! You
+                aren't done here!
+            }
+        }
+    }
+    command drive address {
+        if `donePostOffice` {
+            respond {
+                You begin to drive. 
+
+                It's understandable how the package could have
+                been delivered to the wrong address, given the 
+                awful city planning that went on during Rockburg 
+                early years. Matthias Matusiak, Rockburg's founder,
+                did many great things, but creating an avenue with two
+                of every street number, only differentiable 
+                by use of 'E' or 'W', was somewhat asinine. You 
+                would also have preferred the avenue not have
+                a difficult to pronounce Polish name. 
+
+                You always forget how small Rockburg is. 
+                Actually, you have no idea what size Rockburg is.
+                The point is, you are at the address, and it didn't
+                seem to take that long to get there. You get 
+                out of the car and walk to the doorstep of the 
+                intended package recipient's home.
+            }
+            move-to robertson-front-door;
+        }
+    }
+    object shelves {
+        Packing tape, packing peanuts, packing boxes.
+        There are also some packing chocolate bars near
+        the front counter. On closer inspection, these are
+        just chocolate bars. 
+    }
+    object tape {
+        Sticky on one side but not on the other. You often confuse
+        the two sides.
+    }
+    object peanuts {
+        These ones are the environmentally friendly kind that dissolve
+        in water. Slightly less of a choking hazard.
+    }
+    object chocolate {
+        Yummmmmmmmmm
+    }
+    object solitaire {
+        The man has managed to find all of the clubs up to nine,
+        but the hearts stack doesn't even have an ace. That might be
+        problematic.
+    }
+    object clubs {
+        The stack goes all the way up to nine!
+    }
+    object hearts {
+        All the hearts cards are clogging up the game. You think
+        it might prevent the man from winning.
+    }
+    object spades {
+        There's the queen of spades! You were always a little
+        scared of her.
+    }
+    object diamonds {
+        Diamond cards should be more shiny and sparkly.
+    }
+    object cards {
+        A normal deck of cards. The picture on the back seems to
+        be of a creepy yellow eye.
+    }
+    object eye {
+        Oddly familiar.
+    }
+}
+
+location robertson-front-door in global {
+    synonym "bush" "bushes";
+    synonym "remove" "take off";
+    synonym "open door" "enter";
+    synonym "leave package" "leave medallion" "leave package at door" "leave medallion at door" "leave package at house" "leave medallion at house";
+    synonym "follow cat" "go after cat" "follow footprints" "enter bushes" "go bushes";
+    synonym "go to" "drive to" "drive" "go";
+    synonym "Emily" "Emily's" "Emily's house"
+    
+    command look {
+        respond {
+            Wow, a doorstep. There's a door in front of you.
+
+            Oh, you wanted to look at the house? It's a cozy-sized 
+            house with a small yard coated in snow, a porch and a 
+            couple of surrounding trees. It also has a doorstep. 
+            With a door. Did I mention that already? You find the 
+            home rather appealing.
+        }
+    }
+    command drive home {
+        if `hasMedallion` {
+            respond {
+                You came all this way to deliver the package,
+                and you will deliver it regardless of what
+                forces of nature or not nature try to bring you down.
+            }
+        }
+        else {
+            respond {
+                You should probably deliver Emily's
+                package before you get all comfy and cozy in
+                your nice warm home. You'd probably never want
+                to leave again.
+            }
+        }
+    }
+    command drive post office {
+        respond {
+            No! Not there! You don't ever want to go back to there!
+        }
+    }
+    command drive Emily's house {
+        respond {
+            You get in your car, start the engine,
+            and drive to Emily's house. The whole way there,
+            her package sits on the passenger seat, taunting you.
+            Oh, how you want to open that package. But you have self
+            restraint. You really do.
+        }
+        move-to emily-house;
+    }
+    command look snow {
+        if `not catPresent` {
+            respond {
+                Cold and icy. You wrap your scarf tighter 
+                around yourself.
+            }
+        }
+        else {
+            respond {
+                Footprints of cat paws lead toward the bushes.
+            }
+        }
+    }
+    command look bushes {
+        if `not catPresent` {
+            respond {
+                A couple of leafy bushes, where the leaves are gone
+                and replace with ice.
+            }
+        }
+        else {
+            respond {
+                The cat went that way. You felt a connection 
+                with that cat. Maybe you should follow her.
+            }
+        }
+    }
+    command look footprints {
+        if `not catPresent` {
+            respond {
+                The only footprints here are your own.
+            }
+        }
+        else {
+            respond {
+                Cat footprints in the snow, showing 
+                you a convenient path.
+            }
+        }
+    }
+    command look trees {
+        if `not catPresent` {
+            respond {
+                Two tall birch trees hang over the house, 
+                each with a soft dusting of snow. A hole 
+                of blackness swirls in the leaves. It's 
+                coming closer. The tree leaves part from 
+                its path. The blackness! It approaches! 
+                It will consume your soul! It leaps toward you!
+                It's will destroy you entirely!
+                
+                Oh wait, it's just a black cat. Nevermind.
+                
+                The cat has familiar looking yellow eyes. 
+                She stares shrewdly at you, her tail raised. If 
+                your facial-reading abilities apply to cats, 
+                you would interpret that expression as saying
+                come-with-me-mortal. She turns and leaves through
+                the bushes.
+            }
+            set catPresent 1;
+        }
+        else {
+            respond {
+                Cat footprints in the snow, showing 
+                you a convenient path.
+            }
+        }
+    }
+    command knock {
+        respond {
+            You knock three times on the door, 
+            and wait for an answer. No one responds. Oh well.
+        }
+    }
+    command open door {
+        respond {
+            The door is locked. You pull the door handle harder. 
+            It's still locked. Darn. You thought that would work.
+        }
+    }
+    command remove scarf {
+        respond {
+            No. Absolutely not.
+        }
+    }
+    command leave package {
+        if `hasMedallion` {
+            respond {
+                You kind of tore the package to tiny pieces,
+                and feel a little bit bad about that. You should 
+                probably hand deliver the medallion so you can explain.
+            }
+        }
+        else {
+            respond {
+                That package is gone! You are free of it!
+            }
+        }
+    }
+    command follow cat {
+        if `hasMedallion` {
+            respond {
+                You follow the black cat into the bushes. 
+                After pushing through some leaves, you find yourself
+                in a sequestered backyard of the house. The cat 
+                is nowhere to be seen.
+            }
+            move-to backyard;
+            trigger look;
+        }
+        else {
+            respond {
+                You already followed that cat. Nothing good came
+                of it. Well, you did meet Stuart. And he was kinda
+                dreamy. Maybe you should follow the cat back! No wait,
+                that would lead you right back into the house, and
+                this time breaking in would be so awkward. You resist
+                the temptation.
+            }
+        }
+    }
+    object door handle {
+        Shiny and brass. Good for opening unlocked doors. 
+        Less effective against locked doors.
+    }
+    object scarf {
+        Your fuzzy, fuzzy, scarf.
+    }
+    object home {
+        Quaint and cozy. A couple of trees shade it from the sun.
+    }
+    object sun {
+        You look at the sun. It's bright. Your eyes hurt.
+        You stop looking at the sun.
+    }
+}
+
+location backyard in global {
+    synonym "reindeer" "Christmas reindeer";
+    synonym "take" "pet" "touch" "ride";
+    synonym "go back" "return" "go through bushes" "go bushes";
+    synonym "bush" "bushes";
+    synonym "open window" "break into house" "enter house" "go house" "go into house" "enter window" "go window" "go through window" "climb through window" "climb window";
+    command look {
+        respond {
+            A circle of those light-up Christmas reindeer
+            stand facing outward. It's an odd setup considering
+            you are in a secluded backyard surrounded on all sides
+            by fences. Some people just don't like to ostentatiously
+            flout their decorations in their neighbors' faces. Weird.
+            The back side of the house has no doors, but one of the
+            windows appear to be cracked open a bit.
+        }
+    }
+    command pet reindeer {
+        respond {
+            You reach your hand out toward the fake deer. 
+            The moment your fingers brush the cold, metallic 
+            decoration, the deer and its companions spring to life.
+            You jump back and watch in a stupefying combination
+            of horror and fascination as the previously inanimate
+            creatures engage in a ferocious battle to the death.
+            
+            One after another, each Christmas decorations fights
+            until it or its opponent has been reduced to a pile
+            of twisted wires and flickering lights. At last,
+            only remaining deer claims victory as it prances
+            upon the corpses of its brethren. It paws at the
+            twisted wires for a moment before trotting back to
+            its position in the now vacant ring of deer. As
+            if summoned, the wires untangle themselves and
+            reassemble into the remaining herd. The deer resume
+            their positions and the entire scene appears completely
+            unchanged. Even the freshly fallen snow bears no markings
+            of a scuffle ever occurring. Your sense of stupefaction
+            lifts, leaving you only with a greater appreciation
+            for inanimate Christmas decorations.
+        }
+    }
+    command go back {
+        respond {
+            You have a strange desire to follow that cat,
+            wherever it went.
+        }
+    }
+    command use medallion with reindeer {
+        respond {
+            You hold out the strange medallion to the reindeer. 
+            The one that you, for some unknown reason, identify
+            as the leader tilts its head toward you as the 
+            Christmas lights in its eyes flash red.
+            That was some pretty good animatronics,
+            you must admit. You pocket the medallion.
+        }
+    }
+    command open window {
+        respond {
+            You push open the window until you are able to 
+            fit through the gap. So you fit yourself through
+            the gap. Why else would the window be partly open
+            if not so you can squeeze your body through?
+        }
+        move-to room-one
+        trigger look
+    }
+    object window {
+        Ice coats the glass, making it difficult to see
+        inside, but its cracked open just slightly
+    }
+    object bushes {
+        A thick hedge of bushes. From this side, it looks rather 
+        difficult to climb through. I guess you were desperate.
+        Cats do that to you sometimes.
+    }
+    object snow {
+        Only your own footprints appear in powdery ice. 
+        You wonder what happened to the cat.
+    }
+    object reindeer {
+        They look deep into your soul as the Christmas
+        lights that define their bodies twinkle ominously.
+    }
+}
+
+environment puzzle-room in global{
+    synonym "rock collection" "rocks" "collection" "rock";
+    synonym "bookshelf" "books";
+    synonym "read Passion in Paradise" "read Passion in a Pot" "read Passion in a Poppy Field" "read Passion in Pompeii";
+    synonym "Kurt Vonnegut Novel" "Kurt Vonnegut Novels" "The Kurt Vonnegut Novel" "A Kurt Vonnegut Novel";
+    synonym "book in another language" "books in another language" "a book in another language" "the book in another language";
+    synonym "fantasy series" "fantasy book" "fantasy books" "a fantasy book" "the fantasy book";
+    synonym "leave medallion" "leave package" "drop medallion" "drop package";
+    synonym "filing cabinet" "cabinet" "drawers";
+    synonym "drawer 1" "1" "one";
+    synonym "drawer 2" "2" "two";
+    synonym "drawer 3" "3" "three";
+    synonym "open" "look through";
+    synonym "feed cat" "use food with cat" "use cat food with cat" "give food to cat" "give cat food to cat" "give cat food cat" "give food cat" "give cat food" "give cat cat food";
+    synonym "alarm" "fire alarm";
+    
+    command feed cat {
+        if `hasCatFood` {
+            respond {
+                You take the handful of cat food and offer it
+                to that kind of creepy black cat. The cat wanders
+                over to you, looking kind of adorable despite her
+                bright yellow eyes that stare deep into the depths
+                of your soul. She happily eats up the food and
+                wanders off. Then the room catches fire.
+
+                You ponder your options for a moment, thinking you
+                probably should leave before you die, when,
+                to make matters even worse, the fire alarm goes off.
+                Why do people even have fire alarms? You know there's 
+                a fire. That's why your skin is burning off.
+                Oh yeah, you should probably leave the room.
+            }
+            set hasFood 0;
+            set roomOnFire 1;
+        }
+        else {
+            respond {
+                The cat looks curious, but then realizes you have no
+                food and glares angrily.
+            }
+        }
+    }
+    command leave medallion {
+        if `hasMedallion` {
+            respond {
+                You came all this way and you will deliver this
+                medallion in person to Mr. Robertson. Besides, you're
+                rather fond of the piece and aren't quite sure you
+                want to get rid of it just yet.
+            }
+        }
+        else {
+            respond {
+                You already got rid of that medallion, remember?
+            }
+        }
+    }
+    command take flint {
+        if `hasFlint` {
+            respond { 
+                You really only need one piece of flint.
+                You learned that at camp.
+            }
+        }
+        else {
+            respond {
+                You pick up some of the flint from the display
+                and pocket it.
+            }
+            set hasFlint 1;
+        }
+    }
+    command read fantasy series {
+        respond {
+            Thurglarg begins his adventures as Thurglarina, a maid in
+            the village of Urmaston. The first chapter seems to be
+            mainly about him reevaluating his gender identity.
+            Then a dragon shows up.
+
+            You finish the first chapter and then scrounge up some
+            self control to focus on the task at hand, whatever that
+            is, and stop reading this. You really struggle with
+            self control sometimes.
+        }
+    }
+    command read Passion in Paradise {
+        respond {
+            You pull the book off the shelf and begin to become
+            emotionally involved in Karen and Santiago's somewhat
+            raunchy affair. The writing is just so good. You really
+            appreciate good writing.
+
+            After several minutes, the cat hisses at you. 
+            What's your deal, cat? You lay the quality
+            literature aside.
+        }
+    }
+    command take leaves of grass {
+        if `placedBook` {
+            respond {
+                That book is not on the shelf. You wonder
+                if, perhaps, it has been sacrificed to a past or
+                future fire.
+            }
+        }
+        if `eq heldBook "Leaves of Grass"` {
+            respond {
+                You're already holding `heldBook`. You caress
+                it gently to remind yourself of this fact.
+            }
+        }
+        else {
+            
+            if `not (eq heldBook "None")` {
+                respond {
+                    You can really only carry one book at a time,
+                    so you lovingly deposit `heldBook` in its
+                    proper place on the bookshelf.
+                }
+            }
+            set heldBook "Leaves of Grass";
+            respond {
+                You pick up `heldBook`.
+            }
+        }
+    }
+    command take kurt vonnegut novel {
+        if `eq heldBook "a Kurt Vonnegut novel"` {
+            respond {
+                You're already holding `heldBook`. You caress
+                it gently to remind yourself of this fact.
+            }
+        }
+        else {
+            
+            if `not (eq heldBook "None")` {
+                respond {
+                    You can really only carry one book at a time,
+                    so you lovingly deposit `heldBook` in its
+                    proper place on the bookshelf.
+                }
+            }
+            set heldBook "a Kurt Vonnegut novel";
+            respond {
+                You pick up `heldBook`.
+            }
+        }
+    }
+    command take book in another language {
+        if `eq heldBook "a book in another language"` {
+            respond {
+                You're already holding `heldBook`. You caress
+                it gently to remind yourself of this fact.
+            }
+        }
+        else {
+            
+            if `not (eq heldBook "None")` {
+                respond {
+                    You can really only carry one book at a time,
+                    so you lovingly deposit `heldBook` in its
+                    proper place on the bookshelf.
+                }
+            }
+            set heldBook "a book in another language";
+            respond {
+                You pick up `heldBook`.
+            }
+        }
+    }
+    command take Passion in Paradise {
+        if `eq heldBook "Passion in Paradise"` {
+            respond {
+                You're already holding `heldBook`. You caress
+                it gently to remind yourself of this fact.
+            }
+        }
+        else {
+            
+            if `not (eq heldBook "None")` {
+                respond {
+                    You can really only carry one book at a time,
+                    so you lovingly deposit `heldBook` in its
+                    proper place on the bookshelf.
+                }
+            }
+            set heldBook "Passion in Paradise";
+            respond {
+                You pick up `heldBook`.
+            }
+        }
+    }
+    command take Passion in Pompeii {
+        if `eq heldBook "Passion in Pompeii"` {
+            respond {
+                You're already holding `heldBook`. You caress
+                it gently to remind yourself of this fact.
+            }
+        }
+        else {
+            
+            if `not (eq heldBook "None")` {
+                respond {
+                    You can really only carry one book at a time,
+                    so you lovingly deposit `heldBook` in its
+                    proper place on the bookshelf.
+                }
+            }
+            set heldBook "Passion in Pompeii";
+            respond {
+                You pick up `heldBook`.
+            }
+        }
+    }
+    command take Passion in a Pot {
+        if `eq heldBook "Passion in a Pot"` {
+            respond {
+                You're already holding `heldBook`. You caress
+                it gently to remind yourself of this fact.
+            }
+        }
+        else {
+            
+            if `not (eq heldBook "None")` {
+                respond {
+                    You can really only carry one book at a time,
+                    so you lovingly deposit `heldBook` in its
+                    proper place on the bookshelf.
+                }
+            }
+            set heldBook "Passion in a Pot";
+            respond {
+                You pick up `heldBook`.
+            }
+        }
+    }
+    command take Passion in a Poppy Field {
+        if `eq heldBook "Passion in a Poppy Field"` {
+            respond {
+                You're already holding `heldBook`. You caress
+                it gently to remind yourself of this fact.
+            }
+        }
+        else {
+            
+            if `not (eq heldBook "None")` {
+                respond {
+                    You can really only carry one book at a time,
+                    so you lovingly deposit `heldBook` in its
+                    proper place on the bookshelf.
+                }
+            }
+            set heldBook "Passion in a Poppy Field";
+            respond {
+                You pick up `heldBook`.
+            }
+        }
+    }
+    command take fantasy series {
+        if `eq heldBook "the fantasy book"` {
+            respond {
+                You're already holding `heldBook`. You caress
+                it gently to remind yourself of this fact.
+            }
+        }
+        else {
+            
+            if `not (eq heldBook "None")` {
+                respond {
+                    You can really only carry one book at a time,
+                    so you lovingly deposit `heldBook` in its
+                    proper place on the bookshelf.
+                }
+            }
+            set heldBook "the fantasy book";
+            respond {
+                You pick up `heldBook`.
+            }
+        }
+    }
+    command open filing cabinet {
+        respond  {
+            This filing cabinet has three doors.
+            They are all conveniently labeled. You
+            like opening your doors one at a time in order
+            to savor the experience.
+        }
+    }
+    command pet cat {
+        respond {
+            Here, kitty, kitty...
+            
+            HISSSSSSSSSS
+            
+            Oh well.
+        }
+    }
+    object fire alarm {
+        You don't see a fire alarm. This room looks pretty fire
+        safe anyway, so you don't worry about it.
+    }
+    object cat {
+        That darned cat is lurking in the hallway. She hisses at you
+        every time you try to get near her.
+    }
+    object kurt vonnegut novels {
+        You like Vonnegut, but you're not really in love
+        with him. He's no Santiago.
+
+        The books look well loved.
+    }
+    object books in another language {
+        This sure isn't English. You're sure, because you can 
+        read English.
+    }
+    object Passion in Paradise {
+        Santiago was content to live a laid-back life of
+        professional surfing and beachcombing, but everything
+        changes the night he meets Karen Naymon, a journalist
+        on the hunt for one of the Caribbean's most powerful
+        drug lords. Santiago and Karen embark on a dangerous
+        journey, and realize that all is not as it seems in
+        paradise. With betrayal and lies on all sides, will
+        Karen learn to trust Santiago?
+
+        "Smoldering" - LA Times Review
+    }
+    object Passion in Pompeii {
+        The year is 79 AD, and Karen Naymon is due to be married.
+        Her family insists she choose a wealthy politician who
+        will secure her position in the Roman elite. But Karen
+        has other ideas - and her eye on Santiago, a slave captured
+        from the barbaric wars of barbarians. Will love erupt between
+        Karen and Santiago? Will Karen escape her family… and the
+        trouble brewing at Mount Vesuvius?
+    }
+    object Passion in a Pot {
+        Santiago works late nights at his recently opened
+        restaurant in Chicago, The Firepit. He has always dreamed
+        of being a chef, and with a good review from top food
+        critic Karen Naymon, The Firepit will be on its way to
+        fame and fortune. But when Karen and Santiago meet,
+        the kitchen gets hot. CAN THEY MAINTAIN A DEGREE OF
+        PROFESSIONALISM IN THEIR RELATIONSHIP??
+    }
+    object Passion in a Poppy Field {
+        Karen has waited for Santiago to return from the Allied
+        front in Germany for a year. But the war has changed 
+        Santiago. Karen must find a way to cope with Santiago's
+        loss of a leg. The increasingly volatile Santiago can be
+        kind of a jackass, but he's seen things, you know? Can
+        Karen and Santiago find peace together? 
+    }
+    object rock collection {
+        This is the worst rock collection you have ever seen. 
+        Every cubby in the display box has a piece of flint. 
+        There are no other types of rock.
+        
+        You're reminded of that song Jackie Chan sings in 
+        that movie about traffic. 
+        
+        Flint, huh, yeah! What is it good for?
+
+        Starting fires, based on your impeccable scouting
+        knowledge. Your knowledge of Jackie Chan movies,
+        however, is dubious.
+    }
+    object cubby {
+        A plain cubby with a piece of flint. An odd choice for
+        decor, to be sure, but maybe it works here.
+    }
+    object flint {
+        It's just like those piece of flint you used in camp while
+        the camp leaders shouted at you for being such a miserable
+        little child who couldn't even make a fire. You showed them
+        when you lit the campsite on fire.
+    }
+    object bookshelf {
+        This bookshelf looks Swedish and self-assembled, and has 
+        some familiar titles. On the top shelf is Walt Whitman's
+        Leaves of Grass, some weird fantasy series, and a collection
+        of every Kurt Vonnegut novel in existence. The bottom shelf
+        has some books in another language, and all of the Claire
+        Lovesmith books! Passion in Paradise, Passion in Pompeii,
+        Passion in a Poppy Field, Passion in a Pot…
+    }
+    object fantasy series {
+        Every cover features a muscular man waving a sword at a dragon.
+        Maybe you could get into this. There are probably a bunch
+        of made up names, though. Thurglarg, son of Mardragoglan.
+        The muscular man sort of looks like a Thurglarg.
+    }
+}
+
+location room-one in puzzle-room {
+    synonym "use flint on chair" "burn chair" "start fire" "use flint on armchair" "burn armchair"; 
+    command look { 
+        respond {
+            This room looks very familiar. There's the
+            cat again! You can see it through the doorway. 
+            It stares unblinking at you, and you feel a little unnerved.
+
+            At least there's a lot of nice decor to enjoy in here.
+            Well, the painting on the wall is also a little bit creepy.
+            But that armchair looks amazingly comfortable,
+            and the sofa is normal enough. The decor is rather
+            minimal, with some sort of rock collection hung in
+            a pigeonholed box on the wall, and a filing
+            cabinet and bookshelf tucked in the corners.
+        }
+        if `roomOnFire` {
+            respond {
+                Also the chair is on fire. You might want to
+                get out of here.
+            }
+        }
+    }
+    command put book on chair {
+        if `eq heldBook "None"` {
+            respond {
+                You don't have a book on you.
+            }
+        }
+        else {
+            if `eq heldBook "Leaves of Grass"` {
+                respond {
+                    You can't believe you! This book is in no
+                    way expendable. Well...hmm. Maybe it is a little
+                    bit expendable. You put the crotch-mentioning 
+                    book on the chair. 
+                }
+                set heldBook "None";
+                set placedBook 1;
+            }
+            else {
+                respond {
+                    You can't believe you! This book is in no way
+                    expendable. You are absolutely not setting
+                    fire to this. Never.
+                }
+            }
+        }
+    }
+    command use flint on chair {
+        if `hasFlint` {
+            if `placedBook` {
+                respond {
+                    You hold a piece of flint in your hand and remember
+                    that you need steel to make this work. Sigh. 
+
+                    Scouting also taught you that lighters can start
+                    fires. Why are you even bothering with this rock?
+                    You pull out your trusty lighter from your jacket
+                    and set the book aflame. Your lighter is very
+                    trusty and very forgettable.
+
+                    The little maroon teapots quickly become little
+                    black teapots and then 
+                    impossible-to-see-over-the-flames, likely 
+                    nonexistent teapots. Now might be a good time
+                    to leave, if you don't want to go the way of
+                    the teapots.
+                }
+                set roomOnFire 1;
+            }
+            else {
+                respond {
+                    As much as you enjoying starting fire in 
+                    strangers' houses you have broken into,
+                    you think you need to put some kindling on the
+                    chair first. Something paper and expendable.
+                }
+            }
+        }
+        else {
+            respond { 
+                You don't have any flint. How do you expect to
+                start a fire?
+            }
+        }
+    }
+    command leave room {
+        if `roomOnFire` {
+            respond {
+                That's probably a good idea. This place is heating up.
+                With fire. The hallway is clouded in smoke, so you exit
+                the room into the dark, unknown. The room you arrive in
+                is happily free of smoke and flames. Why would you think
+                there would be a fire anyway? Everything is beautiful.
+                
+                set roomOnFire 0;
+                move-to room-two;
+                trigger look;
+            }
+        }
+        else {
+            respond {
+                There is work to be done! And that
+                creepy cat is kind of lurking in the hallway,
+                so you don't want to pass by her.
+            }
+        }
+    }
+    command open drawer 1 {
+        respond {
+            It's locked. Maybe whoever lives here
+            doesn't want you rifling through all their papers? Odd.
+        }
+    }
+    command open drawer 2 {
+        respond {
+            It's locked. Maybe whoever lives here
+            doesn't want you rifling through all their papers? Odd.
+        }
+    }
+    command open drawer 3 {
+        respond {
+            It's locked. Maybe whoever lives here
+            doesn't want you rifling through all their papers? Odd.
+        }
+    }
+    object painting {
+        You don't know much about art history, but this painting
+        looks like it was made by elves! 
+
+        It's a portrait. Of a chair. It's the spitting image of the
+        chair in this room, actually. The only difference is that
+        the chair in the painting is wreathed in flames. You know,
+        just really on fire. The real chair isn't on fire at all.
+        That's a quality you like in a chair, not being on fire.
+
+        Something about this painting makes you question that
+        preference, though. It's a good painting. Very suggestive.
+    }
+    object chair {
+        This chair is definitely not Swedish or self-assembled.
+        (Chairs are not capable of assembling themselves, anyway.)
+        You think it looks sort of Victorian, what with its clawed
+        wooden feet and elegant curved lines. The fabric features
+        a repeated pattern of little maroon teapots. The word
+        'plush' rattles around in your head whenever you look at it.
+    }
+    object filing cabinet {
+        A large metal structure with three drawers, helpfully labeled
+        '1', '2', and '3', from the top down. You are
+        vaguely nervous of something so professional
+        and potentially well organized.
+    }
+    object leaves of grass {
+        You open to a random page and begin reading until the line
+        "Echoes, ripples, buzz'd whispers, love-root, silk-thread,
+        crotch and vine." Your appreciation for the natural world
+        is really thrown off by the word "crotch." You put the
+        book down.
+    }
+}
+
+location room-two in puzzle-room {
+    synonym "couch" "cushion" "cushions";
+    synonym "search" "search through" "search in";
+    synonym "note" "love note" "letter" "love letter" "heart-shaped note";
+    synonym "pink" "pink paper" "pink page";
+    synonym "white" "white paper" "white page";
+    synonym "green" "green paper" "green page";
+    synonym "yellow" "yellow paper" "yellow page";
+    synonym "blue" "blue paper" "blue page";
+    synonym "put" "place" "set" "file";
+    synonym "close cabinet" "close filing cabinet" "close drawer" "close drawer 1" "close drawer 2" "close drawer 3";
+    
+    command look {
+        respond {
+            This room looks very familiar. It's like you've
+            been here before, except you vaguely remember it
+            being entirely wreathed in flames about to murder
+            you with their fiery tongues. Huh. Strange.
+
+            There's the cat again! You can see it through the doorway.
+            It stares unblinking at you, and you feel a little unnerved.
+
+            This place looks a beat up, or perhaps burned up, 
+            but there's an odd painting on the wall. There's a nice,
+            empty spot at the side of the room that looks like
+            the perfect place to add an armchair with a maroon
+            teapot pattern. But, sadly, there is no armchair, only
+            an elaborate scorch mark where the armchair should go.
+            The decor is rather minimal, with some sort of rock
+            collection hung in a pigeonholed box on the wall,
+            and a filing cabinet and bookshelf tucked in the corners.
+        }
+        if `roomOnFire` {
+            respond {
+                Also the filing cabinet is on fire. You might want to
+                get out of here.
+            }
+        }
+    }
+    command open drawer 1 {
+        if `not hasNote`
+        {
+            respond {
+                It's locked. Maybe whoever lives here
+                doesn't want you rifling through all their papers? Odd.
+            }
+        }
+        else {
+            respond {
+                You see five sheets of paper colored yellow,
+                blue, green, white, and pink. Otherwise
+                the drawer is empty.
+            }
+            set hasPapers 1;
+        }
+    }
+    command open drawer 2 {
+        if `not hasNote` {
+            respond {
+                It's locked. Maybe whoever lives here
+                doesn't want you rifling through all their papers? Odd.
+            }
+        }
+        else {
+            respond {
+                The drawer is empty. The guy who lives here never
+                quite learned how to stuff his filing cabinet
+                full of papers for strangers to pry through.
+            }
+        }
+    }
+    command open drawer 3 {
+        respond {
+            It's locked. Maybe whoever lives here
+            doesn't want you rifling through all their papers? Odd.
+        }
+    }
+    command look pink {
+        if `hasPapers` {
+            respond {
+                The paper is exactly the same shade of pink as
+                the heart note you found under the cushions.
+                In fact, there is a heart of exactly the same size
+                cut out of the corner of this sheet of paper. What
+                a coincidence! The top of the paper reads, in bold
+                letters, "I am a free and independent spirit! I 
+                belong in any drawer!"
+            }
+        }
+        else {
+            respond {
+                What is this pink thing you are talking about?
+                You aren't very fond of the color pink.
+            }
+        }
+    }
+    command look green {
+        if `hasPapers` {
+            respond {
+                A beautiful, pure shade of green. Exactly the
+                same color of green sheets of paper. This paper
+                reads "I belong in drawer 1 and we are all telling
+                the truth." What a trusting piece of paper!
+                You feel complete trust toward all of these sheets
+                of paper.
+            }
+        }
+        else {
+            respond {
+                Green? What green are you talking about? The ice
+                outside has removed all that is green and pleasant in
+                the world.
+            }
+        }
+    }
+    command look yellow {
+        if `hasPapers` {
+            respond {
+                A sheet of light yellow paper. Bold lettering spells
+                out "I belong in drawer 1 and the blue paper
+                is lying." Well, you never trusted blue papers anyway.
+            }
+        }
+        else {
+            respond {
+                Yellow, like happiness and sushine. Too bad there isn't
+                any of that in this town.
+            }
+        }
+    }
+    command look blue {
+        if `hasPapers` {
+            respond {
+                Paper as blue as the sky, when the sky isn't
+                all gray and cloudy and gloomy. It reads 
+                "I belong in drawer 2 and the yellow paper is lying."
+                Come to think of it, that yellow paper did look 
+                suspicious.
+            }
+        }
+        else {
+            respond {
+               Blue. Blue. Huh. You see no blue. Are you color blind?
+               No wait, you vaguely remember blue. You're probably
+               not color blind.
+            }
+        }
+    }
+    command look white {
+        if `hasPapers` {
+            respond {
+                A piece of paper that is white. BORING.
+                The black lettering spells out "I belong in drawer
+                2 and green and yellow are lying." Wow. Come to
+                think of it, all of the unpleasant news you've
+                received lately did come on green and yellow paper.
+                They're probably not trustworthy.
+            }
+        }
+        else {
+            respond {
+               White. There's white paper in those books on the shelves.
+               You like reading those!
+            }
+        }
+    }
+    command look papers {
+        if `hasPapers` {
+            respond {
+                So many papers in so many colors. They seem
+                to like arguing with each other.
+            }
+        }
+        else {
+            respond {
+               What papers? The ones in books? Those are some
+               great books.
+            }
+        }
+    }
+    command sort papers {
+        if `hasPapers` {
+            respond {
+                You look at all the cryptic papers and feel
+                an overwhelming sense of dread. Which one goes where?
+            }
+        }
+        else {
+            respond {
+               What papers? The ones in books? Those are some
+               great books.
+            }
+        }
+    }
+    
+    command read papers {
+        trigger look papers;
+    }
+    command close cabinet {
+        if `hasPapers` {
+            respond {
+                This cabinet just doesn't feel organized to you.
+                You'd rather continue sorting papers into their
+                appropriate drawers.
+            }
+        }
+        else {
+            if `hasNote` {
+                respond {
+                    This cabinet needs organizing! Don't give up now!
+                }
+            }
+            else {
+                respond {
+                    The drawers are already closed. And locked.
+                }
+            }
+        }
+    }
+    command put pink 1 {
+        respond {
+            You place the paper lovingly in the drawer. 
+            Right where it belongs.
+        }
+        set pinkRight 1;
+        if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+            respond {
+                You at once feel the satisfaction of a job well
+                done. That filing cabinet is so organized.
+                You close all the drawers and step back to admire
+                your beautiful work. The cabinet immediately bursts
+                into flames. Weird. You suppose it's kind of like
+                a burst of fireworks here to celebrate your
+                accomplishments. You admire it for a moment,
+                then decide you really better leave the room.
+            }
+            set hasPapers 0;
+            set hasNote 0;
+            set roomOnFire 1;
+        }
+    }
+    command put pink 2 {
+        respond {
+            You place the paper lovingly in the drawer. 
+            Right where it belongs.
+        }
+        set pinkRight 1;
+        if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+            respond {
+                You at once feel the satisfaction of a job well
+                done. That filing cabinet is so organized.
+                You close all the drawers and step back to admire
+                your beautiful work. The cabinet immediately bursts
+                into flames. Weird. You suppose it's kind of like
+                a burst of fireworks here to celebrate your
+                accomplishments. You admire it for a moment,
+                then decide you really better leave the room.
+            }
+            set hasPapers 0;
+            set hasNote 0;
+            set roomOnFire 1;
+        }
+    }
+    command put white 1 {
+        respond {
+            You place the paper lovingly in the drawer. 
+            Right where it belongs.
+        }
+        set whiteRight 0;
+    }
+    command put white 2 {
+        respond {
+            You place the paper lovingly in the drawer. 
+            Right where it belongs.
+        }
+        set whiteRight 1;
+        if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+            respond {
+                You at once feel the satisfaction of a job well
+                done. That filing cabinet is so organized.
+                You close all the drawers and step back to admire
+                your beautiful work. The cabinet immediately bursts
+                into flames. Weird. You suppose it's kind of like
+                a burst of fireworks here to celebrate your
+                accomplishments. You admire it for a moment,
+                then decide you really better leave the room.
+            }
+            set hasPapers 0;
+            set hasNote 0;
+            set roomOnFire 1;
+        }
+    }
+    command put blue 1 {
+        respond {
+            You place the paper lovingly in the drawer. 
+            Right where it belongs.
+        }
+        set blueRight 0;
+    }
+    command put blue 2 {
+        respond {
+            You place the paper lovingly in the drawer. 
+            Right where it belongs.
+        }
+        set blueRight 1;
+        if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+            respond {
+                You at once feel the satisfaction of a job well
+                done. That filing cabinet is so organized.
+                You close all the drawers and step back to admire
+                your beautiful work. The cabinet immediately bursts
+                into flames. Weird. You suppose it's kind of like
+                a burst of fireworks here to celebrate your
+                accomplishments. You admire it for a moment,
+                then decide you really better leave the room.
+            }
+            set hasPapers 0;
+            set hasNote 0;
+            set roomOnFire 1;
+        }
+    }
+    command put green 1 {
+        respond {
+            You place the paper lovingly in the drawer. 
+            Right where it belongs.
+        }
+        set greenRight 0;
+    }
+    command put green 2 {
+        respond {
+            You place the paper lovingly in the drawer. 
+            Right where it belongs.
+        }
+        set greenRight 1;
+        if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+            respond {
+                You at once feel the satisfaction of a job well
+                done. That filing cabinet is so organized.
+                You close all the drawers and step back to admire
+                your beautiful work. The cabinet immediately bursts
+                into flames. Weird. You suppose it's kind of like
+                a burst of fireworks here to celebrate your
+                accomplishments. You admire it for a moment,
+                then decide you really better leave the room.
+            }
+            set hasPapers 0;
+            set hasNote 0;
+            set roomOnFire 1;
+        }
+    }
+    command put yellow 1 {
+        respond {
+            You place the paper lovingly in the drawer. 
+            Right where it belongs.
+        }
+        set yellowRight 0;
+    }
+    command put yellow 2 {
+        respond {
+            You place the paper lovingly in the drawer. 
+            Right where it belongs.
+        }
+        set yellowRight 1;
+        if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+            respond {
+                You at once feel the satisfaction of a job well
+                done. That filing cabinet is so organized.
+                You close all the drawers and step back to admire
+                your beautiful work. The cabinet immediately bursts
+                into flames. Weird. You suppose it's kind of like
+                a burst of fireworks here to celebrate your
+                accomplishments. You admire it for a moment,
+                then decide you really better leave the room.
+            }
+            set hasPapers 0;
+            set hasNote 0;
+            set roomOnFire 1;
+        }
+    }
+    command search couch {
+        respond {
+            Feeling somewhat invasive, you search through the couch
+            cushions of this stranger's house. In another situation,
+            your conscience might have made you stop, but you're
+            pretty sure your conscience also made you burn down this
+            stranger's chair, so you're not going to listen to that.
+            Also, you think that cat is judging you.
+        }
+        if `and (not roomOnFire) (not hasNote)` {
+            respond {
+                Anyway, you find a note written on a 
+                nauseatingly pink heart.
+            }
+            set hasNote 1;
+        }
+        else {
+            respond {
+                You don't find anything else.
+            }
+        }
+    }
+    command look heart {
+        if `hasNote` {
+            respond {
+                Pink. It makes you want to vomit. There's
+                also a note written on it.
+            }
+        }
+        else {
+            respond {
+                Heart? Where? Murder it!
+            }
+        }
+    }
+    command look note {
+        if `hasNote` {
+            respond {
+                It reads "SEND THIS TO 12 PEOPLE WITHIN THE NEXT DAY
+                OR UR FAMILY NAME WILL BE CURSED 4EVER!!1  Also you
+                should organize that filing cabinet." You think 
+                it's kind of poetic in its own special way.
+            }
+        }
+        else {
+            respond {
+                You don't see any notes to read.
+            }
+        }
+    }
+    command vomit {
+        if `hasNote` {
+            respond {
+                Ok, maybe the heart's not that bad.
+            }
+        }
+        else {
+            respond {
+                But you're not feeling sick. Not yet at least. Wait,
+                that sounded ominous. Then you realized you were talking
+                to yourself, which made it less ominous.
+            }
+        }
+    } 
+    command leave room {
+        if `roomOnFire` {
+            respond {
+                Probably a good idea. The room is kind of on fire.
+                You casually stroll out of the room and into 
+                another non-flaming room. The setting feels oddly
+                similar.
+                
+                set roomOnFire 0;
+                move-to room-three;
+                trigger look;
+            }
+        }
+        else {
+            respond {
+                You feel like there's work to be done here. 
+                Besides, this room is kind of nice and not on fire,
+                so why leave?.
+            }
+        }
+    }
+    object scorch marks {
+        Black, charred marks decorate the floor.
+        They're kind of blotchy and shapeless, but if
+        you had to say what they looked like...well...they
+        are roughly in the shape of a person looking
+        through couch cushions for old love notes
+    }
+    object painting {
+        You don't know much about art history, but this painting
+        looks like it was made by fear pigs!
+
+        The entire painting is subsumed by the face of a black cat.
+        The cat doesn't have any eyes. Somehow you still feel like it
+        is watching you. You shudder involuntarily.
+    }
+    object filing cabinet {
+        A large metal structure with three drawers, helpfully labeled
+        '1', '2', and '3', from the top down. You are
+        vaguely nervous of something so professional
+        and potentially well organized.
+    }
+}
+
+location room-three in puzzle-room {
+    synonym "cat food" "food";
+    
+    command look {
+        respond {
+            This room looks very familiar. Something about it
+            reminds you of a giant firestorm. But then again,
+            a lot of things have been reminding you of fiery death
+            lately.
+
+            There's the cat again! You can see it through the doorway.
+            It stares unblinking at you, and you feel a little unnerved.
+
+            This room looks like its been through some hard times,
+            where those hard times may or may not have involved
+            copious amounts of fire. The odd painting on the wall
+            looks unharmed, though. There's a nice, empty spot
+            at the side of the room that looks like the perfect
+            place to add an armchair with a maroon teapot pattern.
+            But, sadly, there is no armchair, only an elaborate scorch
+            mark where the armchair should go. The decor is rather
+            minimal, with some sort of rock collection hung
+            in a pigeonholed box on the wall, and bookshelf
+            tucked in the corners. There is also a metal filing
+            cabinet that looks like it once may have been very secure.
+            Now, however, the metal has been warped and contorted as
+            if by some intense heat.
+        }
+        if `roomOnFire` {
+            respond {
+                Also, the entire room is on fire. You might want to
+                get out of here.
+            }
+        }
+    }
+    command open 1 {
+        trigger look 1;
+    }
+    command open 2 {
+        trigger look 2;
+    }
+    command open 3 {
+        trigger look 3;
+    }
+    command look 3 {
+        if `not roomOnFire`{
+            respond {
+                The drawer contains some questionable looking cat food.
+                You're not sure why it's questionable, as it probably
+                would not respond to any questions you ask it. You are
+                particularly fond of cat food, so you take a handful.
+            }
+            set hasCatFood 1;
+        }
+        else {
+            respond {
+                There's cat food here. But just maybe you have better
+                things to do with your life. Like get out of the burning
+                room!
+            }
+        }
+    }
+    object cat food {
+        respond {
+            Pellets of kitty goodness.
+        }
+    }
+    command question cat food {
+        respond {
+            You ask a series of questions including 
+            "What is your name?", "How did the great founder
+            Matusiak defeat the three-headed flamingo terrorizing
+            the town?", and "Why can't human food be as conveniently
+            labeled as cat food?" Sadly, the cat food makes no response.
+        }
+    }
+    command eat cat food {
+        respond {
+            You tentatively lick the cat food. It's not nearly 
+            as good as your favorite brand, Meow Meow Munchers,
+            so you stop.
+        }
+    }
+    command look fire alarm {
+        if `roomOnFire` {
+            respond {
+                You can't see it, but it's kind of loud. Also the
+                room is on fire, and you think the loud beeping
+                sound means you should get out.
+            }
+        }
+        else {
+            respond {
+                You don't see a fire alarm. This room looks pretty fire
+                safe anyway, so you don't worry about it.
+            }
+        }
+    }
+    command leave room {
+        if `roomOnFire` {
+            respond {
+                Yeah, this ship is going down, and you aren't going
+                with it. And by ship, of course, you mean room consumed
+                by a giant, fiery inferno. You leave for the next room
+                just outside.
+                
+                set roomOnFire 0;
+                move-to room-four;
+                trigger look;
+            }
+        }
+        else {
+            respond {
+                That cat looks hungry and you're afraid that
+                she will eat you if you get anywhere near her. You'd
+                prefer to keep your distance and stay in this room.
+            }
+        }
+    }
+    object 1 {
+        It's empty except for what looks like a few ashes of
+        paper. They probably once had important information.
+        Not anymore
+    }
+    object 2 {
+        The drawer is completely empty and terribly deformed.
+    }
+    object ashes {
+        Crumbly and black. Approximately in the same
+        shape as discarded ashes of paper.
+    }
+    object cabinet {
+        This cabinet has seen better days. Or, if it hasn't,
+        you feel kind of sorry for it because clearly today is not
+        a great day to be this filing cabinet. The metal structure
+        is so warped that all three of the drawers are loose.
+        Conveniently, the drawers are marked 1, 2, and 3.
+    }
+    object painting {
+        You don't know much about art history, but you hate this
+        painting!
+
+        The cat's face stares down at you, with only one giant,
+        yellow eye. The right side of the face is inky blackness.
+    }
+    object scorch marks {
+        Black, charred marks decorate the floor.
+        They're kind of blotchy and shapeless, but if
+        you had to say what they looked like...well...they
+        are roughly in the shape of a person looking
+        through couch cushions for old love notes
+    }
+}
+
+location room-four in puzzle-room {
+    synonym "man" "Mr. Robertson" "Robertson" "Stuart" "Stuart Robertson" "person" "guy";
+    synonym "talk" "talk to" "speak" "speak to" "converse" "converse with";
+    command look {
+        respond {
+            What a beautiful room! There's a lot of nice decor to enjoy
+            in here. That painting on the wall is just the sweetest
+            thing ever and the armchair looks amazingly comfortable.
+            The sofa is normal enough. There's some sort of rock 
+            collection hung in a pigeonholed box on the wall, and a
+            secure and official-looking filing cabinet and bookshelf
+            tucked in the corners.
+
+            The fire alarm is going off. You're not sure why, since
+            you don't see a fire. Dumb fire alarm. If there were a 
+            fire, you'd see it, obviously.
+
+            You stand around for a little bit, but the sound is just
+            unbearably annoying. Just as you're about to stab your
+            ears with that jagged piece of flint you have in your
+            pocket for some unknown reason, a man walks into the room.
+            And boy is he attractive.
+
+            He reaches for that round white thing on the ceiling that
+            you never bothered to mention before because you had no
+            idea what it was. After he presses a button, the alarm
+            just stops. Magic!
+        }
+    }
+    command talk man {
+        if `not beganConv` {
+            respond {
+                You open your mouth to speak. He jumps, just noticing you.
+                "Oh, hello," he says. "I'm Stuart Robertson." He does not
+                feel particularly perturbed about you randomly being in his
+                house. What a nice man!
+            }
+            set beganConv 1;
+        }
+        respond {
+            What would you like to say?
+            
+            (say 1) "Nice to meet you! I was just admiring your yard,
+            so I went to the back and admired the slightly open window
+            and well, now I'm here!"
+            
+            (say 2) "I think this is your creepy medallion"
+            
+            (say 3) "I had a revelation in the post office that
+            I need to start taking charge of my life"
+            
+            (say 4) "Who are you? I don't think we met before."
+            
+            (say 5) "You have a really attractive smile."
+            
+            (say 6) "I really ought to be going. Sorry about the
+            breaking in and entering thing."
+        }
+    }
+    command say 1 {
+        if `beganConv` {
+            respond {
+                "Yeah, I love my yard," he says. "Did you see the
+                reindeer out back? They're just adorable!"
+            }
+            trigger talk man;
+        }
+        else {
+            respond {
+                What are you trying to communicate here?
+            }
+        }
+    }
+    command say 2 {
+        if `beganConv` {
+            if `hasMedallion` {
+                respond {
+                    Reluctantly, you take out the medallion and hand
+                    it over to him. You've become rather attached to that
+                    medallion, but it belongs to him after all.
+    
+                    "Oh wow! That's where it went!" Stuart responds,
+                    taking the medallion. "I was so worried about that
+                    when it didn't show up. Actually, I received this
+                    package and I can't make out who it's supposed
+                    to be for, but I don't think it's mine. Here, why
+                    don't you take it."
+    
+                    Package, package, package! You eagerly receive
+                    the brown parcel.
+                }
+                set hasMedallion 0;
+                set hasemilypackage 1;
+            }
+            else {
+                respond {
+                    Stuart looks at you with an expression of mild
+                    confusion. "You just gave me the medallion,"
+                    he say. Oh yeah. Now you remember.
+                }
+            }
+            trigger talk man;
+        }
+        else {
+            respond {
+                What are you trying to communicate here?
+            }
+        }
+    }
+    command say 3 {
+        if `beganConv` {
+            respond {
+                He looks at you curiously for a moment, and 
+                then says, "You know, I had the same revelation
+                in the supermarket on Thursday."
+
+                You think this could be the start of a really deep
+                and touching discussion between you two, but you
+                don't know what else to say. Instead, you just kind
+                of sit there awkwardly, blinking.
+            }
+            trigger talk man;
+        }
+        else {
+            respond {
+                What are you trying to communicate here?
+            }
+        }
+    }
+    command say 4 {
+        if `beganConv` {
+            respond {
+                "I'm Stuart Robertson," Stuart replies, even though
+                he already introduced himself. "I just moved here
+                a week ago and I've been having all my stuff
+                shipped to me"
+
+                You feel a slight twinge of jealousy when you think
+                of all the packages he must be receiving.
+            }
+            trigger talk man;
+        }
+        else {
+            respond {
+                What are you trying to communicate here?
+            }
+        }
+    }
+    command say 5 {
+        if `beganConv` {
+            respond {
+                He smiles, just briefly, and those pearly
+                whites just absolutely glimmer. Beautiful. No
+                other words can describe that smile. Except
+                maybe "perfect" or "breathtaking" or maybe
+                even "cute."
+            }
+            trigger talk man;
+        }
+        else {
+            respond {
+                What are you trying to communicate here?
+            }
+        }
+    }
+    command say 6 {
+        if `beganConv` {
+            if `hasMedallion` {
+                respond {
+                    You came all this way to deliver that creepy
+                    medallion to this guy. You really like it,
+                    but maybe you ought to hand it over since
+                    it's not yours?
+                }
+            }
+            else {
+                respond {
+                    "Yeah, that might be a good idea," he says. "I was
+                    thinking about closing the window soon since
+                    it's getting cold in here."
+
+                    You take one last look at that perfect smile
+                    that he would have if he just smiled, then squeeze
+                    yourself back through the open window. You're
+                    pretty sure one of the reindeer winks at you
+                    as you pass by it while getting a running
+                    start to jump over the bushes. You only manage
+                    to jump over about half the height of the bushes,
+                    which actually isn't helpful at all.
+                    So instead, you squeeze your way past,
+                    acquiring a few scratches along the way,
+                    and arrive by your car.
+                }
+                move-to robertson-front-door;
+            }
+        }
+        else {
+            respond {
+                What are you trying to communicate here?
+            }
+        }
+    }
+    object man {
+        This is probably the Mr. Robertson who that package was
+        meant for. You can tell because he has a really nice smile
+        and you always imagined him with a nice smile. He's not
+        even smiling and you know he has a nice smile. Also, you
+        just broke into Mr. Robertson's house, so that makes sense.
+    }
+    object painting {
+        You don't know much about art history, but this 
+        painting looks like it was made by Renaissance masters!
+
+        A handsome man sits regally in a comfortable armchair. 
+        An adorable black cat curls in a ball on his lap.
+    }
+    object chair {
+        This chair is definitely not Swedish or self-assembled.
+        (Chairs are not capable of assembling themselves, anyway.)
+        You think it looks sort of Victorian, what with its clawed
+        wooden feet and elegant curved lines. The fabric features
+        a repeated pattern of little maroon teapots. The word
+        'plush' rattles around in your head whenever you look at it.
+    }
+    object filing cabinet {
+        A large metal structure with three drawers, helpfully labeled
+        '1', '2', and '3', from the top down. You are
+        vaguely nervous of something so professional
+        and potentially well organized.
+    }
+}
