@@ -83,7 +83,7 @@ data Environment = Environment {
   } deriving Show
 
 type LocationName = String 
-type ObjectName = String 
+type ObjectName = [String] 
 type EnvironmentName = String 
 type VariableName = String 
 data CommandPattern = Pattern [String] [Action]

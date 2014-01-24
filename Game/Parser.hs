@@ -108,11 +108,6 @@ toplevelItem = do
       parent <- parseParent
       EnvDecl <$> braced (parseEnvironment name parent)
 
-parseSynonym :: String -> Parser Synonym
-parseSynonym name = do
-  synlist <- many parseStr <?> "list of string literals"
-  semicolon <?> "semicolon"
-  return $ Synonym name synlist
 
 parseStr :: Parser String
 parseStr = do
@@ -153,34 +148,40 @@ parseDeclType options = do
 envItem :: Parser Decl
 envItem = do
   declType <- parseDeclType ["object", "command", "synonym"]
-  name <- case declType of
-    "synonym" -> parseStr
-    _ -> many (noneOf " ;{")
   whitespace
   case declType of
-    "object" -> ObjDecl <$> braced (parseObject name)
-    "synonym" -> SynDecl <$> parseSynonym name
-    "command" -> do
-      pat <- parseCommandPat
-      ComDecl <$> braced (parseCommand pat name)
+    "object" -> ObjDecl <$> parseObject
+    "synonym" -> SynDecl <$> parseSynonym
+    "command" -> ComDecl <$> parseCommand
 
-parseObject :: String -> Parser Obj
-parseObject name = do
-  interpolated <- parseInterpolated
-  return $ Obj name interpolated
+parseSynonym :: Parser Synonym
+parseSynonym = do
+  name <- parseStr
+  synlist <- many parseStr <?> "list of string literals"
+  semicolon <?> "semicolon"
+  return $ Synonym name synlist
 
-parseCommandPat :: Parser [String]
-parseCommandPat = many word
+parseObject :: Parser Obj
+parseObject = do
+  nameWords <- parseWords
+  braced $ do
+    interpolated <- parseInterpolated
+    return $ Obj nameWords interpolated
+
+parseWords :: Parser [String]
+parseWords = many word
   where
   word = do
     contents <- many1 (noneOf " {")
     whitespace
     return contents
 
-parseCommand :: [String] -> String -> Parser CommandPattern
-parseCommand pat name = do
-  actions <- many1 parseAction
-  return $ Pattern (name:pat) actions
+parseCommand :: Parser CommandPattern
+parseCommand = do
+  name:pat <- parseWords
+  braced $ do
+    actions <- many1 parseAction
+    return $ Pattern (name:pat) actions
 
 parseInterpolated :: Parser InterpolatedString
 parseInterpolated = Interpolate <$> many (choice [strParser, exprParser])
