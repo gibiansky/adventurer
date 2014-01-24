@@ -6,6 +6,7 @@ module Game.Parser (
 
 import Control.Monad (void)
 import Text.Parsec
+import Text.Parsec.Error
 import Text.Parsec.String (Parser)
 import Control.Applicative ((<$>), (<*>))
 import Data.Char (isDigit)
@@ -32,11 +33,12 @@ parseFile filename = do
 
 -- | Given a data string, parse it, and return the parsed episode.
 -- If there is an error, return the line and column number.
-parseString :: String -> Either (Int, Int) Episode
+parseString :: String -> Either (String, Int, Int) Episode
 parseString contents =
   case parse parseEpisode "<interactive>" (removeComments contents) of
-    Left err -> Left (sourceLine pos, sourceColumn pos)
+    Left err -> Left (msgs, sourceLine pos, sourceColumn pos)
       where pos = errorPos err
+            msgs = unlines $ tail $ lines $ show err
     Right episode -> Right episode
 
 removeComments :: String -> String
@@ -108,8 +110,8 @@ toplevelItem = do
 
 parseSynonym :: String -> Parser Synonym
 parseSynonym name = do
-  synlist <- many parseStr
-  semicolon
+  synlist <- many parseStr <?> "list of string literals"
+  semicolon <?> "semicolon"
   return $ Synonym name synlist
 
 parseStr :: Parser String
@@ -358,7 +360,7 @@ stateParser = do
 
 parseAllVariables :: Parser GameState
 parseAllVariables = do
-  vars <- many parseVar :: Parser [(String, Either Int String)]
+  vars <- many parseVar
   return $ foldl (flip $ uncurry Map.insert) Map.empty vars
 
 parseVar :: Parser (String, Either Int String)
@@ -373,14 +375,16 @@ parseVar = do
   return (name, val)
 
 parseVal :: Parser (Either Int String)
-parseVal = do
-  value <- many $ noneOf " ;"
-  return $ case (head value, last value) of
-    ('"', '"') -> Right $ init $ tail value 
-    ('"', _) -> error "Unterminated quote in default value"
-    (_, '"') -> error "Unstarted quote in default value"
-    (_, _) -> Left $ read value
-
+parseVal = parseString <|> parseInt
+  where
+    parseInt = try $ do
+      value <- many $ noneOf " ;"
+      return $ Left $ read value
+    parseString = try $ do
+      char '"'
+      str <- many $ noneOf "\""
+      char '"'
+      return $ Right str
 
 -- | Parse whitespace, returning nothing.
 whitespace :: Parser ()

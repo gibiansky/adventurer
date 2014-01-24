@@ -42,8 +42,9 @@ main = do
     ["parse", filename] -> do
       parsed <- parseFile filename
       case parsed of
-        Left (line, col) -> 
+        Left (err, line, col) -> do
           putStrLn $ "Error on line " ++ show line ++ ", column " ++ show col ++ "."
+          putStrLn err
         Right _ -> putStrLn "Success."
     _ -> do
       -- Create a mutable variable where we store all game state.
@@ -105,7 +106,7 @@ site st =
       let Just creation = decode input
       out <- liftIO $ modifyMVar state $ \st -> 
         case parseString (gameCode creation) of
-          Left (line, col) -> return (st, CreationError line col)
+          Left (_, line, col) -> return (st, CreationError line col)
           Right episode -> return (Map.insert name (createGameFromEpisode creation episode) st, CreationSuccess name)
       writeLBS $ encode out
 

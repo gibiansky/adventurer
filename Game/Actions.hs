@@ -252,12 +252,13 @@ cmdMatches str game env (Pattern pat _) =
   let allSyns = findSynonyms env in 
       words (applySynonyms allSyns str) == pat
   where
+    -- Returns the synonyms with the childrens synonyms first.
     findSynonyms :: Environment -> [Synonym]
-    findSynonyms env =
-      envSynonyms env ++ 
-        case flip findEnvWithName game <$> envParent env of
-          Nothing -> []
-          Just env' -> findSynonyms env'
+    findSynonyms env = parentSyns ++ envSynonyms env
+      where parentSyns =
+              case flip findEnvWithName game <$> envParent env of
+                Nothing -> []
+                Just env' -> findSynonyms env'
 
 wordsMatch :: [String] -> [String] -> Bool
 wordsMatch _ ("*":_) = True
