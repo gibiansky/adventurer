@@ -197,10 +197,16 @@ parseExpr :: Parser Expression
 parseExpr = do
   whitespace
   foldl1 (<|>) $ map try $ 
-     map parseFun functions ++ [parseExprVal]
+     map parseFun functions ++ [parseExprOrVal]
   where
     functions = ["add", "sub", "and", "or", "not", "eq",
                  "neq", "gt", "gte", "lt", "lte"]
+    parseExprOrVal = do
+      ch <- lookAhead anyChar
+      if isDigit ch || ch == '"'
+        then parseExprVal
+        else parseVar
+    parseVar = Var <$> many1 (noneOf " ())`;{")
 
 parseExprVal :: Parser Expression
 parseExprVal = do
