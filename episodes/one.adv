@@ -90,8 +90,8 @@ environment global {
     synonym "look" "examine" "x" "see" "view" 
     "look at" "look around";
     synonym "take off jacket" "strip" "remove jacket";
-    synonym "go" "move" "g" "go in" "got to" "move to";
-    synonym "living room" "livingroom";
+    synonym "go" "move" "g" "go in" "go to" "move to";
+    synonym "living-room" "living room" "livingroom";
     synonym "close" "shut";
     synonym "take" "pick up" "get";
     synonym "package" "box";
@@ -205,7 +205,7 @@ environment global {
                 }
             }
         }
-        if `eq hintsState "open1"` {
+        if `or (eq hintsState "open1") (eq hintsState "open2")` {
             if `eq hintsCounter 0` {
                 respond {
                     Package, package, package!
@@ -755,36 +755,86 @@ environment global {
             }
             if `eq hintsCounter 2` {
                 respond {
-                    You should drive to Emily's house and leave
-                    it at her doorstep. You probably won't
-                    see her, but that's ok.
+                    Say goodbye to Mr. Robertson and drive
+                    to Emily's house to leave her package
                 }
                 set hintsCounter 3;
             }
             if `gt hintsCounter 1` {
                 respond {
+                    Tell Mr. Robertson that you should be
+                    going, drive to Emily's house, and deliver
+                    her package.
                 }
             }
         }
         if `eq hintsState "chat"` {
-        }
-        if `eq hintsState "yourPackage"` {
-        }
-        if `eq hintsState "open2"` {
-        }
-        if `eq hintsState "tea"` {
             if `eq hintsCounter 0` {
                 respond {
+                    Now that you've delivered Emily's pacakge,
+                    you should probably tell her. She won't
+                    look outside her door otherwise. She
+                    will be on chat, though.
                 }
                 set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
+                    Turn on your computer in your living room
+                    to talk to Emily.
                 }
                 set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
+                    Go to the living room, turn on your computer,
+                    open chat, and tell Emily that you left her
+                    package at her door.
+                }
+            }
+        }
+        if `eq hintsState "yourPackage"` {
+            if `eq hintsCounter 0` {
+                respond {
+                    Emily left you a package! You should go
+                    get it.
+                }
+                set hintsCounter 1;
+            }
+            if `eq hintsCounter 1` {
+                respond {
+                    The package will be right outside your door.
+                    Packages!
+                }
+                set hintsCounter 2;
+            }
+            if `gt hintsCounter 1` {
+                respond {
+                    Go to the entryway, open the door, and
+                    get your package. Packagepackagepackage!
+                }
+            }
+        }
+        if `eq hintsState "tea"` {
+            if `eq hintsCounter 0` {
+                respond {
+                    You have a teapot! But, sadly, no tea.
+                    You should buy some tea! You bet Swifts
+                    sells tea.
+                }
+                set hintsCounter 1;
+            }
+            if `eq hintsCounter 1` {
+                respond {
+                    Go on to your computer and buy tea from
+                    Swifts.
+                }
+                set hintsCounter 2;
+            }
+            if `gt hintsCounter 1` {
+                respond {
+                    Go to the living room, turn on the computer,
+                    open Swifts, and buy some tea.
                 }
             }
         }
