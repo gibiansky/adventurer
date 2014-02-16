@@ -1123,15 +1123,15 @@ environment global {
 environment house global {
     synonym "outside" "outdoors";
 
-    command go living-room{
+    command go living-room {
         move-to living-room;
         trigger look;
     }
-    command go kitchen{
+    command go kitchen {
         move-to kitchen;
         trigger look;
     }
-    command go entryway{
+    command go entryway {
         move-to entryway;
         trigger look;
         if `not enteredEntry` {
