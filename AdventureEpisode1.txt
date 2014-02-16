@@ -51,16 +51,23 @@ state {
     variable hasFlint 0;
     # The correct book must be placed on the clair to start fire
     variable placedBook 0;
+    # Which book from the bookshelf are you holding?
     variable heldBook "None";
+    # Room periodically lights on fire. 
+    # It means you should probably leave
     variable roomOnFire 0;
+    # Received love note from couch. Can now open cabinet.
     variable hasNote 0;
+    # Recieved papers from cabinet and need to organize them
     variable hasPapers 0;
+    # papers of different colors in correct drawer in cabinet
     variable pinkRight 0;
     variable whiteRight 0;
     variable greenRight 0;
     variable blueRight 0;
     variable yellowRight 0;
     variable hasCatFood 0;
+    # Began a conversation with Stuart
     variable beganConv 0;
 }
 
@@ -76,15 +83,26 @@ location init {
 }
 
 environment global {
-
-    synonym "look" "examine" "x" "look at";
+    synonym " " "  ";
+    synonym "" "a" "an" "the" "that";
+    synonym "look" "examine" "x" "see" "view" "look at";
     synonym "take off jacket" "strip" "remove jacket";
-    synonym "go" "move to" "go to";
-    synonym "" "the" "a";
+    synonym "go" "move" "g" "go in" "got to" "move to";
     synonym "living room" "livingroom";
     synonym "close" "shut";
-    synonym "take" "pick up";
-    synonym "empty box" "ripped box" "opened box" "torn box" "empty package" "torn package" "opened package";
+    synonym "take" "pick up" "get";
+    synonym "package" "box";
+    synonym "empty package" "torn package" "opened package" "ripped package";
+    synonym "entryway" "entrance" "entry way" "entry-way";
+    synonym "talk" "talk to" "speak" "speak with" 
+    "converse" "converse with" "talk with";
+    synonym "1" "one";
+    synonym "2" "two";
+    synonym "3" "three";
+    synonym "4" "four";
+    synonym "5" "five";
+    synonym "6" "six";
+    synonym "put" "place";
     
     command look pen {
         if `hasPen` {
@@ -98,7 +116,6 @@ environment global {
             }
         }
     }
-
     command look package {
         if `hasYourPackage` {
             respond {
@@ -160,7 +177,6 @@ environment global {
             }
         }
     }
-
     command open package {
         if `hasYourPackage` {
             respond {
@@ -236,7 +252,6 @@ environment global {
             }
         }
     }
-
     command look teapot {
         if `hasTeapot` {
             respond {
@@ -275,7 +290,11 @@ environment global {
             }
         }
     }
-
+    command take off jacket {
+        respond {
+            Being cold is against your general life strategy.
+        }
+    }
     command lick medallion {
         if `hasMedallion` {
             respond {
@@ -294,7 +313,7 @@ environment global {
             Your trusty lighter! You take it everywhere.
         }
     }
-    command look empty box {
+    command look empty package {
         if `hasEmptyBox` {
             respond {
                 The cardboard box has been torn
@@ -340,6 +359,8 @@ environment global {
     
 
 environment house global {
+    synonym "outside" "outdoors";
+
     command go living-room{
         move-to living-room;
         trigger look;
@@ -415,6 +436,10 @@ location bedroom house {
     synonym "night-table" "night-stand" "table";
     synonym "top drawer" "drawer";
     synonym "open closet" "clamber over furniture";
+    synonym "blankets" "blanket" "covers" "cover";
+    synonym "sleep" "nap" "doze off" "get in bed";
+    synonym "clothes" "clothing" "shirt" "shirts";
+    synonym "clean" "tidy";
     
     command look {
         respond {
@@ -439,11 +464,6 @@ location bedroom house {
             You're already wearing a jacket, 
             and you don't want to mess up their current placement.
             It's pretty damn cozy.
-        }
-    }
-    command take off jacket {
-        respond {
-            Being cold is against your general life strategy.
         }
     }
     command sleep {
@@ -499,7 +519,10 @@ location bedroom house {
             to continue cleaning.
         }
     }
-    command pick up clothes {
+    command take clothes {
+        trigger clean room;
+    }
+    command clean clothes {
         trigger clean room;
     }
     command open closet{
@@ -513,9 +536,9 @@ location bedroom house {
             better things to be doing!
         }
     }
-    object clothes{
+    object clothes {
         Look like you, smell like you. Are tragically not corporeal.
-        }
+    }
     object dresser {
         A nice two drawer unit. It would be nicer
         if the second drawer actually opened,
@@ -551,8 +574,10 @@ location bedroom house {
 
 # Set up for entryway
 location entryway house {
-    synonym "woman" "mailwoman" "mailperson" "Patty";
+    synonym "woman" "mailwoman" "mailperson" "patty" "mail person" "delivery person" "delivery woman" "person";
     synonym "peanuts" "packaging peanuts" "peanut";
+    synonym "sign" "sign for";
+    synonym "door" "front door";
     
     command look {
         respond {
@@ -614,7 +639,7 @@ location entryway house {
             }
         }
     }
-    command sign for package {
+    command sign package {
         if `or (eq frontDoor "closed") (not mailWomanPresent)` {
             respond {
                 What package?
@@ -672,6 +697,19 @@ location entryway house {
                 (say 2) May I borrow a pen?
                 
                 (say 3) Bow down to me, mortal!
+            }
+        }
+    }
+    command talk mailman {
+        if `or (not mailWomanPresent) (eq frontDoor "closed")` {
+            respond {
+                You don't see anyone to talk to.
+            }
+        }
+        else {
+            respond {
+                This is not a mailman, this is a mailwoman!
+                Do you have some gender identification issues?
             }
         }
     }
@@ -800,7 +838,7 @@ location entryway house {
             }
         }
     }
-    command go kitchen{
+    command go kitchen {
         if `openedDoorFirst`{
             if `hasOrigPackage` {
                 respond {
@@ -927,14 +965,18 @@ location entryway house {
 
 location kitchen house {
 
-    synonym "stove" "stains";
+    synonym "stove" "stains" "oven";
     synonym "food" "bread" "pasta" "cookies";
     synonym "tomato-sauce" "tomato sauce" "tomatosauce";
-    synonym "take food" "eat food" "take bread" "eat bread" "take pasta" "eat pasta" "take cookies" "eat cookies";
+    synonym "food" "bread" "pasta" "cookies";
+    synonym "take" "eat";
     synonym "fridge" "refrigerator" "fridge door" "refrigerator door";
-    synonym "boxes" "box" "cheese";
+    synonym "cheese" "boxes";
     synonym "butter" "butter dish" "butter dish thing" "little butter dish thing";
-    synonym "jar" "jars" "jam" "jams" "marmalade" "condiments";
+    synonym "jars" "jar" "jam" "jams" "marmalade" "condiments";
+    synonym "clean" "wash";
+    synonym "dishes" "dish" "plates" "plate";
+    synonym "shelves" "fridge shelves";
     
     command look {
         respond {
@@ -961,7 +1003,7 @@ location kitchen house {
             You still have a couple of clean plates left.
         }
     }
-    command wash dishes {
+    command clean dishes {
         respond {
             Why would you waste your time washing
             dishes when you have clean plates?
@@ -1076,8 +1118,7 @@ location kitchen house {
             }
         }
     }
-    command look butter
-    {
+    command look butter {
         if `fridgeOpen` {
             respond {
                 A little butter dish thing. You're not quite sure
@@ -1092,8 +1133,7 @@ location kitchen house {
             }
         }
     }
-    command look jars
-    {
+    command look jars {
         if `fridgeOpen` {
             respond {
                 A perfect arrangement made by a perfect person.
@@ -1117,9 +1157,6 @@ location kitchen house {
                 What are you talking about?
             }
         }
-    }
-    command eat condiments {
-        trigger take jars;
     }
     command take butter {
         if `fridgeOpen` {
@@ -1145,10 +1182,7 @@ location kitchen house {
             }
         }
     }
-    command eat butter {
-        trigger take butter;
-    }
-    command open butter dish {
+    command open butter {
         if `hasKeys` {
             respond {
                 It's empty.
@@ -1212,14 +1246,16 @@ location kitchen house {
         loaf of bread balances on an empty box of
         pasta and a package of cookies.
     }
-    
 }
 
 location bathroom house {
-    synonym "wash" "clean";
+    synonym "clean" "wash" "rinse";
     synonym "tile" "floor" "tiles" "tile floor";
     synonym "take shower" "turn on shower";
-    synonym "clean room" "clean shower" "clean mirror" "clean toilet" "clean sink";
+    synonym "clean room" "clean shower" 
+    "clean mirror" "clean toilet" "clean sink";
+    synonym "sweatshirt" "sweater";
+
     command look {
         respond {
             It's a bathroom. What did you expect? You see typical 
@@ -1227,7 +1263,7 @@ location bathroom house {
             and dirty clothes on the floor.
         }
     }
-    command wash hands {
+    command clean hands {
         respond {
             You put your hands under the sink and turn on the tap.
             Water pours over your hands. You turn off the tap. 
@@ -1294,7 +1330,7 @@ location bathroom house {
 
 location living-room house {
     synonym "couch" "sofa" "loveseat";
-    synonym "dust" "dust bunnies" "dust bunny";
+    synonym "dust bunnies" "dust bunny" "dust";
     synonym "cushion" "cushions";
     synonym "leg" "legs" "desk legs";
     synonym "read words" "read paper" "read papers";
@@ -1303,12 +1339,23 @@ location living-room house {
     synonym "take computer" "take desktop" "take mouse" "take monitor" "take keyboard";
     synonym "turn on tv" "watch tv" "play tv";
     synonym "open" "navigate" "navigate to" "click";
-    synonym "Swifts" "browser" "internet" "the internet" "google";
+    synonym "swifts" "browser" "internet" "the internet" "google";
     synonym "giant pen" "giant pens";
-    synonym "something" "anything" "random item" "random thing" "stuff";
+    synonym "something" "anything" "random item" 
+    "random thing" "stuff";
     synonym "close" "leave" "exit";
-    synonym "chatroom" "chat" "talk";
-    
+    synonym "chat" "talk" "chatroom" "chat room";
+    synonym "quarter" "coin" "money";
+    synonym "sit" "sit on" "relax" "relax on" "lay" "lay on";
+    synonym "tv" "television";
+    synonym "browse" "search";
+    synonym "buy" "purchase";
+    synonym "baby colthes" "onesie";
+    synonym "explosives" "bomb" "bombs" "dynamite";
+    synonym "emoticon" "smiley" "smiley face";
+    synonym "legs" "leg" "desk legs" "desk leg";
+    synonym "q" "q key";
+
     command look {
         respond {
             The living room lies in the center of the apartment,
@@ -1336,7 +1383,7 @@ location living-room house {
             out of clean clothes.
         }
     }
-    command sit on couch {
+    command sit couch {
         respond {
             Comfy! You yawn, stretch out your arms, 
             and caress the soft cushions. Then you get up again.
@@ -1365,7 +1412,7 @@ location living-room house {
                 during which time you stare at the screen, 
                 waiting for the bright lights to flash at your face. 
                 The desktop loads, showing you two shortcuts on your
-                screen: one to the internet chat room and one to your
+                screen: one to the internet chatroom and one to your
                 favorite online store, Swifts.
             }
         }
@@ -1430,7 +1477,8 @@ location living-room house {
     command buy giant pens {
         if `onSwifts` {
             respond {
-                That price is tempting, but you resist the temptation.
+                That price is tempting, but you resist 
+                the temptation.
                 You know how to practice self control when it comes 
                 to purchasing items online.
             }
@@ -1441,7 +1489,7 @@ location living-room house {
             }
         }
     }
-    command browse Swifts {
+    command browse swifts {
         if `onSwifts` {
             respond {
                 The baby clothes look really cute. 
@@ -1540,7 +1588,7 @@ location living-room house {
             }
         }
     }
-    command close Swifts {
+    command close swifts {
         if `onSwifts` {
             respond {
                 You close your browser, bringing you back to 
@@ -1556,7 +1604,7 @@ location living-room house {
             }
         }
     }
-    command open chatroom {
+    command open chat {
         if `onChat` {
             respond {
                 You're already on chat. Look! Emily wants to talk to
@@ -1578,7 +1626,7 @@ location living-room house {
             }
         }
     }
-    command close chatroom {
+    command close chat {
         if `onChat` {
             respond {
                 You exit the chat room without saying any
@@ -1609,7 +1657,7 @@ location living-room house {
             }
         } 
     }
-    command look Emily {
+    command look emily {
         if `onChat` {
             respond {
                 Well, Emily is on chat, so you can't actually see her.
@@ -1636,7 +1684,7 @@ location living-room house {
             }
         } 
     }
-    command talk Emily {
+    command chat emily {
         if `onChat` {
             set chatEmily 1;
             respond {
@@ -1853,13 +1901,13 @@ location living-room house {
         useless letter though, so you don't mind the limitations 
         imposed on you by a keyboard with no Q.
     }
-    object Q {
+    object q {
         It's gone. Q does not exist in the universe of this keyboard.
         It's sad how little that even matters.
     }
     object mouse {
         A two button mouse. It looks more like a large 
-        beetle than a mouse it you had to compare your hardware 
+        beetle than a mouse if you had to compare your hardware 
         to living creatures.
     }
     
@@ -1869,8 +1917,15 @@ location living-room house {
 location outdoors global {
     synonym "inside" "house" "indoors";
     synonym "open car" "get in car" "drive car";
-    synonym "go to" "drive to" "drive" "go";
-    synonym "Emily" "Emily's" "Emily's house";
+    synonym "drive" "go";
+    synonym "emily" "emily's" "emily's house" 
+    "emily house" "emily's place";
+    synonym "car" "vehicle";
+    synonym "post office" "post-office" "postoffice";
+    synonym "open door" "enter" "enter house" "enter door";
+    synonym "drive inside" "open door" "enter" 
+    "enter house" "enter door";
+
     command look {
         respond {
             Ah, the great outdoors. As freezing cold and inhospitable 
@@ -1880,14 +1935,16 @@ location outdoors global {
             Your car is sitting in the driveway, waiting. Good car.
         }
     }
-    command go inside {
+
+    # This is really sad. :(
+    command drive inside {
         respond { 
             It's warm in there. Good idea.
         }
         move-to entryway;
         trigger look;
     }
-    command look at car {
+    command look car {
         respond {
             It has four wheels and it drives places. 
             This is exactly what you wanted in a car.
@@ -1912,14 +1969,14 @@ location outdoors global {
             }
         }
     }
-    command got to Swifts {
+    command drive swifts {
         respond {
             Swifts exists only in the ethereal world 
             of the internet. Your car does not yet have 
             the ability to take you to that magical land.
         }
     }
-    command go to post office {
+    command drive post office {
         if `not hasKeys` {
             trigger drive car;
         }
@@ -1965,7 +2022,7 @@ location outdoors global {
             }
         }
     }
-    command go to Emily {
+    command dirve emily {
         if `not hasKeys` {
             trigger drive car;
         }
@@ -1985,9 +2042,12 @@ location outdoors global {
 
 location emily-house global {
     synonym "plant" "potted plant" "dead plant";
-    synonym "knock" "knock on door";
-    synonym "open door" "enter";
-    synonym "deliver package" "leave package" "give Emily package" "give package" "drop package";
+    synonym "knock" "knock on door" "knock at door";
+    synonym "open door" "enter" "enter house" "enter door";
+    synonym "deliver" "leave" "give emily" "give";
+    synonym "drive" "go" "drive to";
+    synonym "post office" "post-office" "postoffice";
+
     command look {
         respond {
             A small apartment with a door but no windows 
@@ -2041,6 +2101,8 @@ location emily-house global {
                 Good idea. You should return that package like an
                 outstanding citizen.
             }
+            move-to postoffice;
+            trigger look;
         }
         else {
             respond {
@@ -2063,21 +2125,23 @@ location emily-house global {
 }
 
 location postoffice global {
-    synonym "man" "employee" "worker" "Kleisthenes" "person" "guy";
+    synonym "man" "employee" "worker" "kleisthenes" "person" "guy";
     synonym "scream" "yell";
-    synonym "wave arms" "wave your arms" "flail";
-    synonym "hit" "punch" "slap" "hurt" "harm" "kill" "murder";
-    synonym "burn the post office down" "burn down" "burn post office" "burn" "start fire" "light fire";
+    synonym "wave your arms" "wave arms" "wave" "flail";
+    synonym "punch" "hit" "slap" "hurt" "harm" "kill" "murder";
+    synonym "burn the post office down" "burn down" "burn post office" "burn" "start fire" "light fire" "burn post office down";
     synonym "buy" "purchase" "take";
-    synonym "peanuts" "packaging peanuts";
-    synonym "boxes" "box";
+    synonym "peanuts" "packaging peanuts" "packing peanuts";
+    synonym "boxes" "packing boxes" "packaging boxes";
     synonym "chocolate" "chocolate bar" "chocolate bars" "packaging chocolate";
     synonym "steal" "eat";
-    synonym "drive" "go" "drive to";
+    synonym "cards" "card";
+    synonym "drive" "drive to" "go";
     synonym "eye" "creepy eye" "yellow eye" "yellow creepy eye";
-    synonym "game" "solitaire";
+    synonym "solitaire" "game";
     synonym "home" "back";
-    synonym "address" "address on package" "package address" "Mr. Robertson" "Mr. Robertson's house" "Robertson's house" "Robertson" "13310 Podwoic Avenue";
+    synonym "address" "address on package" "package address" "mr. robertson" "mr. robertson's house" "robertson's house" "robertson" "13310 podwoic avenue";
+    synonym "tape" "packing tape" "packaging tape";
     
     command look {
         respond {
@@ -2254,7 +2318,7 @@ location postoffice global {
             tiny bit.
         }
     }
-    command eat peanuts {
+    command steal peanuts {
         respond {
             They're actually not tasty, so why would you? 
             You've tried them before.
@@ -2350,11 +2414,19 @@ location postoffice global {
 location robertson-front-door global {
     synonym "bush" "bushes";
     synonym "remove" "take off";
-    synonym "open door" "enter";
+    synonym "open door" "enter" "enter house" "enter door";
     synonym "leave package" "leave medallion" "leave package at door" "leave medallion at door" "leave package at house" "leave medallion at house";
     synonym "follow cat" "go after cat" "follow footprints" "enter bushes" "go bushes";
-    synonym "go to" "drive to" "drive" "go";
-    synonym "Emily" "Emily's" "Emily's house";
+    synonym "drive" "drive to" "go";
+    synonym "emily" "emily's" "emily's house" 
+    "emily house" "emily's place";
+    synonym "post office" "post-office" "postoffice";
+    synonym "snow" "ground";
+    synonym "bushes" "bush" "plant" "plants";
+    synonym "footprints" "footprint" "pawprint" "pawprints";
+    synonym "trees" "tree";
+    synonym "knock" "knock on door" "knock at door";
+    synonym "home" "house";
     
     command look {
         respond {
@@ -2389,7 +2461,7 @@ location robertson-front-door global {
             No! Not there! You don't ever want to go back to there!
         }
     }
-    command drive Emily's house {
+    command drive emily {
         respond {
             You get in your car, start the engine,
             and drive to Emily's house. The whole way there,
@@ -2549,7 +2621,7 @@ location backyard global {
     synonym "reindeer" "Christmas reindeer";
     synonym "take" "pet" "touch" "ride";
     synonym "go back" "return" "go through bushes" "go bushes";
-    synonym "bush" "bushes";
+    synonym "bushes" "bush" "plant" "plants";
     synonym "open window" "break into house" "enter house" "go house" "go into house" "enter window" "go window" "go through window" "climb through window" "climb window";
     command look {
         respond {
@@ -2562,7 +2634,7 @@ location backyard global {
             windows appear to be cracked open a bit.
         }
     }
-    command pet reindeer {
+    command take reindeer {
         respond {
             You reach your hand out toward the fake deer. 
             The moment your fingers brush the cold, metallic 
@@ -2633,20 +2705,22 @@ location backyard global {
 }
 
 environment puzzle-room global{
-    synonym "rock collection" "rocks" "collection" "rock";
+    synonym "rock collection" "rocks" "collection" "rock" "flint";
     synonym "bookshelf" "books";
-    synonym "read Passion in Paradise" "read Passion in a Pot" "read Passion in a Poppy Field" "read Passion in Pompeii";
-    synonym "Kurt Vonnegut Novel" "Kurt Vonnegut Novels" "The Kurt Vonnegut Novel" "A Kurt Vonnegut Novel";
+    synonym "pet" "touch";
+    synonym "read passion in paradise" "read passion in pot" "read passion in poppy field" "read passion in pompeii";
+    synonym "kurt vonnegut novel" "kurt vonnegut novels";
     synonym "book in another language" "books in another language" "a book in another language" "the book in another language";
-    synonym "fantasy series" "fantasy book" "fantasy books" "a fantasy book" "the fantasy book";
+    synonym "fantasy series" "fantasy book" "fantasy books";
     synonym "leave medallion" "leave package" "drop medallion" "drop package";
     synonym "filing cabinet" "cabinet" "drawers";
-    synonym "drawer 1" "1" "one";
-    synonym "drawer 2" "2" "two";
-    synonym "drawer 3" "3" "three";
     synonym "open" "look through";
+    synonym "cat food" "food";
     synonym "feed cat" "use food with cat" "use cat food with cat" "give food to cat" "give cat food to cat" "give cat food cat" "give food cat" "give cat food" "give cat cat food";
     synonym "alarm" "fire alarm";
+    synonym "painting" "picture" "image";
+    synonym "leave room" "leave" "walk out";
+    synonym "scorch marks" "scorch mark" "scorch" "scorches";
     
     command feed cat {
         if `hasCatFood` {
@@ -2690,7 +2764,7 @@ environment puzzle-room global{
             }
         }
     }
-    command take flint {
+    command take rock collection {
         if `hasFlint` {
             respond { 
                 You really only need one piece of flint.
@@ -2718,7 +2792,7 @@ environment puzzle-room global{
             self control sometimes.
         }
     }
-    command read Passion in Paradise {
+    command read passion in paradise {
         respond {
             You pull the book off the shelf and begin to become
             emotionally involved in Karen and Santiago's somewhat
@@ -2804,7 +2878,7 @@ environment puzzle-room global{
             }
         }
     }
-    command take Passion in Paradise {
+    command take passion in paradise {
         if `eq heldBook "Passion in Paradise"` {
             respond {
                 You're already holding `heldBook`. You caress
@@ -2826,7 +2900,7 @@ environment puzzle-room global{
             }
         }
     }
-    command take Passion in Pompeii {
+    command take passion in pompeii {
         if `eq heldBook "Passion in Pompeii"` {
             respond {
                 You're already holding `heldBook`. You caress
@@ -2848,7 +2922,7 @@ environment puzzle-room global{
             }
         }
     }
-    command take Passion in a Pot {
+    command take passion in pot {
         if `eq heldBook "Passion in a Pot"` {
             respond {
                 You're already holding `heldBook`. You caress
@@ -2870,7 +2944,7 @@ environment puzzle-room global{
             }
         }
     }
-    command take Passion in a Poppy Field {
+    command take passion in poppy field {
         if `eq heldBook "Passion in a Poppy Field"` {
             respond {
                 You're already holding `heldBook`. You caress
@@ -2931,7 +3005,7 @@ environment puzzle-room global{
             Oh well.
         }
     }
-    object fire alarm {
+    object alarm {
         You don't see a fire alarm. This room looks pretty fire
         safe anyway, so you don't worry about it.
     }
@@ -2939,7 +3013,7 @@ environment puzzle-room global{
         That darned cat is lurking in the hallway. She hisses at you
         every time you try to get near her.
     }
-    object kurt vonnegut novels {
+    object kurt vonnegut novel {
         You like Vonnegut, but you're not really in love
         with him. He's no Santiago.
 
@@ -2949,7 +3023,7 @@ environment puzzle-room global{
         This sure isn't English. You're sure, because you can 
         read English.
     }
-    object Passion in Paradise {
+    object passion in paradise {
         Santiago was content to live a laid-back life of
         professional surfing and beachcombing, but everything
         changes the night he meets Karen Naymon, a journalist
@@ -2961,7 +3035,7 @@ environment puzzle-room global{
 
         "Smoldering" - LA Times Review
     }
-    object Passion in Pompeii {
+    object passion in pompeii {
         The year is 79 AD, and Karen Naymon is due to be married.
         Her family insists she choose a wealthy politician who
         will secure her position in the Roman elite. But Karen
@@ -2970,7 +3044,7 @@ environment puzzle-room global{
         Karen and Santiago? Will Karen escape her family… and the
         trouble brewing at Mount Vesuvius?
     }
-    object Passion in a Pot {
+    object passion in pot {
         Santiago works late nights at his recently opened
         restaurant in Chicago, The Firepit. He has always dreamed
         of being a chef, and with a good review from top food
@@ -2979,7 +3053,7 @@ environment puzzle-room global{
         the kitchen gets hot. CAN THEY MAINTAIN A DEGREE OF
         PROFESSIONALISM IN THEIR RELATIONSHIP??
     }
-    object Passion in a Poppy Field {
+    object passion in poppy field {
         Karen has waited for Santiago to return from the Allied
         front in Germany for a year. But the war has changed 
         Santiago. Karen must find a way to cope with Santiago's
@@ -3029,7 +3103,8 @@ environment puzzle-room global{
 }
 
 location room-one puzzle-room {
-    synonym "use flint on chair" "burn chair" "start fire" "use flint on armchair" "burn armchair"; 
+    synonym "use flint on chair" "burn chair" "start fire" "use flint on armchair" "burn armchair";
+    synonym "put book on chair";
     command look { 
         respond {
             This room looks very familiar. There's the
@@ -3051,6 +3126,7 @@ location room-one puzzle-room {
             }
         }
     }
+    # Should do something about heldBook in command...
     command put book on chair {
         if `eq heldBook "None"` {
             respond {
@@ -3077,6 +3153,123 @@ location room-one puzzle-room {
             }
         }
     }
+
+    command put leaves of grass on chair {
+        if `eq heldBook "Leaves of Grass"` {
+            respond {
+                You can't believe you! This book is in no
+                way expendable. Well...hmm. Maybe it is a little
+                bit expendable. You put the crotch-mentioning 
+                book on the chair. 
+            }
+            set heldBook "None";
+            set placedBook 1;
+        }
+        else {
+            respond {
+                You aren't holding that book.
+            }
+        }
+    }
+    command put fantasy series on chair {
+        if `eq heldBook "the fantasy book"` {
+            respond {
+                You can't believe you! This book is in no
+                way expendable. You are absolutely not setting
+                fire to this. Never.
+            }
+        }
+        else {
+            respond {
+                You aren't holding that book.
+            }
+        }
+    }
+    command put kurt vonnegut novel on chair {
+        if `eq heldBook "a Kurt Vonnegut novel"` {
+            respond {
+                You can't believe you! This book is in no
+                way expendable. You are absolutely not setting
+                fire to this. Never.
+            }
+        }
+        else {
+            respond {
+                You aren't holding that book.
+            }
+        }
+    }
+    command put books in another language on chair {
+        if `eq heldBook "a book in another language"` {
+            respond {
+                You can't believe you! This book is in no
+                way expendable. You are absolutely not setting
+                fire to this. Never.
+            }
+        }
+        else {
+            respond {
+                You aren't holding that book.
+            }
+        }
+    }
+    command put passion in poppy field on chair {
+        if `eq heldBook "Passion in a Poppy Field"` {
+            respond {
+                You can't believe you! This book is in no
+                way expendable. You are absolutely not setting
+                fire to this. Never.
+            }
+        }
+        else {
+            respond {
+                You aren't holding that book.
+            }
+        }
+    }
+    command put passion in pompeii on chair {
+        if `eq heldBook "Passion in Pompeii"` {                
+            respond {
+                You can't believe you! This book is in no
+                way expendable. You are absolutely not setting
+                fire to this. Never.
+            }
+        }
+        else {
+            respond {
+                You aren't holding that book.
+            }
+        }
+    }
+    command put passion in pot on chair {
+        if `eq heldBook "Passion in a Pot"` {
+            respond {
+                You can't believe you! This book is in no
+                way expendable. You are absolutely not setting
+                fire to this. Never.
+            }
+        }
+        else {
+            respond {
+                You aren't holding that book.
+            }
+        }
+    }
+    command put passion in paradise on chair {
+        if `eq heldBook "Passion in Paradise"` {
+            respond {
+                You can't believe you! This book is in no
+                way expendable. You are absolutely not setting
+                fire to this. Never.
+            }
+        }
+        else {
+            respond {
+                You aren't holding that book.
+            }
+        }
+    }
+
     command use flint on chair {
         if `hasFlint` {
             if `placedBook` {
@@ -3195,6 +3388,7 @@ location room-two puzzle-room {
     synonym "couch" "cushion" "cushions";
     synonym "search" "search through" "search in";
     synonym "note" "love note" "letter" "love letter" "heart-shaped note";
+    synonym "papers" "paper" "colored paper" "colored papers";
     synonym "pink" "pink paper" "pink page";
     synonym "white" "white paper" "white page";
     synonym "green" "green paper" "green page";
@@ -3202,6 +3396,10 @@ location room-two puzzle-room {
     synonym "blue" "blue paper" "blue page";
     synonym "put" "place" "set" "file";
     synonym "close cabinet" "close filing cabinet" "close drawer" "close drawer 1" "close drawer 2" "close drawer 3";
+    synonym "1" "in 1" "in drawer 1";
+    synonym "2" "in 2" "in drawer 2";
+    synonym "3" "in 3" "in drawer 3";
+    synonym "vomit" "throw up" "be sick";
     
     command look {
         respond {
@@ -3385,7 +3583,6 @@ location room-two puzzle-room {
             }
         }
     }
-    
     command read papers {
         trigger look papers;
     }
@@ -3411,163 +3608,233 @@ location room-two puzzle-room {
         }
     }
     command put pink 1 {
-        respond {
-            You place the paper lovingly in the drawer. 
-            Right where it belongs.
-        }
-        set pinkRight 1;
-        if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+        if `hasPapers` {
             respond {
-                You at once feel the satisfaction of a job well
-                done. That filing cabinet is so organized.
-                You close all the drawers and step back to admire
-                your beautiful work. The cabinet immediately bursts
-                into flames. Weird. You suppose it's kind of like
-                a burst of fireworks here to celebrate your
-                accomplishments. You admire it for a moment,
-                then decide you really better leave the room.
+                You place the paper lovingly in the drawer. 
+                Right where it belongs.
             }
-            set hasPapers 0;
-            set hasNote 0;
-            set roomOnFire 1;
+            set pinkRight 1;
+            if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+                respond {
+                    You at once feel the satisfaction of a job well
+                    done. That filing cabinet is so organized.
+                    You close all the drawers and step back to admire
+                    your beautiful work. The cabinet immediately bursts
+                    into flames. Weird. You suppose it's kind of like
+                    a burst of fireworks here to celebrate your
+                    accomplishments. You admire it for a moment,
+                    then decide you really better leave the room.
+                }
+                set hasPapers 0;
+                set hasNote 0;
+                set roomOnFire 1;
+            }
+        }
+        else {
+            respond {
+                You have no papers to add to the cabinet.
+            }
         }
     }
     command put pink 2 {
-        respond {
-            You place the paper lovingly in the drawer. 
-            Right where it belongs.
-        }
-        set pinkRight 1;
-        if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+        if `hasPapers` {
             respond {
-                You at once feel the satisfaction of a job well
-                done. That filing cabinet is so organized.
-                You close all the drawers and step back to admire
-                your beautiful work. The cabinet immediately bursts
-                into flames. Weird. You suppose it's kind of like
-                a burst of fireworks here to celebrate your
-                accomplishments. You admire it for a moment,
-                then decide you really better leave the room.
+                You place the paper lovingly in the drawer. 
+                Right where it belongs.
             }
-            set hasPapers 0;
-            set hasNote 0;
-            set roomOnFire 1;
+            set pinkRight 1;
+            if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+                respond {
+                    You at once feel the satisfaction of a job well
+                    done. That filing cabinet is so organized.
+                    You close all the drawers and step back to admire
+                    your beautiful work. The cabinet immediately bursts
+                    into flames. Weird. You suppose it's kind of like
+                    a burst of fireworks here to celebrate your
+                    accomplishments. You admire it for a moment,
+                    then decide you really better leave the room.
+                }
+                set hasPapers 0;
+                set hasNote 0;
+                set roomOnFire 1;
+            }
+        }
+        else {
+            respond {
+                You have no papers to add to the cabinet.
+            }
         }
     }
     command put white 1 {
-        respond {
-            You place the paper lovingly in the drawer. 
-            Right where it belongs.
+        if `hasPapers` {
+            respond {
+                You place the paper lovingly in the drawer. 
+                Right where it belongs.
+            }
+            set whiteRight 0;
         }
-        set whiteRight 0;
+        else {
+            respond {
+                You have no papers to add to the cabinet.
+            }
+        }
     }
     command put white 2 {
-        respond {
-            You place the paper lovingly in the drawer. 
-            Right where it belongs.
-        }
-        set whiteRight 1;
-        if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+        if `hasPapers` {
             respond {
-                You at once feel the satisfaction of a job well
-                done. That filing cabinet is so organized.
-                You close all the drawers and step back to admire
-                your beautiful work. The cabinet immediately bursts
-                into flames. Weird. You suppose it's kind of like
-                a burst of fireworks here to celebrate your
-                accomplishments. You admire it for a moment,
-                then decide you really better leave the room.
+                You place the paper lovingly in the drawer. 
+                Right where it belongs.
             }
-            set hasPapers 0;
-            set hasNote 0;
-            set roomOnFire 1;
+            set whiteRight 1;
+            if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+                respond {
+                    You at once feel the satisfaction of a job well
+                    done. That filing cabinet is so organized.
+                    You close all the drawers and step back to admire
+                    your beautiful work. The cabinet immediately bursts
+                    into flames. Weird. You suppose it's kind of like
+                    a burst of fireworks here to celebrate your
+                    accomplishments. You admire it for a moment,
+                    then decide you really better leave the room.
+                }
+                set hasPapers 0;
+                set hasNote 0;
+                set roomOnFire 1;
+            }
+        }
+        else {
+            respond {
+                You have no papers to add to the cabinet.
+            }
         }
     }
     command put blue 1 {
-        respond {
-            You place the paper lovingly in the drawer. 
-            Right where it belongs.
+        if `hasPapers` {
+            respond {
+                You place the paper lovingly in the drawer. 
+                Right where it belongs.
+            }
+            set blueRight 0;
         }
-        set blueRight 0;
+        else {
+            respond {
+                You have no papers to add to the cabinet.
+            }
+        }
     }
     command put blue 2 {
-        respond {
-            You place the paper lovingly in the drawer. 
-            Right where it belongs.
-        }
-        set blueRight 1;
-        if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+        if `hasPapers` {
             respond {
-                You at once feel the satisfaction of a job well
-                done. That filing cabinet is so organized.
-                You close all the drawers and step back to admire
-                your beautiful work. The cabinet immediately bursts
-                into flames. Weird. You suppose it's kind of like
-                a burst of fireworks here to celebrate your
-                accomplishments. You admire it for a moment,
-                then decide you really better leave the room.
+                You place the paper lovingly in the drawer. 
+                Right where it belongs.
             }
-            set hasPapers 0;
-            set hasNote 0;
-            set roomOnFire 1;
+            set blueRight 1;
+            if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+                respond {
+                    You at once feel the satisfaction of a job well
+                    done. That filing cabinet is so organized.
+                    You close all the drawers and step back to admire
+                    your beautiful work. The cabinet immediately bursts
+                    into flames. Weird. You suppose it's kind of like
+                    a burst of fireworks here to celebrate your
+                    accomplishments. You admire it for a moment,
+                    then decide you really better leave the room.
+                }
+                set hasPapers 0;
+                set hasNote 0;
+                set roomOnFire 1;
+            }
+        }        
+        else {
+            respond {
+                You have no papers to add to the cabinet.
+            }
         }
     }
     command put green 1 {
-        respond {
-            You place the paper lovingly in the drawer. 
-            Right where it belongs.
+        if `hasPapers` {
+            respond {
+                You place the paper lovingly in the drawer. 
+                Right where it belongs.
+            }
+            set greenRight 0;
         }
-        set greenRight 0;
+        else {
+            respond {
+                You have no papers to add to the cabinet.
+            }
+        }
     }
     command put green 2 {
-        respond {
-            You place the paper lovingly in the drawer. 
-            Right where it belongs.
-        }
-        set greenRight 1;
-        if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+        if `hasPapers` {
             respond {
-                You at once feel the satisfaction of a job well
-                done. That filing cabinet is so organized.
-                You close all the drawers and step back to admire
-                your beautiful work. The cabinet immediately bursts
-                into flames. Weird. You suppose it's kind of like
-                a burst of fireworks here to celebrate your
-                accomplishments. You admire it for a moment,
-                then decide you really better leave the room.
+                You place the paper lovingly in the drawer. 
+                Right where it belongs.
             }
-            set hasPapers 0;
-            set hasNote 0;
-            set roomOnFire 1;
+            set greenRight 1;
+            if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+                respond {
+                    You at once feel the satisfaction of a job well
+                    done. That filing cabinet is so organized.
+                    You close all the drawers and step back to admire
+                    your beautiful work. The cabinet immediately bursts
+                    into flames. Weird. You suppose it's kind of like
+                    a burst of fireworks here to celebrate your
+                    accomplishments. You admire it for a moment,
+                    then decide you really better leave the room.
+                }
+                set hasPapers 0;
+                set hasNote 0;
+                set roomOnFire 1;
+            }
+        }
+        else {
+            respond {
+                You have no papers to add to the cabinet.
+            }
         }
     }
     command put yellow 1 {
-        respond {
-            You place the paper lovingly in the drawer. 
-            Right where it belongs.
+        if `hasPapers` {
+            respond {
+                You place the paper lovingly in the drawer. 
+                Right where it belongs.
+            }
+            set yellowRight 0;
         }
-        set yellowRight 0;
+        else {
+            respond {
+                You have no papers to add to the cabinet.
+            }
+        }
     }
     command put yellow 2 {
-        respond {
-            You place the paper lovingly in the drawer. 
-            Right where it belongs.
-        }
-        set yellowRight 1;
-        if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+        if `hasPapers` {
             respond {
-                You at once feel the satisfaction of a job well
-                done. That filing cabinet is so organized.
-                You close all the drawers and step back to admire
-                your beautiful work. The cabinet immediately bursts
-                into flames. Weird. You suppose it's kind of like
-                a burst of fireworks here to celebrate your
-                accomplishments. You admire it for a moment,
-                then decide you really better leave the room.
+                You place the paper lovingly in the drawer. 
+                Right where it belongs.
             }
-            set hasPapers 0;
-            set hasNote 0;
-            set roomOnFire 1;
+            set yellowRight 1;
+            if `and pinkRight (and whiteRight (and greenRight (and blueRight yellowRight)))` {
+                respond {
+                    You at once feel the satisfaction of a job well
+                    done. That filing cabinet is so organized.
+                    You close all the drawers and step back to admire
+                    your beautiful work. The cabinet immediately bursts
+                    into flames. Weird. You suppose it's kind of like
+                    a burst of fireworks here to celebrate your
+                    accomplishments. You admire it for a moment,
+                    then decide you really better leave the room.
+                }
+                set hasPapers 0;
+                set hasNote 0;
+                set roomOnFire 1;
+            }
+        }
+        else {
+            respond {
+                You have no papers to add to the cabinet.
+            }
         }
     }
     command search couch {
@@ -3759,7 +4026,7 @@ location room-three puzzle-room {
             so you stop.
         }
     }
-    command look fire alarm {
+    command look alarm {
         if `roomOnFire` {
             respond {
                 You can't see it, but it's kind of loud. Also the
@@ -3831,7 +4098,7 @@ location room-three puzzle-room {
 }
 
 location room-four puzzle-room {
-    synonym "man" "Mr. Robertson" "Robertson" "Stuart" "Stuart Robertson" "person" "guy";
+    synonym "man" "mr. robertson" "robertson" "stuart" "stuart robertson" "person" "guy";
     synonym "talk" "talk to" "speak" "speak to" "converse" "converse with";
     command look {
         respond {
