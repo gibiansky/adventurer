@@ -4,19 +4,27 @@
 
 (function() {
   var AdventureView, Command, CommandHistory, CommandView, TextField, _ref, _ref1, _ref2, _ref3, _ref4,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   Command = (function(_super) {
     __extends(Command, _super);
 
     function Command() {
+      this.initialize = __bind(this.initialize, this);
       _ref = Command.__super__.constructor.apply(this, arguments);
       return _ref;
     }
 
-    Command.prototype.url = "/{name}/run";
+    Command.prototype.initialize = function(options) {
+      this.episode = options.episode;
+      return this.user = options.user;
+    };
+
+    Command.prototype.url = function() {
+      return "/run/" + this.episode + "/" + this.user;
+    };
 
     return Command;
 
@@ -29,13 +37,21 @@
     __extends(CommandHistory, _super);
 
     function CommandHistory() {
+      this.initialize = __bind(this.initialize, this);
       _ref1 = CommandHistory.__super__.constructor.apply(this, arguments);
       return _ref1;
     }
 
     CommandHistory.prototype.model = Command;
 
-    CommandHistory.prototype.url = "/{name}/history";
+    CommandHistory.prototype.initialize = function(models, options) {
+      this.episode = options.episode;
+      return this.user = options.user;
+    };
+
+    CommandHistory.prototype.url = function() {
+      return "/history/" + this.episode + "/" + this.user;
+    };
 
     return CommandHistory;
 
@@ -135,6 +151,10 @@
       $(document).bind('keyup', this.keyUp);
       this.history = options.history;
       this.items = options.items;
+      this.episode = options.episode;
+      this.user = options.user;
+      console.log(this.user);
+      console.log(this.episode);
       this.historyPosition = this.history.length - 1;
       return this.render();
     };
@@ -143,7 +163,9 @@
       var command;
       command = new Command({
         command: text,
-        response: ""
+        response: "",
+        episode: this.episode,
+        user: this.user
       });
       this.history.add(command);
       this.historyPosition = this.history.length;
@@ -296,16 +318,44 @@
 
   })(Backbone.View);
 
-  this.loadGame = function() {
-    var adventureView, history, textField;
-    history = new CommandHistory([]);
+  this.getUser = function() {
+    var storageExists, user;
+    storageExists = typeof Storage !== "undefined";
+    if (!storageExists || null === localStorage.getItem("adventureUser")) {
+      user = generateNewUser();
+      localStorage.setItem("adventureUser", user);
+      return user;
+    } else {
+      return localStorage.getItem("adventureUser");
+    }
+  };
+
+  this.generateNewUser = function() {
+    var id, length;
+    length = 80;
+    id = "";
+    while (id.length < length) {
+      id += Math.random().toString(36).substr(2);
+    }
+    return id.substr(0, length);
+  };
+
+  this.loadGame = function(episode) {
+    var adventureView, history, textField, user;
+    user = getUser();
+    history = new CommandHistory([], {
+      episode: episode,
+      user: user
+    });
     adventureView = new AdventureView({
       el: $('#main'),
       history: history
     });
     textField = new TextField({
       el: adventureView.textEntry,
-      history: history
+      history: history,
+      episode: episode,
+      user: user
     });
     return history.fetch({
       reset: true

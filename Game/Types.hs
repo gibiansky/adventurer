@@ -20,8 +20,7 @@ data Game = Game {
   currentRoom :: Location,                -- ^ The current room the player is in.
   episode :: Episode,                     -- ^ The episode this game is for.
   lastId :: CommandId,                    -- ^ The last id assigned to a command.
-  gameState :: GameState,
-  gameProperties :: GameProperties
+  gameState :: GameState
   } deriving Show
 
 type GameState = Map.Map String (Either Int String)

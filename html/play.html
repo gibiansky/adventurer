@@ -3,7 +3,7 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>#{name}</title>
+        <title>Adventure Games</title>
 
         <!-- JQuery -->
         <script src="http://code.jquery.com/jquery.js"></script>
@@ -20,7 +20,7 @@
         <script src="/static/js/adventure.js"></script>
 
         <!-- Bootstrap customizations -->
-        <link href="/static/css/stylesheet.css" rel="stylesheet"></script>
+        <link href="/static/css/stylesheet.css" rel="stylesheet">
 
         <script type="text/template" id="command-template">
             <div class="command">
@@ -38,13 +38,7 @@
         </script>
     </head>
 
-    <style>
-      .main-text-field {
-        #{font-color};
-        #{font-family};
-      }
-    </style>
-    <body onload="loadGame();"  style="#{background};">
+    <body onload="loadGame('{EPISODE}');">
         <div class="container">
             <div class="row">
                 <div class="span8 offset4 fill">

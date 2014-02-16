@@ -1,11 +1,20 @@
 ### Models ###
 class Command extends Backbone.Model
-    url: "/{name}/run"
+    initialize: (options) =>
+      @episode = options.episode
+      @user = options.user
+
+    url: -> "/run/#{@episode}/#{@user}"
 
 ### Collections ###
 class CommandHistory extends Backbone.Collection
     model: Command
-    url: "/{name}/history"
+
+    initialize: (models, options) =>
+      @episode = options.episode
+      @user = options.user
+
+    url: -> "/history/#{@episode}/#{@user}"
 
 ### Views ###
 class AdventureView extends Backbone.View
@@ -79,6 +88,10 @@ class TextField extends Backbone.View
         # Store history and items so we can add to it.
         @history = options.history
         @items = options.items
+        @episode = options.episode
+        @user = options.user
+        console.log @user
+        console.log @episode
         @historyPosition = @history.length - 1
 
         # Do initial rendering.
@@ -88,6 +101,8 @@ class TextField extends Backbone.View
         command = new Command
             command: text
             response: ""
+            episode: @episode
+            user: @user
         @history.add command
         @historyPosition = @history.length
         command.save()
@@ -224,8 +239,29 @@ class CommandView extends Backbone.View
 
         this
 
-@loadGame = ->
-    history = new CommandHistory []
+@getUser = ->
+  storageExists = typeof Storage != "undefined"
+
+  if not storageExists or null == localStorage.getItem "adventureUser"
+    user = generateNewUser()
+    localStorage.setItem "adventureUser", user
+    user
+  else
+    localStorage.getItem "adventureUser"
+
+@generateNewUser = ->
+  # Generate a unique ID
+  length = 80 # Desired length
+  id = ""
+  id += Math.random().toString(36).substr(2) while id.length < length
+  id.substr 0, length
+
+@loadGame = (episode) ->
+    user = getUser()
+    history = new CommandHistory [],
+        episode: episode
+        user: user
+
 
     # Load all views: main view, and text entry view.
     adventureView = new AdventureView
@@ -234,6 +270,8 @@ class CommandView extends Backbone.View
     textField = new TextField
         el: adventureView.textEntry
         history: history
+        episode: episode
+        user: user
 
     # Load command history.
     history.fetch
