@@ -132,7 +132,7 @@ evaluateExpression game (Or exp1 exp2) =
 evaluateExpression game (Not exp) = 
   let evaledExp = evaluateExpression game exp 
       truthiness = getBool evaledExp in
-    Left $ if truthiness then 1 else 0
+    Left $ if truthiness then 0 else 1
 
 evaluateExpression game (Equal exp1 exp2) = 
   let evaledExp1 = evaluateExpression game exp1
@@ -231,7 +231,7 @@ findMatchingCommand cmdstr game = case trace ("syn " ++ synonymedStr ++ " from "
     env = unLoc $ currentRoom game
     syns = findSynonyms game env
     synonymedStr = applySynonyms syns cmdstr
-    cmdResult = findMatchingCommand' cmdstr game env
+    cmdResult = findMatchingCommand' synonymedStr game env
     objResult objwords = findMatchingObject objwords game $ unLoc $ currentRoom game
 
 findMatchingCommand' :: String -> Game -> Environment -> Maybe CommandPattern
@@ -250,7 +250,7 @@ findMatchingObject objwords game loc =
     parentEnv = flip findEnvWithName game <$> envParent loc
 
 objMatches :: [String] -> Environment -> Obj  -> Bool
-objMatches objwords env (Obj objname _) = trace ("Trying " ++ show objwords ++ " " ++ show objname) $ wordsMatch objwords objname
+objMatches objwords env (Obj objname _) = wordsMatch objwords objname
 
 cmdMatches :: String -> Game -> Environment -> CommandPattern -> Bool
 cmdMatches str game env (Pattern pat _) = wordsMatch (words str) pat
@@ -272,10 +272,11 @@ wordsMatch _ _ = False
 
 applySynonyms :: [Synonym] -> String -> String
 applySynonyms syns str =
-  let applicable = filter isApplicable syns in
+  let applicable = filter isApplicable syns
+      remaining = filter (not . isApplicable) syns in
     case applicable of 
       [] -> str
-      syns' -> applySynonyms syns $ foldl' doApply str syns'
+      syns' -> applySynonyms remaining $ foldl' doApply str syns'
 
   where
     isApplicable (Synonym to from) = 
