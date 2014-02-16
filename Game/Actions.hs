@@ -17,11 +17,13 @@ import Control.Monad.State (State, modify, gets)
 import Control.Monad.Writer (runWriter, Writer, tell)
 import Data.Aeson (encode, decode)
 import Data.List (find, foldl', isInfixOf)
-import Data.List.Utils (replace)
+import Data.List.Utils (replace, startswith)
 import Data.Maybe (fromJust, fromMaybe)
 
 import qualified Data.Map as Map
 import qualified Data.ByteString.Lazy as Lazy
+
+import Debug.Trace
 
 import Game.Types
 
@@ -220,13 +222,16 @@ noSuchCommand :: CommandResponse
 noSuchCommand = Just "error: command unavailable."
 
 findMatchingCommand :: String -> Game -> Maybe CommandPattern
-findMatchingCommand cmdstr game = case words cmdstr of
+findMatchingCommand cmdstr game = case trace ("syn " ++ synonymedStr ++ " from " ++ cmdstr) $ words synonymedStr of
   "look":objwords -> case objResult objwords of
-    Nothing -> cmdResult
+    Nothing -> trace ("Failing to find obj " ++ show objwords) cmdResult
     Just (Obj name description) -> Just $ Pattern ("look":name) [Print description]
   _ -> cmdResult
   where
-    cmdResult = findMatchingCommand' cmdstr game $ unLoc $ currentRoom game
+    env = unLoc $ currentRoom game
+    syns = findSynonyms game env
+    synonymedStr = applySynonyms syns cmdstr
+    cmdResult = findMatchingCommand' cmdstr game env
     objResult objwords = findMatchingObject objwords game $ unLoc $ currentRoom game
 
 findMatchingCommand' :: String -> Game -> Environment -> Maybe CommandPattern
@@ -245,24 +250,24 @@ findMatchingObject objwords game loc =
     parentEnv = flip findEnvWithName game <$> envParent loc
 
 objMatches :: [String] -> Environment -> Obj  -> Bool
-objMatches objwords env (Obj objname _) = wordsMatch objwords objname
+objMatches objwords env (Obj objname _) = trace ("Trying " ++ show objwords ++ " " ++ show objname) $ wordsMatch objwords objname
 
 cmdMatches :: String -> Game -> Environment -> CommandPattern -> Bool
-cmdMatches str game env (Pattern pat _) = 
-  let allSyns = findSynonyms env in 
-      words (applySynonyms allSyns str) == pat
-  where
-    -- Returns the synonyms with the childrens synonyms first.
-    findSynonyms :: Environment -> [Synonym]
-    findSynonyms env = parentSyns ++ envSynonyms env
-      where parentSyns =
-              case flip findEnvWithName game <$> envParent env of
-                Nothing -> []
-                Just env' -> findSynonyms env'
+cmdMatches str game env (Pattern pat _) = wordsMatch (words str) pat
+
+
+-- Returns the synonyms with the childrens synonyms first.
+findSynonyms :: Game -> Environment -> [Synonym]
+findSynonyms game env = parentSyns ++ envSynonyms env
+  where parentSyns =
+          case flip findEnvWithName game <$> envParent env of
+            Nothing -> []
+            Just env' -> findSynonyms game env'
 
 wordsMatch :: [String] -> [String] -> Bool
 wordsMatch _ ("*":_) = True
 wordsMatch (x:xs) (y:ys) = x == y && wordsMatch xs ys
+wordsMatch [] [] = True
 wordsMatch _ _ = False
 
 applySynonyms :: [Synonym] -> String -> String
@@ -273,9 +278,14 @@ applySynonyms syns str =
       syns' -> applySynonyms syns $ foldl' doApply str syns'
 
   where
-    isApplicable (Synonym to from) = any (`isInfixOf` str) from
+    isApplicable (Synonym to from) = 
+      let infixMatch = any (`isInfixOf` str) $ map (' ':) from
+          prefixMatch = any (`startswith` str) $ map (++ " ") from in
+        infixMatch || prefixMatch
     doApply string (Synonym to from) =
-      let replacer s rep = replace rep to s in
+      let postSpace = (++ " ")
+          preSpace = (' ':)
+          replacer s rep = replace (preSpace rep) (preSpace to) . replace (postSpace rep) (postSpace to) $ s in
         foldl' replacer str from
 
 findEnvWithName :: EnvironmentName -> Game -> Environment
