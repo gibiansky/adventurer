@@ -85,7 +85,7 @@ location init {
 }
 
 environment global {
-    synonym " " "  ";
+    synonym "" " ";
     synonym "" "a" "an" "the" "that";
     synonym "look" "examine" "x" "see" "view" 
     "look at" "look around";
