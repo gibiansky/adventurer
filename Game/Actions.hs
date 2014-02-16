@@ -272,10 +272,11 @@ wordsMatch _ _ = False
 
 applySynonyms :: [Synonym] -> String -> String
 applySynonyms syns str =
-  let applicable = filter isApplicable syns in
+  let applicable = filter isApplicable syns
+      remaining = filter (not . isApplicable) syns in
     case applicable of 
       [] -> str
-      syns' -> applySynonyms syns $ foldl' doApply str syns'
+      syns' -> applySynonyms remaining $ foldl' doApply str syns'
 
   where
     isApplicable (Synonym to from) = 
