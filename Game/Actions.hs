@@ -230,7 +230,7 @@ findMatchingCommand cmdstr game = case trace ("syn " ++ synonymedStr ++ " from "
   where
     env = unLoc $ currentRoom game
     syns = findSynonyms game env
-    synonymedStr = applySynonyms syns cmdstr
+    synonymedStr = applySynonyms syns (cmdstr ++ " ")
     cmdResult = findMatchingCommand' synonymedStr game env
     objResult objwords = findMatchingObject objwords game $ unLoc $ currentRoom game
 
@@ -286,8 +286,8 @@ applySynonyms syns str =
     doApply string (Synonym to from) =
       let postSpace = (++ " ")
           preSpace = (' ':)
-          replacer s rep = replace (preSpace rep) (preSpace to) . replace (postSpace rep) (postSpace to) $ s in
-        foldl' replacer str from
+          replacer s rep = trace ("replacing " ++ rep ++ " " ++ s) $ replace (preSpace rep) (preSpace to) . replace (postSpace rep) (postSpace to) $ s in
+        foldl' replacer string from
 
 findEnvWithName :: EnvironmentName -> Game -> Environment
 findEnvWithName name game = fromJust $ find ((== name) . envName) $ environments $ episode game
