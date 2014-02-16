@@ -1200,7 +1200,7 @@ environment house global {
 location bedroom house {
 
     synonym "night-table" "night-stand" "table";
-    synonym "top drawer" "drawer";
+    synonym "drawer" "top drawer";
     synonym "open closet" "clamber over furniture";
     synonym "blankets" "blanket" "covers" "cover";
     synonym "sleep" "nap" "doze off" "get in bed";
@@ -1238,7 +1238,7 @@ location bedroom house {
             feel tired enough to go to sleep right now.
         }
     }
-    command open top drawer {
+    command open drawer {
         if `dresserOpen` {
             respond {
                 The drawer is already open.
@@ -1266,7 +1266,7 @@ location bedroom house {
             }
         }
     }
-    command close top drawer {
+    command close drawer {
         if `dresserOpen` {
             respond {
                 You close the dresser drawer.
