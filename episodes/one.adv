@@ -83,6 +83,62 @@ location init {
         }
         move-to bedroom;
         trigger look;
+
+        # Debugging: uncomment these to automatically
+        # advance through game
+
+        #trigger open drawer;
+        #trigger go kitchen;
+        #trigger open fridge;
+        #trigger open butter;
+        #trigger go entry;
+        #trigger open door;
+        #trigger sign package;
+        #trigger open package;
+        #trigger look package;
+        #trigger go outside;
+        #trigger drive post office;
+        #trigger flail;
+        #trigger flail;
+        #trigger flail;
+        #trigger flail;
+        #trigger drive address;
+        #trigger look tree;
+        #trigger follow cat;
+        #trigger open window;
+        #trigger take flint;
+        #trigger take leaves of grass;
+        #trigger put book on chair;
+        #trigger burn chair;
+        #trigger leave;
+        #trigger search couch;
+        #trigger open 1;
+        #trigger put pink 2;
+        #trigger put white 2;
+        #trigger put yellow 2;
+        #trigger put green 2;
+        #trigger put blue 2;
+        #trigger leave;
+        #trigger open 3;
+        #trigger feed cat;
+        #trigger leave room;
+        #trigger talk man;
+        #trigger say 2;
+        #trigger say 6;
+        #trigger drive emily;
+        #trigger deliver package;
+        #trigger drive home;
+        #trigger go living room;
+        #trigger open chat;
+        #trigger chat emily;
+        #trigger say 6;
+        #trigger go entry;
+        #trigger open door;
+        #trigger open package;
+        #trigger go living room;
+        #trigger open swifts;
+        #trigger buy tea;
+
     }
 }
 
@@ -110,6 +166,90 @@ environment global {
     synonym "put" "place";
     synonym "hint" "help" "hints" "give hint" "give me hint";
     synonym "medallion" "medal";
+    synonym "inventory" "i" "look inventory";
+    synonym "lint" "bit of lint";
+    synonym "money" "some money";
+    synonym "ticket" "old ticket stub" "ticket stub" "stub" ;
+    synonym "rabbit" "giant stuffed rabbit" "stuffed rabbit";
+
+    # Some display of the items you have, I guess.
+    command inventory {
+        if `hasPen` {
+            respond {
+                You have a pen that boldly advertises
+                Bert and his tree-trimming abilities.
+            }
+        }
+        if `hasMedallion` {
+            respond {
+                You have a medallion with a creepy yellow
+                eye on it.
+            }
+        }
+        if `or hasYourPackage (or hasOrigPackage hasEmilyPackage)`
+        {
+            respond {
+                You have a package! Packagepackagepackage!
+            }
+        }
+        if `hasEmptyBox` {
+            respond {
+                You have a visciously torn box that you
+                sacrificed in a valient effort to obtain material
+                goods. There seems to be an address on the box
+                that you're pretty sure isn't yours.
+            }
+        }
+        if `hasKeys` {
+            respond {
+                You have your keys, which are still nice
+                and cold from the refrigerator.
+            }
+        }
+        if `hasFlint` {
+            respond {
+                You have a piece of flint which you've
+                heard is very useful for starting fires.
+            }
+        }
+        if `neq heldBook "None"`{
+            respond {
+                You have a copy of `heldBook`.
+                It doesn't really belong to you.
+                You feel a little guilty that it
+                somehow ended up stuffed in your pockets.
+            }
+        }
+        if `hasNote` {
+            respond {
+                You have a nauseatingly pink love note.
+            }
+        }
+        if `hasPapers` {
+            respond {
+                You have sheets of paper that may or may not
+                be lying to you.
+            }
+        }
+        if `hasCatFood` {
+            respond {
+                You have a handful of questionable cat food.
+            }
+        }
+        if `hasTeapot` {
+            respond {
+                You have a beautiful teapot but,
+                unfortunately, no tea.
+            }
+        }
+        respond {
+            You have a bit of lint, some money, and old
+            ticket stub, a giant stuffed rabbit...
+
+            Actaully, you have a lot of junk in your pocket.
+            Let's stop listing it all.
+        }
+    }
 
     # hints for all states, more specific the more you ask
     #UGGGHHH
@@ -919,7 +1059,7 @@ environment global {
                 Swifts sells some really good tea. You
                 should order some.
             }
-            set hasyourpackage 0;
+            set hasYourPackage 0;
             set hasTeapot 1;
             set hintsState "tea";
             set hintsCounter 0;
@@ -1133,6 +1273,24 @@ environment global {
     }
     object jacket {
         So warm. So fuzzy. Fuzzy warm.
+    }
+    object lint {
+        Lint in your pockets. Completely ordinary, you think.
+    }
+    object money {
+        Approximately $5.33, but you do all of your
+        purchasing on Swifts.com, so you don't need
+        cash.
+    }
+    object rabbit {
+        About four four feet tall and three feet wide
+        when completely fluffed to its full potential.
+        It still, somehow, manages to fit in your pockets.
+        Impressive.
+    }
+    object ticket {
+        An old ticket stub to that play you saw two years
+        ago. You know, that one with the hot romantic lead.
     }
 }
     
@@ -3621,7 +3779,11 @@ environment puzzle-room global{
     synonym "alarm" "fire alarm";
     synonym "painting" "picture" "image";
     synonym "leave" "walk out" "go door" "leave room";
-    synonym "scorch marks" "scorch mark" "scorch" "scorches";
+    synonym "scorch" "scorch marks" "scorch mark"
+     "mark" "scorches" "marks";
+    synonym "1" "in 1" "in drawer 1" "drawer 1";
+    synonym "2" "in 2" "in drawer 2" "drawer 2";
+    synonym "3" "in 3" "in drawer 3" "drawer 3";
     
     command feed cat {
         if `hasCatFood` {
@@ -3640,7 +3802,7 @@ environment puzzle-room global{
                 a fire. That's why your skin is burning off.
                 Oh yeah, you should probably leave the room.
             }
-            set hasFood 0;
+            set hasCatFood 0;
             set roomOnFire 1;
             if `eq hintsState "feed"` {
                 set hintsState "fire";
@@ -3908,6 +4070,24 @@ environment puzzle-room global{
             HISSSSSSSSSS
             
             Oh well.
+        }
+    }
+    command open 1 {
+        respond {
+            It's locked. Maybe whoever lives here
+            doesn't want you rifling through all their papers? Odd.
+        }
+    }
+    command open 2 {
+        respond {
+            It's locked. Maybe whoever lives here
+            doesn't want you rifling through all their papers? Odd.
+        }
+    }
+    command open 3 {
+        respond {
+            It's locked. Maybe whoever lives here
+            doesn't want you rifling through all their papers? Odd.
         }
     }
     object alarm {
@@ -4244,24 +4424,7 @@ location room-one puzzle-room {
             }
         }
     }
-    command open drawer 1 {
-        respond {
-            It's locked. Maybe whoever lives here
-            doesn't want you rifling through all their papers? Odd.
-        }
-    }
-    command open drawer 2 {
-        respond {
-            It's locked. Maybe whoever lives here
-            doesn't want you rifling through all their papers? Odd.
-        }
-    }
-    command open drawer 3 {
-        respond {
-            It's locked. Maybe whoever lives here
-            doesn't want you rifling through all their papers? Odd.
-        }
-    }
+
     object painting {
         You don't know much about art history, but this painting
         looks like it was made by elves! 
@@ -4311,9 +4474,7 @@ location room-two puzzle-room {
     synonym "put" "place" "set" "file";
     synonym "close cabinet" "close drawer" "close drawer 1"
      "close drawer 2" "close drawer 3";
-    synonym "1" "in 1" "in drawer 1" "drawer 1";
-    synonym "2" "in 2" "in drawer 2" "drawer 2";
-    synonym "3" "in 3" "in drawer 3" "drawer 3";
+
     synonym "vomit" "throw up" "be sick";
     
     command look {
@@ -4343,7 +4504,14 @@ location room-two puzzle-room {
             }
         }
     }
-    command open drawer 1 {
+    command organize cabinet {
+        respond {
+            You have no idea how to proceed. Organization 
+            is not your strong point. You'll need a little
+            more direction.
+        }
+    }
+    command open 1 {
         if `not hasNote`
         {
             respond {
@@ -4360,7 +4528,7 @@ location room-two puzzle-room {
             set hasPapers 1;
         }
     }
-    command open drawer 2 {
+    command open 2 {
         if `not hasNote` {
             respond {
                 It's locked. Maybe whoever lives here
@@ -4375,7 +4543,7 @@ location room-two puzzle-room {
             }
         }
     }
-    command open drawer 3 {
+    command open 3 {
         respond {
             It's locked. Maybe whoever lives here
             doesn't want you rifling through all their papers? Odd.
@@ -4866,13 +5034,13 @@ location room-two puzzle-room {
             }
         }
     }
-    command look scorch marks {
+    command look scorch {
         respond {
             Black, charred marks decorate the floor.
             They're kind of blotchy and shapeless, but if
             you had to say what they looked like...well...they
             are roughly in the shape of a person looking
-            through couch cushions for old love notes
+            through couch cushions for old love notes.
         }
         if `eq hintsState "scorch"` {
             set hintsState "notes";
@@ -5047,12 +5215,12 @@ location room-three puzzle-room {
         The cat's face stares down at you, with only one giant,
         yellow eye. The right side of the face is inky blackness.
     }
-    object scorch marks {
+    object scorch {
         Black, charred marks decorate the floor.
         They're kind of blotchy and shapeless, but if
         you had to say what they looked like...well...they
         are roughly in the shape of a person looking
-        through couch cushions for old love notes
+        through couch cushions for old love notes.
     }
 }
 
