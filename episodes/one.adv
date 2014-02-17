@@ -1029,6 +1029,20 @@ environment global {
             }
         }
     }
+    command look keys {
+        if `hasKeys` {
+            respond {
+                Jingle, jingle, jangle! They're still nice
+                and cold from the fridge. Just the way you
+                like them.
+            }
+        }
+        else {
+            respond {
+                Where did those keys go?
+            }
+        }
+    }
     command look lighter {
         respond { 
             Your trusty lighter! You take it everywhere.
@@ -1079,6 +1093,9 @@ environment global {
                 That would mean you once had a full box.
             }
         }
+    }
+    object jacket {
+        So warm. So fuzzy. Fuzzy warm.
     }
 }
     
@@ -1724,7 +1741,7 @@ location kitchen house {
     synonym "butter" "butter dish" "butter dish thing" "little butter dish thing";
     synonym "jars" "jar" "jam" "jams" "marmalade" "condiments";
     synonym "clean" "wash";
-    synonym "dishes" "dish" "plates" "plate";
+    synonym "dishes" "plates" "plate";
     synonym "shelves" "fridge shelves";
     
     command look {
@@ -1777,8 +1794,8 @@ location kitchen house {
         else {
             respond {
                 Your fridge is closed. On some people's fridges, they
-                proudly display cute picture drawn by their 
-                four-year-olds alongside the report card alongside the
+                proudly display cute pictures drawn by their 
+                four-year-olds alongside the
                 report card pronouncing the mediocre achievements of
                 their middle schooler. But you don't have and kids.
                 And if you did, you certainly wouldn't want to show off
@@ -1959,7 +1976,7 @@ location kitchen house {
         across the entire front of the stove is
         a more recent acquisition.
     }
-    object Steve {
+    object steve {
         Steve has been with you from the
         day you spilled a failed attempt
         at a cream sauce and refused to clean it up for a month.
@@ -2675,7 +2692,7 @@ location living-room house {
 location outdoors global {
     synonym "inside" "house" "indoors";
     synonym "drive car" "open car" "get in car";
-    synonym "drive" "go";
+    synonym "drive" "go" "drive to";
     synonym "emily" "emily's" "emily's house" 
     "emily house" "emily's place";
     synonym "car" "vehicle";
@@ -2898,9 +2915,11 @@ location emily-house global {
 location postoffice global {
     synonym "man" "employee" "worker" "kleisthenes" "person" "guy";
     synonym "scream" "yell";
-    synonym "wave your arms" "wave arms" "wave" "flail";
+    synonym "flail" "wave your arms" "wave arms" "wave";
     synonym "punch" "hit" "slap" "hurt" "harm" "kill" "murder";
-    synonym "burn the post office down" "burn down" "burn post office" "burn" "start fire" "light fire" "burn post office down";
+    synonym "burn" "burn the post office down" "burn down" 
+    "burn post office" "start fire" "light fire" 
+    "burn post office down";
     synonym "buy" "purchase" "take";
     synonym "peanuts" "packaging peanuts" "packing peanuts";
     synonym "boxes" "packing boxes" "packaging boxes";
@@ -2911,7 +2930,9 @@ location postoffice global {
     synonym "eye" "creepy eye" "yellow eye" "yellow creepy eye";
     synonym "solitaire" "game";
     synonym "home" "back";
-    synonym "address" "address on package" "package address" "mr. robertson" "mr. robertson's house" "robertson's house" "robertson" "13310 podwoic avenue";
+    synonym "address" "address on package" "package address"
+     "mr robertson" "mr robertson's house"
+    "robertson's house" "robertson" "13310 podwoic avenue";
     synonym "tape" "packing tape" "packaging tape";
     
     command look {
@@ -2976,7 +2997,7 @@ location postoffice global {
             }
         }
     }
-    command wave your arms {
+    command flail {
         respond {
             You flail wildly. Nothing happens.
         }
@@ -3035,7 +3056,7 @@ location postoffice global {
             }
         }
     }
-    command burn the post office down {
+    command burn {
         respond {
             This seems really inadvisable. You should at 
             least wait until you receive your real package.
