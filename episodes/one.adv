@@ -71,6 +71,8 @@ state {
     variable hasCatFood 0;
     # Began a conversation with Stuart
     variable beganConv 0;
+    # Discovered you needed your keys
+    variable triedCar 0;
 }
 
 location init {
@@ -107,6 +109,7 @@ environment global {
     synonym "6" "six";
     synonym "put" "place";
     synonym "hint" "help" "hints" "give hint" "give me hint";
+    synonym "medallion" "medal";
 
     # hints for all states, more specific the more you ask
     #UGGGHHH
@@ -882,9 +885,14 @@ environment global {
                     }
                 }
                 else {
-                    respond {
-                        What package? You wish you had a package.
-                        Packages make life better.
+                    if `origPackageOpen` {
+                        trigger look empty package;
+                    }
+                    else {
+                        respond {
+                            What package? You wish you had a package.
+                            Packages make life better.
+                        }
                     }
                 }
             }
@@ -1002,6 +1010,15 @@ environment global {
                     it to its owner.
                 }
             }
+            else {
+                respond {
+                    You don't think you bought a creepy
+                    medallion, though you could be wrong.
+                    Maybe you should check the opened
+                    package to see the address that it
+                    was supposed to go to.
+                }
+            }
         }
         else {
             respond {
@@ -1024,6 +1041,24 @@ environment global {
         else {
             respond {
                 A medallion! That would be cool to lick.
+                Unfortunately, you don't have one.
+            }
+        }
+    }
+    command wear medallion {
+        if `hasMedallion` {
+            respond {
+                You place the medallion over your neck.
+                You suddenly feel a strong affection
+                for cats. Or maybe you just always felt
+                a strong affection for cats. You love cats!
+                You remove the medallion. Sure enough,
+                you still love cats.
+            }
+        }
+        else {
+            respond {
+                A medallion! That would be cool to wear.
                 Unfortunately, you don't have one.
             }
         }
@@ -1083,6 +1118,9 @@ environment global {
                 if `eq hintsState "address"` {
                     set hintsState "post";
                     set hintsCounter 0;
+                    if `and triedCar (not hasKeys)`{
+                        set hintsState "keys";
+                    }
                 }
             }
         }
@@ -1188,19 +1226,19 @@ location bedroom house {
     
     command look {
         respond {
-                You've done a really great job decorating.
-                Your dirty clothes make a very modern,
-                chic floor covering.
-                Really accents your Swedish self-assembled furniture.
+            You've done a really great job decorating.
+            Your dirty clothes make a very modern,
+            chic floor covering.
+            Really accents your Swedish self-assembled furniture.
 
-                Most of the room is taken up by your
-                bed, but you've managed to
-                squeeze in a dresser and a night table.
-                There's a closet in the back corner only
-                accessible by clambering over your
-                furniture. So stylish.
+            Most of the room is taken up by your
+            bed, but you've managed to
+            squeeze in a dresser and a night table.
+            There's a closet in the back corner only
+            accessible by clambering over your
+            furniture. So stylish.
 
-                Your bedroom opens up onto the living room.
+            Your bedroom opens up onto the living room.
         }
     }
     command take blankets {
@@ -1235,6 +1273,8 @@ location bedroom house {
                     drawer was a cheap plastic pen
                     advertising BERT'S TREE TRIMMING. Too 
                     bad you don't have any trees to trim.
+
+                    You pocket the pen.
                 }
                 set dresserOpen 1;
                 set hasPen 1;
@@ -1314,6 +1354,10 @@ location bedroom house {
     } 
     object bed {
         There are so many blankets. You may be cold blooded.
+
+        For a moment, you ponder whether blankets
+        would even help if you were cold blooded. Then
+        you remember that you love blankets.
     }
     object blankets {
         Blue. Carefully piled.
@@ -2682,6 +2726,11 @@ location living-room house {
         beetle than a mouse if you had to compare your hardware 
         to living creatures.
     }
+    object tv {
+        The football game isn't on for another three hours.
+        You're pretty sure your television is as disappointed
+        by the wait as you are.
+    }
     
 }
 
@@ -2724,6 +2773,7 @@ location outdoors global {
     }
     command drive car {
         if `not hasKeys` {
+            set triedCar 1;
             respond {
                 You walk over the car and yank on the door handle.
                 The door is locked. You search your pockets for keys, 
@@ -2942,6 +2992,20 @@ location postoffice global {
             Besides the counter and inattentive employee, the 
             room contains some shelves of packing and shipping
             necessities.
+        }
+    }
+    command talk man {
+        respond {
+            You start talking. You continue talking. You take
+            a convenitent break from talking, during which
+            time the man might interject some words into
+            your polite, but one-sided conversation. 
+
+            Nope, not going to happen. That game of solitaire
+            must be rather interesting. You could scream, 
+            hit him, flail, burn the post office to the ground,
+            and he wouldn't notice. In fact, you inform him
+            of this observation. He doesn't respond.
         }
     }
     command look man {
@@ -3542,13 +3606,14 @@ environment puzzle-room global{
     synonym "bookshelf" "books";
     synonym "pet" "touch";
     synonym "read passion in paradise" "read passion in pot" "read passion in poppy field" "read passion in pompeii";
-    synonym "kurt vonnegut novel" "kurt vonnegut novels";
+    synonym "vonnegut" "vonnegut novel" "kurt vonnegut novel"
+    "vonnegut novels" "kurt vonnegut novels";
     synonym "book in another language" "books in another language" "a book in another language" "the book in another language";
     synonym "fantasy series" "fantasy book" "fantasy books";
     synonym "leave medallion" "leave package" "drop medallion" "drop package";
     synonym "cabinet" "filing cabinet" "drawers";
     synonym "open" "look through";
-    synonym "food" cat food";
+    synonym "food" "cat food";
     synonym "feed cat" "use food with cat" 
     "use cat food with cat" "give food to cat" 
     "give cat food to cat" "give cat food cat" 
@@ -3674,7 +3739,7 @@ environment puzzle-room global{
             }
         }
     }
-    command take kurt vonnegut novel {
+    command take vonnegut {
         if `eq heldBook "a Kurt Vonnegut novel"` {
             respond {
                 You're already holding `heldBook`. You caress
@@ -3853,7 +3918,7 @@ environment puzzle-room global{
         That darned cat is lurking in the hallway. She hisses at you
         every time you try to get near her.
     }
-    object kurt vonnegut novel {
+    object vonnegut {
         You like Vonnegut, but you're not really in love
         with him. He's no Santiago.
 
@@ -4026,7 +4091,7 @@ location room-one puzzle-room {
             }
         }
     }
-    command put kurt vonnegut novel on chair {
+    command put vonnegut on chair {
         if `eq heldBook "a Kurt Vonnegut novel"` {
             respond {
                 You can't believe you! This book is in no
