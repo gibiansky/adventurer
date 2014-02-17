@@ -1533,10 +1533,8 @@ location entryway house {
             set frontDoor "closed";
             if `mailWomanPresent` {
                 respond {
-                    You politely close the door in the
-                    `mailPersonName`'s face. She doesn't
-                    seem to mind, and makes no indication
-                    that she will leave. After all, she has
+                    You politely close the door in the `mailPersonName`'s face. She doesn't
+                    seem to mind, and makes no indication that she will leave. After all, she has
                     your package.
                 }
             }
