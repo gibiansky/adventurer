@@ -289,18 +289,5 @@ applySynonyms syns str =
                           replace ws (words to) s in
         foldl' replacer string (map words from)
 
-    {-
-    postSpace = (++ " ")
-    preSpace = (' ':)
-    infSpace = preSpace . postSpace
-    isApplicable (Synonym to from) = 
-      let infixMatch = any (`isInfixOf` str) $ map infSpace from
-          prefixMatch = any (`startswith` str) $ map postSpace from in
-        infixMatch || prefixMatch
-    doApply string (Synonym to from) =
-      let replacer s rep = trace ("replacing " ++ rep ++ " " ++ s) $ replace (preSpace rep) (preSpace to) . replace (postSpace rep) (postSpace to) $ s in
-        foldl' replacer string from
-        -}
-
 findEnvWithName :: EnvironmentName -> Game -> Environment
 findEnvWithName name game = fromJust $ find ((== name) . envName) $ environments $ episode game

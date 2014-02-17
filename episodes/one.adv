@@ -1452,11 +1452,11 @@ location entryway house {
                 your mouth can form semi-intelligible words
                 that may be accurately interpreted by
                 the woman in front of you. What would you like to say?
-
+                 
                 (say 1) Nice to meet you!
-                
+                 
                 (say 2) May I borrow a pen?
-                
+                 
                 (say 3) Bow down to me, mortal!
             }
         }

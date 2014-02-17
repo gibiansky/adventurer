@@ -11,7 +11,7 @@ import Text.Parsec.String (Parser)
 import Control.Applicative ((<$>), (<*>))
 import Data.Char (isDigit)
 
-import Data.String.Utils (replace)
+import Data.String.Utils (replace, strip, startswith)
 import qualified Data.Map as Map
 
 import Debug.Trace
@@ -164,8 +164,8 @@ parseSynonym = do
 parseObject :: Parser Obj
 parseObject = do
   nameWords <- parseWords
-  braced $ do
-    interpolated <- parseInterpolated
+  stringBraced $ do
+    interpolated <- processPrinted <$> parseInterpolated
     return $ Obj nameWords interpolated
 
 parseWords :: Parser [String]
@@ -248,11 +248,17 @@ parseArg = do
 
 -- | Parse another parser surrounded by braces and whitespace.
 braced :: Parser a -> Parser a
-braced parser = do
+braced = braced' whitespace
+
+stringBraced :: Parser a -> Parser a
+stringBraced = braced' $
+  many (oneOf " \t") >> char '\n'
+
+braced' afterBrace parser = do
   -- Parse opening brace and whitespace.
   whitespace
   char '{'
-  whitespace
+  afterBrace
 
   -- Parse the actual values.
   val <- parser
@@ -302,26 +308,31 @@ respondParser :: Parser Action
 respondParser = do
   whitespace
   string "respond"
-  val <- braced parseInterpolated
+  val <- stringBraced parseInterpolated
   return $ Print $ processPrinted val
 
 processPrinted :: InterpolatedString -> InterpolatedString
 processPrinted (Interpolate pieces) = Interpolate $ map fixStrings pieces
   where
-  fixStrings (Left str) = Left $ replace ('\n' : replicate maxNumSpaces ' ') "" str
-  fixStrings x = x
+    strLines = filter (not . empty) $ lines $ concat [str | Left str <- pieces ]
+    numLeadingSpace = length . takeWhile (== ' ')
+    leading = minimum $ map numLeadingSpace strLines
+    empty = null . strip
 
-  maxNumSpaces :: Int
-  maxNumSpaces = minimum $ map numLeadingSpace $ lines $ joinPieces $ filter isStr pieces
+    fixStrings (Left string) = Left . dropNewlines . unlines . map fixLine . lines $ string
+    fixStrings x = x
 
-  isStr (Left _) = True
-  isStr _ = False
+    dropNewlines ('\n':'\n':rest) = '\n':dropNewlines rest
+    dropNewlines ('\n':rest) = ' ':dropNewlines rest
+    dropNewlines (x:rest) = x:dropNewlines rest
+    dropNewlines [] = []
 
-  joinPieces [] = ""
-  joinPieces (Left str : rest) = str ++ joinPieces rest
-
-  numLeadingSpace :: String -> Int
-  numLeadingSpace str = length $ takeWhile (== ' ') str
+    fixLine str = trace str $
+      if empty str
+      then ""
+      else if startswith (replicate leading ' ') str
+           then drop leading str
+           else str
 
 ifParser :: Parser Action
 ifParser = do
