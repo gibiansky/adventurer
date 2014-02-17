@@ -276,18 +276,31 @@ applySynonyms syns str =
       remaining = filter (not . isApplicable) syns in
     case applicable of 
       [] -> str
-      syns' -> applySynonyms remaining $ foldl' doApply str syns'
+      syns' -> applySynonyms remaining $ unwords $ foldl' doApply pieces syns'
 
   where
+    pieces = words str
+    isApplicable (Synonym to from) = any (`isInfixOf` pieces) $ map words from
+
+    doApply :: [String] -> Synonym -> [String]
+    doApply string (Synonym to from) =
+      let replacer :: [String] -> [String] -> [String]
+          replacer s ws = trace ("replacing " ++ show ws ++ " " ++ show s) $
+                          replace ws (words to) s in
+        foldl' replacer string (map words from)
+
+    {-
+    postSpace = (++ " ")
+    preSpace = (' ':)
+    infSpace = preSpace . postSpace
     isApplicable (Synonym to from) = 
-      let infixMatch = any (`isInfixOf` str) $ map (' ':) from
-          prefixMatch = any (`startswith` str) $ map (++ " ") from in
+      let infixMatch = any (`isInfixOf` str) $ map infSpace from
+          prefixMatch = any (`startswith` str) $ map postSpace from in
         infixMatch || prefixMatch
     doApply string (Synonym to from) =
-      let postSpace = (++ " ")
-          preSpace = (' ':)
-          replacer s rep = trace ("replacing " ++ rep ++ " " ++ s) $ replace (preSpace rep) (preSpace to) . replace (postSpace rep) (postSpace to) $ s in
+      let replacer s rep = trace ("replacing " ++ rep ++ " " ++ s) $ replace (preSpace rep) (preSpace to) . replace (postSpace rep) (postSpace to) $ s in
         foldl' replacer string from
+        -}
 
 findEnvWithName :: EnvironmentName -> Game -> Environment
 findEnvWithName name game = fromJust $ find ((== name) . envName) $ environments $ episode game
