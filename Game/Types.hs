@@ -11,6 +11,8 @@ import Control.Monad (mzero)
 import Data.Aeson
 import Debug.Trace
 import Data.String.Utils (startswith)
+import Data.Char (toLower)
+
 
 import qualified Data.Map as Map
 
@@ -52,7 +54,7 @@ instance ToJSON Command where
   toJSON (Command i cmd Nothing) = toJSON $ Command i cmd $ Just "No response."
   toJSON (Command i cmd (Just response)) = object ["id" .= i, "command" .= cmd, "response" .= response]
 instance FromJSON Command where
-  parseJSON (Object v) = Command <$> return (-1) <*> v .: "command" <*> return Nothing
+  parseJSON (Object v) = Command <$> return (-1) <*> (map toLower <$> v .: "command") <*> return Nothing
 
   -- Commands must be objects, as they are toplevel entities.
   -- (That is, as opposed to "strings" or ints like 3.)
