@@ -95,7 +95,8 @@ environment global {
     synonym "take" "pick up" "get";
     synonym "package" "box";
     synonym "empty package" "torn package" "opened package" "ripped package";
-    synonym "entryway" "entrance" "entry way" "entry-way" "entranceway";
+    synonym "entryway" "entrance" "entry way" "entry-way" 
+    "entranceway";
     synonym "talk" "talk to" "speak" "speak with" 
     "converse" "converse with" "talk with";
     synonym "1" "one";
@@ -118,14 +119,12 @@ environment global {
                     whole day. Take some time too look around
                     this lovely house of yours.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
                     You might just have a package coming.
                     You love packages! You should check the entryway.
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -134,19 +133,18 @@ environment global {
                     Packages!
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "mail"` {
             if `eq hintsCounter 0` {
                 respond {
                     There's a package for you!
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
                     Open the door and get your package!
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -154,25 +152,23 @@ environment global {
                     want you to sign for your package.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "pen"` {
             if `eq hintsCounter 0` {
                 respond {
                     You need to get a pen to sign for your package.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
                     You think you left a pen in your bedroom somewhere.
                 }
-                set hintsCounter 2;
             }
             if `eq hintsCounter 2` {
                 respond {
                     Maybe that pen was in the dresser in your bedroom?
                 }
-                set hintsCounter 3;
             }
             if `gt hintsCounter 2` {
                 respond {
@@ -180,6 +176,7 @@ environment global {
                     pen, and come sign for this package
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "sign"` {
             if `eq hintsCounter 0` {
@@ -187,7 +184,6 @@ environment global {
                     Go sign for that package! Oh man,
                     packages!
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
@@ -195,7 +191,6 @@ environment global {
                     you should go to the mailwoman and
                     sign for you package.
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -203,6 +198,7 @@ environment global {
                     and sign for your package.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `or (eq hintsState "open1") (eq hintsState "open2")` {
             if `eq hintsCounter 0` {
@@ -210,13 +206,11 @@ environment global {
                     Package, package, package!
                     Open it!
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
                     Open your package! Now!
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -230,6 +224,7 @@ environment global {
                     Ok, you have your control back.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "address"` {
             if `eq hintsCounter 0` {
@@ -238,14 +233,12 @@ environment global {
                     not belong to you. Maybe you should find
                     out who it does belong to.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
                     Did you try looking at the empty package?
                     Maybe there's an address on there.
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -254,6 +247,7 @@ environment global {
                     on there.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "post"` {
             if `eq hintsCounter 0` {
@@ -262,7 +256,6 @@ environment global {
                     meant for you. Maybe you should
                     return it to the post office.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
@@ -271,7 +264,6 @@ environment global {
                     order to return that package like
                     a moral and upright citizen.
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -279,6 +271,7 @@ environment global {
                     post office.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "keys"` {
             if `eq hintsCounter 0` {
@@ -288,7 +281,6 @@ environment global {
                     probably in the place you always keep
                     them.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
@@ -298,14 +290,12 @@ environment global {
                     leave your house every once in a while
                     when you eat.
                 }
-                set hintsCounter 2;
             }
             if `eq hintsCounter 2` {
                 respond {
                     You love the feel of cold keys. Maybe
                     you should check the refrgerator.
                 }
-                set hintsCounter 3;
             }
             if `eq hintsCounter 3` {
                 respond {
@@ -313,7 +303,6 @@ environment global {
                     somewhere on the shelves inside the 
                     fridge door.
                 }
-                set hintsCounter 4;
             }
             if `eq hintsCounter 4` {
                 respond {
@@ -321,7 +310,6 @@ environment global {
                     in the refrigerator is just the perfect
                     size for your keys.
                 }
-                set hintsCounter 5;
             }
             if `gt hintsCounter 4` {
                 respond {
@@ -331,6 +319,7 @@ environment global {
                     put them.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "attention"` {
             if `eq hintsCounter 0` {
@@ -340,7 +329,6 @@ environment global {
                     you're going to need to get
                     that man's attention.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
@@ -351,7 +339,6 @@ environment global {
                     those kind of methods. He looks
                     pretty preoccupied, though.
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -361,6 +348,7 @@ environment global {
                     work.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "deliver1"` {
             if `eq hintsCounter 0` {
@@ -373,7 +361,6 @@ environment global {
                     know the address of the man who owns the
                     medallion, so off you go!
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
@@ -381,7 +368,6 @@ environment global {
                     on the opened package. Go get in that car
                     and deliver that package yourself.
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -389,6 +375,7 @@ environment global {
                     the medallion to him.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "findCat"` {
             if `eq hintsCounter 0` {
@@ -396,14 +383,12 @@ environment global {
                     What a nice yard. You should look
                     around and see what you can find.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
                     Have you checked out that tree over
                     there? It's a pretty nice tree.
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -411,6 +396,7 @@ environment global {
                     find anything.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "followCat"` {
             if `eq hintsCounter 0` {
@@ -421,7 +407,6 @@ environment global {
                     you heard that from, but it's probably
                     true.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
@@ -429,7 +414,6 @@ environment global {
                     through the bushes. There might be
                     something interesting behind those bushes.
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -439,6 +423,7 @@ environment global {
                     it must be right.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "enterHouse"` {
             if `eq hintsCounter 0` {
@@ -446,20 +431,17 @@ environment global {
                     Where did that cat go? Maybe
                     you can find her.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
                     That window looks slightly open...
                 }
-                set hintsCounter 2;
             }
             if `eq hintsCounter 2` {
                 respond {
                     Maybe you could get into the house through
                     the window.
                 }
-                set hintsCounter 3;
             }
             if `gt hintsCounter 2` {
                 respond {
@@ -468,6 +450,7 @@ environment global {
                     cat is in there. 
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "burn"` {
             if `eq hintsCounter 0` {
@@ -476,7 +459,6 @@ environment global {
                     feels really suggestive. You feel
                     like imitating it.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
@@ -486,14 +468,12 @@ environment global {
                     uncontrollable desires, but now is not the
                     time. Now is the time for fire!
                 }
-                set hintsCounter 2;
             }
             if `eq hintsCounter 2` {
                 respond {
                     You're going to need some flint and
                     paper to start this fire.
                 }
-                set hintsCounter 3;
             }
             if `eq hintsCounter 3` {
                 respond {
@@ -501,7 +481,6 @@ environment global {
                     collection and those books on the 
                     bookshelf would be good for paper.
                 }
-                set hintsCounter 4;
             }
             if `eq hintsCounter 4` {
                 respond {
@@ -511,7 +490,6 @@ environment global {
                     therapist, but we'll worry about that 
                     later.
                 }
-                set hintsCounter 5;
             }
             if `eq hintsCounter 5` {
                 respond {
@@ -521,7 +499,6 @@ environment global {
                     the chair, grab some flint, and light 
                     yourself a fire.
                 }
-                set hintsCounter 6;
             }
             if `gt hintsCounter 5` {
                 respond {
@@ -531,6 +508,7 @@ environment global {
                     on fire and watch it burn. Burn!
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "fire"` {
             if `eq hintsCounter 0` {
@@ -538,13 +516,11 @@ environment global {
                     The room's on fire. Do I
                     reeally need to tell you to get out?
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
                     Leave the room. It's on fire! Really!
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -561,6 +537,7 @@ environment global {
                     control. Don't make me regret this.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "scorch"` {
             if `eq hintsCounter 0` {
@@ -569,14 +546,12 @@ environment global {
                     on the ground over there.
                     You wonder what they look like.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
                     Look at those scorch marks. You think
                     they might have some information.
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -586,6 +561,7 @@ environment global {
                     scorch marks.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "notes"` {
                 if `eq hintsCounter 0` {
@@ -594,7 +570,6 @@ environment global {
                     searching through a couch for old love
                     notes. It felt rather suggestive.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
@@ -602,7 +577,6 @@ environment global {
                     wonder if it contains anything
                     interesting.
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -611,6 +585,7 @@ environment global {
                     suggestive.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "organize"` {
             if `eq hintsCounter 0` {
@@ -620,7 +595,6 @@ environment global {
                     and organize the cabinet. You've followed
                     worse advice before.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
@@ -631,7 +605,6 @@ environment global {
                     doesn't seem to open, so you see no reason
                     to worry about it.
                 }
-                set hintsCounter 2;
             }
             if `eq hintsCounter 2` {
                 respond {
@@ -643,14 +616,12 @@ environment global {
                     are lying in the opposite drawers than the ones
                     they ask for.
                 }
-                set hintsCounter 3;
             }
             if `eq hintsCounter 3` {
                 respond {
                     The yellow paper is lying. You should put
                     it in drawer 2.
                 }
-                set hintsCounter 4;
             }
             if `gt hintsCounter 3` {
                 respond {
@@ -659,6 +630,7 @@ environment global {
                     in either of the drawers.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "cabinet"` {
             if `eq hintsCounter 0` {
@@ -668,7 +640,6 @@ environment global {
                     can see what's in the thrid drawer
                     now.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
@@ -676,7 +647,6 @@ environment global {
                     looks like it has something inside
                     it. You should check it out.
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -691,14 +661,12 @@ environment global {
                     a cat watching you. You wonder what you
                     could possibly do in this situation.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
                     Here kitty kitty. Look you have food!
                     Eat the food, kitty kitty!
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -707,6 +675,7 @@ environment global {
                     the cat.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "giveMedallion"` {
             if `eq hintsCounter 0` {
@@ -716,7 +685,6 @@ environment global {
                     might like you more if you gave him the
                     medallion.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
@@ -726,7 +694,6 @@ environment global {
                     think it will make him like you more.
                     (But it probably will!)
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -734,6 +701,7 @@ environment global {
                     his medallion so youcan get out of here.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "deliver2"` {
             if `eq hintsCounter 0` {
@@ -742,7 +710,6 @@ environment global {
                     once again,the package does not belong
                     to you. You should give it to Emily. 
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
@@ -750,14 +717,12 @@ environment global {
                     it at her doorstep. You probably won't
                     see her, but that's ok.
                 }
-                set hintsCounter 2;
             }
             if `eq hintsCounter 2` {
                 respond {
                     Say goodbye to Mr. Robertson and drive
                     to Emily's house to leave her package
                 }
-                set hintsCounter 3;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -766,6 +731,7 @@ environment global {
                     her package.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "chat"` {
             if `eq hintsCounter 0` {
@@ -775,14 +741,12 @@ environment global {
                     look outside her door otherwise. She
                     will be on chat, though.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
                     Turn on your computer in your living room
                     to talk to Emily.
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -791,6 +755,7 @@ environment global {
                     package at her door.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "yourPackage"` {
             if `eq hintsCounter 0` {
@@ -798,14 +763,12 @@ environment global {
                     Emily left you a package! You should go
                     get it.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
                     The package will be right outside your door.
                     Packages!
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -813,6 +776,7 @@ environment global {
                     get your package. Packagepackagepackage!
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "tea"` {
             if `eq hintsCounter 0` {
@@ -821,14 +785,12 @@ environment global {
                     You should buy some tea! You bet Swifts
                     sells tea.
                 }
-                set hintsCounter 1;
             }
             if `eq hintsCounter 1` {
                 respond {
                     Go on to your computer and buy tea from
                     Swifts.
                 }
-                set hintsCounter 2;
             }
             if `gt hintsCounter 1` {
                 respond {
@@ -836,6 +798,7 @@ environment global {
                     open Swifts, and buy some tea.
                 }
             }
+            set hintsCounter `add hintsCounter 1`;
         }
         if `eq hintsState "won"` {
             respond {
@@ -1065,6 +1028,20 @@ environment global {
             }
         }
     }
+    command look keys {
+        if `hasKeys` {
+            respond {
+                Jingle, jingle, jangle! They're still nice
+                and cold from the fridge. Just the way you
+                like them.
+            }
+        }
+        else {
+            respond {
+                Where did those keys go?
+            }
+        }
+    }
     command look lighter {
         respond { 
             Your trusty lighter! You take it everywhere.
@@ -1115,6 +1092,9 @@ environment global {
                 That would mean you once had a full box.
             }
         }
+    }
+    object jacket {
+        So warm. So fuzzy. Fuzzy warm.
     }
 }
     
@@ -1368,7 +1348,7 @@ location entryway house {
         }
         else {
             set frontDoor "open";
-            if `mailwomanPresent` {
+            if `mailWomanPresent` {
                 respond {
                     A young woman carrying a brown package
                     under her arm stands in the doorway,
@@ -1760,7 +1740,7 @@ location kitchen house {
     synonym "butter" "butter dish" "butter dish thing" "little butter dish thing";
     synonym "jars" "jar" "jam" "jams" "marmalade" "condiments";
     synonym "clean" "wash";
-    synonym "dishes" "dish" "plates" "plate";
+    synonym "dishes" "plates" "plate";
     synonym "shelves" "fridge shelves";
     
     command look {
@@ -1813,8 +1793,8 @@ location kitchen house {
         else {
             respond {
                 Your fridge is closed. On some people's fridges, they
-                proudly display cute picture drawn by their 
-                four-year-olds alongside the report card alongside the
+                proudly display cute pictures drawn by their 
+                four-year-olds alongside the
                 report card pronouncing the mediocre achievements of
                 their middle schooler. But you don't have and kids.
                 And if you did, you certainly wouldn't want to show off
@@ -1995,7 +1975,7 @@ location kitchen house {
         across the entire front of the stove is
         a more recent acquisition.
     }
-    object Steve {
+    object steve {
         Steve has been with you from the
         day you spilled a failed attempt
         at a cream sauce and refused to clean it up for a month.
@@ -2129,7 +2109,7 @@ location living-room house {
     synonym "turn on tv" "watch tv" "play tv";
     synonym "open" "navigate" "navigate to" "click";
     synonym "swifts" "browser" "internet" "the internet" "google";
-    synonym "giant pen" "giant pens";
+    synonym "pen" "pens" "giant pen" "giant pens";
     synonym "something" "anything" "random item" 
     "random thing" "stuff";
     synonym "close" "leave" "exit";
@@ -2263,7 +2243,7 @@ location living-room house {
         }
         set onSwifts 1;
     }
-    command buy giant pens {
+    command buy pen {
         if `onSwifts` {
             respond {
                 That price is tempting, but you resist 
@@ -2710,8 +2690,8 @@ location living-room house {
 # just outside the house
 location outdoors global {
     synonym "inside" "house" "indoors";
-    synonym "open car" "get in car" "drive car";
-    synonym "drive" "go";
+    synonym "drive car" "open car" "get in car";
+    synonym "drive" "go" "drive to";
     synonym "emily" "emily's" "emily's house" 
     "emily house" "emily's place";
     synonym "car" "vehicle";
@@ -2934,9 +2914,11 @@ location emily-house global {
 location postoffice global {
     synonym "man" "employee" "worker" "kleisthenes" "person" "guy";
     synonym "scream" "yell";
-    synonym "wave your arms" "wave arms" "wave" "flail";
+    synonym "flail" "wave your arms" "wave arms" "wave";
     synonym "punch" "hit" "slap" "hurt" "harm" "kill" "murder";
-    synonym "burn the post office down" "burn down" "burn post office" "burn" "start fire" "light fire" "burn post office down";
+    synonym "burn" "burn the post office down" "burn down" 
+    "burn post office" "start fire" "light fire" 
+    "burn post office down";
     synonym "buy" "purchase" "take";
     synonym "peanuts" "packaging peanuts" "packing peanuts";
     synonym "boxes" "packing boxes" "packaging boxes";
@@ -2947,7 +2929,9 @@ location postoffice global {
     synonym "eye" "creepy eye" "yellow eye" "yellow creepy eye";
     synonym "solitaire" "game";
     synonym "home" "back";
-    synonym "address" "address on package" "package address" "mr. robertson" "mr. robertson's house" "robertson's house" "robertson" "13310 podwoic avenue";
+    synonym "address" "address on package" "package address"
+     "mr robertson" "mr robertson's house"
+    "robertson's house" "robertson" "13310 podwoic avenue";
     synonym "tape" "packing tape" "packaging tape";
     
     command look {
@@ -3012,7 +2996,7 @@ location postoffice global {
             }
         }
     }
-    command wave your arms {
+    command flail {
         respond {
             You flail wildly. Nothing happens.
         }
@@ -3071,7 +3055,7 @@ location postoffice global {
             }
         }
     }
-    command burn the post office down {
+    command burn {
         respond {
             This seems really inadvisable. You should at 
             least wait until you receive your real package.
@@ -3567,7 +3551,10 @@ environment puzzle-room global{
     synonym "filing cabinet" "cabinet" "drawers";
     synonym "open" "look through";
     synonym "cat food" "food";
-    synonym "feed cat" "use food with cat" "use cat food with cat" "give food to cat" "give cat food to cat" "give cat food cat" "give food cat" "give cat food" "give cat cat food";
+    synonym "feed cat" "use food with cat" 
+    "use cat food with cat" "give food to cat" 
+    "give cat food to cat" "give cat food cat" 
+    "give food cat" "give cat food" "give cat cat food";
     synonym "alarm" "fire alarm";
     synonym "painting" "picture" "image";
     synonym "leave room" "leave" "walk out" "go door";
