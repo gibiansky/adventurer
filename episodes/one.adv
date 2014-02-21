@@ -171,6 +171,7 @@ environment global {
     synonym "money" "some money";
     synonym "ticket" "old ticket stub" "ticket stub" "stub" ;
     synonym "rabbit" "giant stuffed rabbit" "stuffed rabbit";
+    synonym "break" "destroy";
 
     # Some display of the items you have, I guess.
     command inventory {
@@ -1271,6 +1272,25 @@ environment global {
             }
         }
     }
+
+    command break game {
+        respond {
+            Bzzzzzzzzz.....zap!
+
+            Sadly, you fail to break the game, because this game is
+            invincible.
+        }
+    }
+
+    # Just for Devon
+    command break *{
+        respond {
+            You raise your arms above your head, ready to unleash
+            your smashing powers. Then you stop yourself. Today is
+            not a day for destruction.
+        }
+    }
+
     object jacket {
         So warm. So fuzzy. Fuzzy warm.
     }
@@ -1294,7 +1314,6 @@ environment global {
     }
 }
     
-
 environment house global {
     synonym "outside" "outdoors";
 
@@ -1339,9 +1358,19 @@ environment house global {
         }
         else {
             if `eq frontDoor "closed"` {
-                respond {
-                    The front door is closed. How can you
-                    ever go outside?
+                if `mailWomanPresent` {
+                    respond {
+                        The front door is closed. How can you
+                        ever go outside?
+                    }
+                }
+                else {
+                    respond {
+                        You first open the front door and stare
+                        bleakly into the outside world.
+                    }
+                    set frontDoor "open";
+                    trigger go outside;
                 }
             }
             else {
@@ -1380,7 +1409,8 @@ location bedroom house {
     synonym "blankets" "blanket" "covers" "cover";
     synonym "sleep" "nap" "doze off" "get in bed";
     synonym "clothes" "clothing" "shirt" "shirts";
-    synonym "clean" "tidy";
+    synonym "clean" "tidy" "clean room" "tidy up" "tidy room"
+    "pick up clothes";
     
     command look {
         respond {
@@ -1456,7 +1486,7 @@ location bedroom house {
             }
         }
     }
-    command clean room {
+    command clean {
         respond {
             You pick up a shirt and put it down again.
             It's so much easier to find clothing 
@@ -1520,7 +1550,6 @@ location bedroom house {
     object blankets {
         Blue. Carefully piled.
     }
-
 }
 
 # Set up for entryway
@@ -1937,17 +1966,19 @@ location kitchen house {
     synonym "take" "eat";
     synonym "fridge" "refrigerator" "fridge door" "refrigerator door";
     synonym "cheese" "boxes";
-    synonym "butter" "butter dish" "butter dish thing" "little butter dish thing";
+    synonym "butter"  "little butter dish thing" 
+    "butter dish thing" "butter dish";
     synonym "jars" "jar" "jam" "jams" "marmalade" "condiments";
     synonym "clean" "wash";
-    synonym "dishes" "plates" "plate";
+    synonym "dishes" "plates" "plate" "dish";
     synonym "shelves" "fridge shelves";
     
     command look {
         respond {
             Your kitchen looks exceptionally clean today. 
             Last night you remembered to put all of the
-            perishable food back in the refrigerator, so it 
+            perishable food back in the refrigerator
+            that's in the corner of the room, so it 
             smells better than usual as well. You only
             have half of the pantry spread out across the counters 
             in an elaborate pyramid of food, and
@@ -2324,6 +2355,11 @@ location living-room house {
     synonym "emoticon" "smiley" "smiley face";
     synonym "legs" "leg" "desk legs" "desk leg";
     synonym "q" "q key";
+    synonym "everything" "all of things" "all things" "all";
+    synonym "marker" "markers" "scented markers" "scented marker";
+    synonym "armchair" "chair" "florid armchair" "florid chair";
+    synonym "soap" "bar of soap" "bars of soap" "soap bar"
+    "soap bars" "bar soap" "bars soap";
 
     command look {
         respond {
@@ -2458,6 +2494,67 @@ location living-room house {
             }
         }
     }
+    command buy everything {
+        if `onSwifts` {
+            respond {
+                You start placing things in your cart. A bar 
+                of soap, a florid armchair, some scented markers...
+
+                After the 137th item, your arm gets a little tired and
+                the price tag on your cart is frightening. You cancel
+                all of your purchases.
+            }
+        }
+        else {
+            respond {
+                Swifts sells everything! You should buy it all of
+                everything there!
+            }
+        }
+    }
+
+    command buy soap {
+        if `onSwifts` {
+            respond {
+                You're very conservative about soap usage,
+                so that bar you bought last year is less than halfway
+                gone. You don't need another one right now.
+            }
+        }
+        else {
+            respond {
+                I bet Swifts sells those! You should check!
+            }
+        }
+    }
+    command buy armchair {
+        if `onSwifts` {
+            respond {
+                The armchair looks pretty nice, but the upholstery clashes
+                with the pattern of the dirty laundry on your floor.
+            }
+        }
+        else {
+            respond {
+                I bet Swifts sells those! You should check!
+            }
+        }
+    }
+    command buy marker {
+        if `onSwifts` {
+            respond {
+                The yellow one smells like lemon!
+                The blue one smells like raspberries! You are
+                confused why some people think raspberries are blue,
+                which is enough to keep you from buying these markers.
+            }
+        }
+        else {
+            respond {
+                I bet Swifts sells those! You should check!
+            }
+        }
+    }
     command browse swifts {
         if `onSwifts` {
             respond {
@@ -2556,6 +2653,20 @@ location living-room house {
         else {
             respond {
                 I bet Swifts sells those! You should check!
+            }
+        }
+    }
+    command buy * {
+        if `onSwifts` {
+            respond {
+                Man, you really want to buy that, but
+                you have a lot of self restraint, which you are
+                demonstrating really well.
+            }
+        }
+        else {
+            respond {
+                I bet Swifts sells that! You should check!
             }
         }
     }
@@ -2888,8 +2999,7 @@ location living-room house {
         The football game isn't on for another three hours.
         You're pretty sure your television is as disappointed
         by the wait as you are.
-    }
-    
+    } 
 }
 
 # just outside the house
@@ -2897,7 +3007,7 @@ location outdoors global {
     synonym "inside" "house" "indoors";
     synonym "drive car" "open car" "get in car";
     synonym "drive" "go" "drive to";
-    synonym "emily" "emily's" "emily's house" 
+    synonym "emily" "emilys" "emilys house" 
     "emily house" "emily's place";
     synonym "car" "vehicle";
     synonym "post office" "post-office" "postoffice";
@@ -3010,7 +3120,7 @@ location outdoors global {
             }
         }
     }
-    command dirve emily {
+    command drive emily {
         if `not hasKeys` {
             trigger drive car;
         }
@@ -3030,10 +3140,13 @@ location outdoors global {
 
 location emily-house global {
     synonym "plant" "potted plant" "dead plant";
-    synonym "knock" "knock on door" "knock at door";
+    synonym "knock" "knock on door" "knock at door" "knock door" 
+    "ring doorbell" "call for emily" "yell" "call";
     synonym "open door" "enter" "enter house" "enter door";
     synonym "deliver" "leave" "give emily" "give";
     synonym "drive" "go" "drive to";
+    synonym "package" "package emily" "package to emily";
+    synonym "home" "house" "your home" "your house";
     synonym "post office" "post-office" "postoffice";
 
     command look {
@@ -3056,6 +3169,9 @@ location emily-house global {
             You probably shouldn't break into Emily's house.
             Breaking into other people's houses seems rude.
         }
+    }
+    command give package emily {
+        trigger deliver package;
     }
     command deliver package {
         if `hasEmilyPackage` {
@@ -3121,14 +3237,15 @@ location postoffice global {
     synonym "man" "employee" "worker" "kleisthenes" "person" "guy";
     synonym "scream" "yell";
     synonym "flail" "wave your arms" "wave arms" "wave";
-    synonym "punch" "hit" "slap" "hurt" "harm" "kill" "murder";
-    synonym "burn" "burn the post office down" "burn down" 
-    "burn post office" "start fire" "light fire" 
-    "burn post office down";
+    synonym "punch" "hit" "slap" "hurt" "harm" "kill" "murder" "kick";
+    synonym "burn" "burn the post office down" 
+    "burn post office down" "burn post office to ground" "burn down" 
+    "burn post office" "start fire" "light fire";
     synonym "buy" "purchase" "take";
     synonym "peanuts" "packaging peanuts" "packing peanuts";
     synonym "boxes" "packing boxes" "packaging boxes";
-    synonym "chocolate" "chocolate bar" "chocolate bars" "packaging chocolate";
+    synonym "chocolate" "chocolate bar" "chocolate bars"
+     "packaging chocolate";
     synonym "steal" "eat";
     synonym "cards" "card";
     synonym "drive" "drive to" "go";
@@ -3411,6 +3528,10 @@ location postoffice global {
         These ones are the environmentally friendly kind that dissolve
         in water. Slightly less of a choking hazard.
     }
+    object boxes {
+        Boxes that do not have things inside of them. Way less interesting
+        than boxes that do have things inside of them.
+    }
     object chocolate {
         Yummmmmmmmmm
     }
@@ -3446,11 +3567,13 @@ location robertson-front-door global {
     synonym "bush" "bushes";
     synonym "remove" "take off";
     synonym "open door" "enter" "enter house" "enter door";
-    synonym "leave package" "leave medallion" "leave package at door" "leave medallion at door" "leave package at house" "leave medallion at house";
+    synonym "leave package" "leave medallion" "leave package at door"
+     "leave medallion at door" "leave package at house"
+      "leave medallion at house";
     synonym "follow cat" "go after cat" "follow footprints" "enter bushes" "go bushes";
     synonym "drive" "drive to" "go";
-    synonym "emily" "emily's" "emily's house" 
-    "emily house" "emily's place";
+    synonym "emily" "emilys" "emilys house" 
+    "emily house" "emilys place";
     synonym "post office" "post-office" "postoffice";
     synonym "snow" "ground";
     synonym "bushes" "bush" "plant" "plants";
@@ -5411,9 +5534,26 @@ location room-four puzzle-room {
                     "Yeah, that might be a good idea," he says. "I was
                     thinking about closing the window soon since
                     it's getting cold in here."
+                }
+                if `not (eq heldBook "None")` {
+                    respond {
+                        You dig into your pockets and pull out `heldBook`.
+                        "Here", you say. "This somehow ended up in my
+                        pocket."
 
+                        "How strange!" he responds, with a delighted smile.
+                        That book has been missing for weeks. 
+                        He takes `heldBook` from you and carefully places it
+                        on the bookshelf beside the copy of "Leaves of Grass".
+                        You feel a little confused, but you're not quite sure
+                        why.
+                    }
+                    set heldBook "None";
+                }
+                respond {
                     You take one last look at that perfect smile
-                    that he would have if he just smiled, then squeeze
+                    that he would have on his face if he 
+                    just smiled, then squeeze
                     yourself back through the open window. You're
                     pretty sure one of the reindeer winks at you
                     as you pass by it while getting a running
