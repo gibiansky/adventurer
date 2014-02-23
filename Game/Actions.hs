@@ -61,13 +61,13 @@ runCommand commandStr =
         return (bytes, log)
 
 -- | Ignoring the input, return the command history encoded as JSON.
-getHistory :: Lazy.ByteString -> State Game Lazy.ByteString
+getHistory :: Lazy.ByteString -> State Game (Lazy.ByteString, String)
 getHistory _ = do
   -- Get all history from the game state.
   commands <- gets history
 
   -- Encode it as a JSON bytestring.
-  return $ encode commands
+  return (encode commands, "history-request")
 
 --- Module-private functions ---
 --------------------------------

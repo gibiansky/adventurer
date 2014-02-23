@@ -16,12 +16,13 @@ import Snap.Http.Server
 import Control.Concurrent.MVar
 import Control.Monad.IO.Class
 import Control.Monad.State
-import Data.ByteString.Lazy hiding (drop, filter, readFile, zipWith, map, putStrLn, zip, find, split)
+import Data.ByteString.Lazy hiding (drop, filter, readFile, writeFile, zipWith, map, putStrLn, zip, find, split)
 import System.Environment
 import Data.Maybe (fromJust)
 import Data.Aeson
 import Data.List (find)
 import Data.String.Utils (replace, split)
+import System.Directory (doesFileExist)
 
 -- My imports.
 import Game.Types
@@ -63,7 +64,8 @@ main = do
 
 logString :: String -> String -> IO ()
 logString fname str = do
-  contents <- readFile fname
+  contents <- doesFileExist fname >>= \exists ->
+    if exists then readFile fname else return ""
   let newContents = contents ++ str
   Prelude.writeFile fname newContents
 
@@ -113,15 +115,15 @@ site st =
              contents <- readFile $ "episodes/" ++ episode ++ ".adv"
              let Right gameEp = parseString contents
                  game = gameFromEpisode gameEp
-                 (out, (newGame, log)) = runState (rt input) game
+                 ((out, log), newGame) = runState (rt input) game
              return (ServerState $ Map.insert key newGame state, (out, log))
              
            Just game -> 
-             let (out, (newGame, log)) = runState (rt input) game in
+             let ((out, log), newGame) = runState (rt input) game in
                return (ServerState $ Map.insert key newGame state, (out, log))
 
-      id <- getParam "id"
-      logString id log
+      Just id <- fmap Chars.unpack <$> getParam "id"
+      liftIO $ logString id log
 
       -- Write the response back to the client.
       writeLBS response
@@ -135,7 +137,7 @@ site st =
             lastId = 0,
             gameState = initState episode
           } in
-        run (Command 0 "start" Nothing) pregame
+        fst $ run (Command 0 "start" Nothing) pregame
       where
         findRoom :: Episode -> String -> Location
         findRoom episode name = fromJust $ find ((== name) . envName . unLoc) (rooms episode)
