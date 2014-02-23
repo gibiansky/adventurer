@@ -67,14 +67,14 @@ getHistory _ = do
   commands <- gets history
 
   -- Encode it as a JSON bytestring.
-  return (encode commands, "history-request")
+  return (encode commands, "")
 
 --- Module-private functions ---
 --------------------------------
 
 logError :: Game -> String -> String
 logError game cmd =
-  printf "-----\nErr:\t\nCmd: '%s'\n\tLoc: %s\n-----\n\n" cmd (envName . unLoc . currentRoom $ game)
+  printf "-----\nErr:\tCmd: '%s'\n\tLoc: %s\n-----\n" cmd (envName . unLoc . currentRoom $ game)
 
 logCmd :: String -> [String] -> String
 logCmd inp match = printf "Cmd: '%s' -> '%s'\n" inp $ unwords match
@@ -100,12 +100,12 @@ run Command { commandString = cmdstr } game =
          --
          -- We use a writer to keep track of action output, which is why we need the monadic fold.
          -- See 'runAction' for more detail.
-         let (game', ActionOutput cmdOutput log) = runWriter $ foldM runAction game actions
+         let (game', ActionOutput log cmdOutput) = runWriter $ foldM runAction game actions
              -- Create the new command with the command output and a new ID.
              newCommand = Command (lastId game) cmdstr $ Just cmdOutput in
 
            -- Create the new game with updated history, command counts, and last used ID.
-           (game' {history = history game ++ [newCommand], lastId = 1 + lastId game}, logCmd log words)
+           (game' {history = history game ++ [newCommand], lastId = 1 + lastId game}, logCmd cmdstr words)
 
 -- Convert an evaluated expression into a 1 or 0
 getBool :: Either Int String -> Bool
@@ -239,6 +239,7 @@ noSuchCommand = Just "error: command unavailable."
 
 findMatchingCommand :: String -> Game -> Maybe CommandPattern
 findMatchingCommand cmdstr game = case trace ("syn " ++ synonymedStr ++ " from " ++ cmdstr) $ words synonymedStr of
+  ["look"] -> traceShow cmdResult cmdResult
   "look":objwords -> case objResult objwords of
     Nothing -> trace ("Failing to find obj " ++ show objwords) cmdResult
     Just (Obj name description) -> Just $ Pattern ("look":name) [Print description]
@@ -246,7 +247,7 @@ findMatchingCommand cmdstr game = case trace ("syn " ++ synonymedStr ++ " from "
   where
     env = unLoc $ currentRoom game
     syns = findSynonyms game env
-    synonymedStr = applySynonyms syns (cmdstr ++ " ")
+    synonymedStr = applySynonyms syns cmdstr
     cmdResult = findMatchingCommand' synonymedStr game env
     objResult objwords = findMatchingObject objwords game $ unLoc $ currentRoom game
 

@@ -63,11 +63,7 @@ main = do
       quickHttpServe $ site st
 
 logString :: String -> String -> IO ()
-logString fname str = do
-  contents <- doesFileExist fname >>= \exists ->
-    if exists then readFile fname else return ""
-  let newContents = contents ++ str
-  Prelude.writeFile fname newContents
+logString = Prelude.appendFile
 
 site :: MVar ServerState -> Snap ()
 site st =
