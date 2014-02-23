@@ -13,12 +13,14 @@ module Game.Actions (
 
 import Control.Monad (foldM, join)
 import Control.Applicative
-import Control.Monad.State (State, modify, gets)
+import Control.Monad.State (State, modify, gets, get, put)
 import Control.Monad.Writer (runWriter, Writer, tell)
 import Data.Aeson (encode, decode)
 import Data.List (find, foldl', isInfixOf)
 import Data.List.Utils (replace, startswith)
 import Data.Maybe (fromJust, fromMaybe)
+import Data.Monoid 
+import Text.Printf
 
 import qualified Data.Map as Map
 import qualified Data.ByteString.Lazy as Lazy
@@ -27,13 +29,22 @@ import Debug.Trace
 
 import Game.Types
 
+data ActionOutput = ActionOutput { actionLog :: String, actionOut :: String  }
+
+instance Monoid ActionOutput where
+  mappend (ActionOutput log out) (ActionOutput log' out') = ActionOutput (log ++ log') (out ++ out')
+  mempty = ActionOutput "" ""
+
+output = tell . ActionOutput ""  
+log str = tell $ ActionOutput str ""
+
 --- External interface ---
 --------------------------
 
 -- | Given a JSON-encoded command from the client, parse the command,
 -- | run all actions that are triggered, update the game state, and
 -- | return the response as a ByteString.  
-runCommand :: Lazy.ByteString -> State Game Lazy.ByteString
+runCommand :: Lazy.ByteString -> State Game (Lazy.ByteString, String)
 runCommand commandStr = 
   -- Decode the command from the client.
   let Just command = decode commandStr in
@@ -41,10 +52,13 @@ runCommand commandStr =
         -- Run the actual command.
         -- The 'modify' function invokes its argument (run command) on the
         -- current value of the state, and then updates the state.
-        modify $ run command
+        game <- get
+        let (game', log) = run command game
+        put game'
 
         -- Get the last command in the history, encode it as JSON, and return.
-        gets (encode . last . history)
+        bytes <- gets (encode . last . history)
+        return (bytes, log)
 
 -- | Ignoring the input, return the command history encoded as JSON.
 getHistory :: Lazy.ByteString -> State Game Lazy.ByteString
@@ -58,20 +72,27 @@ getHistory _ = do
 --- Module-private functions ---
 --------------------------------
 
+logError :: Game -> String -> String
+logError game cmd =
+  printf "-----\nErr:\t\nCmd: '%s'\n\tLoc: %s\n-----\n\n" cmd (envName . unLoc . currentRoom $ game)
+
+logCmd :: String -> [String] -> String
+logCmd inp match = printf "Cmd: '%s' -> '%s'\n" inp $ unwords match
+
 -- | Given a command and game, run the command and return the modified game.
 -- | Although it may seem that this produces no output, the output is stored in the
 -- | response to the command, which is now in the history of the new game.
-run :: Command -> Game -> Game
+run :: Command -> Game -> (Game, String)
 run Command { commandString = cmdstr } game = 
   -- Try to find a power matching this command in the power definitions of the current room.
   case findMatchingCommand cmdstr game of
        -- If we don't find anything, return an error.
        Nothing -> let errcmd = Command (lastId game) cmdstr noSuchCommand in
            -- Add the error to the history and increment the last ID.
-           game {history = history game ++ [errcmd], lastId = 1 + lastId game}
+           (game {history = history game ++ [errcmd], lastId = 1 + lastId game}, logError game cmdstr)
 
        -- If we manage to find the power, run the triggered actions.
-       Just (Pattern _ actions) -> 
+       Just (Pattern words actions) -> 
          -- Run the actions triggered.
          -- runAction will run a single action, and we use the monadic fold (foldM) to 
          -- run all of the actions while keeping the state (the game) in the background.
@@ -79,12 +100,12 @@ run Command { commandString = cmdstr } game =
          --
          -- We use a writer to keep track of action output, which is why we need the monadic fold.
          -- See 'runAction' for more detail.
-         let (game', cmdOutput) = runWriter $ foldM runAction game actions
+         let (game', ActionOutput cmdOutput log) = runWriter $ foldM runAction game actions
              -- Create the new command with the command output and a new ID.
              newCommand = Command (lastId game) cmdstr $ Just cmdOutput in
 
            -- Create the new game with updated history, command counts, and last used ID.
-           game' {history = history game ++ [newCommand], lastId = 1 + lastId game}
+           (game' {history = history game ++ [newCommand], lastId = 1 + lastId game}, logCmd log words)
 
 -- Convert an evaluated expression into a 1 or 0
 getBool :: Either Int String -> Bool
@@ -169,17 +190,12 @@ evaluateExpression _ (StringVal string) = Right string
 evaluateExpression _ (IntVal int) = Left int
 
 -- | Run an action on a game and return the new game.
--- | Keep track of the output of the action using the Writer monad.
--- |
--- | The writer monad accumulates values using 'mappend' in the background,
--- | and you can give it a new value using 'tell'. Thus, each action is responsible
--- | for just 'tell'-ing its command output, and later it is all joined together.
-runAction :: Game -> Action -> Writer String Game
+runAction :: Game -> Action -> Writer ActionOutput  Game
 
 -- Just output the given string.
 -- Return the game unchanged.
 runAction game (Print string) = do
-  tell $ evalInterpolation game string
+  output $ evalInterpolation game string
   return game
 
 runAction game (MoveToRoom name) = return game { currentRoom = findRoom game name }
