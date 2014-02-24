@@ -16,12 +16,13 @@ import Snap.Http.Server
 import Control.Concurrent.MVar
 import Control.Monad.IO.Class
 import Control.Monad.State
-import Data.ByteString.Lazy hiding (drop, filter, readFile, zipWith, map, putStrLn, zip, find, split)
+import Data.ByteString.Lazy hiding (drop, filter, readFile, writeFile, zipWith, map, putStrLn, zip, find, split)
 import System.Environment
 import Data.Maybe (fromJust)
 import Data.Aeson
 import Data.List (find)
 import Data.String.Utils (replace, split)
+import System.Directory (doesFileExist)
 
 -- My imports.
 import Game.Types
@@ -61,6 +62,9 @@ main = do
       -- Serve the site.
       quickHttpServe $ site st
 
+logString :: String -> String -> IO ()
+logString = Prelude.appendFile
+
 site :: MVar ServerState -> Snap ()
 site st =
   -- Order of routes:
@@ -92,7 +96,7 @@ site st =
     -- Construct a Snap handler from a simpler function, which takes
     -- the request body as input and produces some output, possibly altering
     -- the global state.
-    useRoute :: (ByteString -> State Game ByteString) -> Snap ()
+    useRoute :: (ByteString -> State Game (ByteString, String)) -> Snap ()
     useRoute rt = do
       -- Read the request body (up to a maximum request size).
       input <- readRequestBody 10000
@@ -101,18 +105,21 @@ site st =
       userId <- fmap (Chars.unpack . fromJust) $ getParam "id"
 
       let key = (UserId userId, episode)
-      response <- liftIO $ modifyMVar st $ \(ServerState state) -> 
+      (response, log) <- liftIO $ modifyMVar st $ \(ServerState state) -> 
          case Map.lookup key state of
            Nothing -> do
              contents <- readFile $ "episodes/" ++ episode ++ ".adv"
              let Right gameEp = parseString contents
                  game = gameFromEpisode gameEp
-                 (out, newGame) = runState (rt input) game
-             return (ServerState $ Map.insert key newGame state, out)
+                 ((out, log), newGame) = runState (rt input) game
+             return (ServerState $ Map.insert key newGame state, (out, log))
              
            Just game -> 
-             let (out, newGame) = runState (rt input) game in
-               return (ServerState $ Map.insert key newGame state, out)
+             let ((out, log), newGame) = runState (rt input) game in
+               return (ServerState $ Map.insert key newGame state, (out, log))
+
+      Just id <- fmap Chars.unpack <$> getParam "id"
+      liftIO $ logString id log
 
       -- Write the response back to the client.
       writeLBS response
@@ -126,7 +133,7 @@ site st =
             lastId = 0,
             gameState = initState episode
           } in
-        run (Command 0 "start" Nothing) pregame
+        fst $ run (Command 0 "start" Nothing) pregame
       where
         findRoom :: Episode -> String -> Location
         findRoom episode name = fromJust $ find ((== name) . envName . unLoc) (rooms episode)
@@ -134,7 +141,7 @@ site st =
 -- JSON endpoints. Each of the values in the map is a function that takes an
 -- input bytestring and produces an output bytestring, potentially modifying
 -- the game state while at it.
-routes :: Map.Map Strict.ByteString (ByteString -> State Game ByteString)
+routes :: Map.Map Strict.ByteString (ByteString -> State Game (ByteString, String))
 routes = Map.fromList [
     (toStrict "run/:episode/:id", runCommand),
     (toStrict "history/:episode/:id", getHistory)
