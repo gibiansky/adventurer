@@ -92,7 +92,7 @@ location init {
             It's time to start exploring. If you're ever unsure what
             to do, type "hint" and I'll offer you some directions. I have
             lots of good advice, so don't be afraid to ask, or even to
-            keep perstering me for help if my first (or second) piece of
+            keep pestering me for help if my first (or second) piece of
             advice just isn't enough.
 
             Let's get started!
@@ -4861,7 +4861,7 @@ environment puzzle-room global{
     }
     command take wall {
         respond {
-            You're impulsive need to steal everything ends
+            Your impulsive need to steal everything ends
             right here and now.
         }
     }
