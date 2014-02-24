@@ -72,9 +72,9 @@ getHistory _ = do
 --- Module-private functions ---
 --------------------------------
 
-logError :: Game -> String -> String
-logError game cmd =
-  printf "-----\nErr:\tCmd: '%s'\n\tLoc: %s\n-----\n" cmd (envName . unLoc . currentRoom $ game)
+logError :: Game -> String -> String -> String
+logError game cmdstr cmd =
+  printf "-----\nErr:\tCmd: '%s' -> '%s'\n\tLoc: %s\n-----\n" cmdstr cmd (envName . unLoc . currentRoom $ game)
 
 logCmd :: String -> [String] -> String
 logCmd inp match = printf "Cmd: '%s' -> '%s'\n" inp $ unwords match
@@ -89,7 +89,7 @@ run Command { commandString = cmdstr } game =
        -- If we don't find anything, return an error.
        Nothing -> let errcmd = Command (lastId game) cmdstr noSuchCommand in
            -- Add the error to the history and increment the last ID.
-           (game {history = history game ++ [errcmd], lastId = 1 + lastId game}, logError game cmdstr)
+           (game {history = history game ++ [errcmd], lastId = 1 + lastId game}, logError game cmdstr synonymedStr )
 
        -- If we manage to find the power, run the triggered actions.
        Just (Pattern words actions) -> 
@@ -106,6 +106,9 @@ run Command { commandString = cmdstr } game =
 
            -- Create the new game with updated history, command counts, and last used ID.
            (game' {history = history game ++ [newCommand], lastId = 1 + lastId game}, logCmd cmdstr words)
+  where
+    syns = findSynonyms game $ unLoc $ currentRoom game
+    synonymedStr = applySynonyms syns cmdstr
 
 -- Convert an evaluated expression into a 1 or 0
 getBool :: Either Int String -> Bool
