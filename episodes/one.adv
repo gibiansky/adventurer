@@ -3262,6 +3262,7 @@ location living-room house {
                     that was meant for you. I'll send it over!"
                 }
                 set gotPackageFromEmily 1;
+                set frontDoor "closed";
                 if `eq hintsState "chat"` {
                     set hintsState "yourPackage";
                     set hintsCounter 0;
