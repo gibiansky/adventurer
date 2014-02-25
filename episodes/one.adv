@@ -164,15 +164,15 @@ location init {
 environment global {
     synonym "" "a" "an" "the" "that";
     synonym "look" "examine" "x" "see" "view" 
-    "look at" "look around";
+    "look at" "look around" "l";
     synonym "take off jacket" "strip" "remove jacket";
     synonym "go" "move" "g" "go in" "go to" "move to" "enter"
-    "go into";
+    "go into" "goto";
     synonym "" "damn" "fucking" "goddamn" "god damn";
     synonym "living-room" "living room" "livingroom";
     synonym "close" "shut";
     synonym "take" "pick up" "get";
-    synonym "package" "box";
+    synonym "package" "box" "packaging";
     synonym "empty package" "torn package" "opened package" "ripped package";
     synonym "entryway" "entrance" "entry way" "entry-way" 
     "entranceway" "entry";
@@ -197,7 +197,8 @@ environment global {
     synonym "wear" "put on";
     synonym "sit" "sit on";
     synonym "sing" "sing heart out";
-    synonym "heart" "your heart" "your own heart" "own heart";
+    synonym "heart" "your heart" "your own heart" "own heart"
+    "my heart" "my own heart";
     synonym "rip out heart" "rip heart out";
     synonym "die" "kill yourself" "commit suicide";
     synonym "somewhere" "somewhere else" "elsewhere";
@@ -1466,7 +1467,7 @@ environment global {
 }
     
 environment house global {
-    synonym "outside" "outdoors";
+    synonym "outside" "outdoors" "car";
     synonym "emily" "emilys" "emilys house" 
     "emily house" "emily's place";
     synonym "post office" "post-office" "postoffice";
@@ -1474,6 +1475,30 @@ environment house global {
     command go emily {
         respond {
             Your car's outside.
+        }
+    }
+    command find pen {
+        if `hasPen` {
+            respond {
+                It's in your pocket, genius.
+            }
+        }
+        else {
+            respond {
+                You think you left a pen in the bedroom.
+            }
+        }
+    }
+    command find keys {
+        if `hasKeys` {
+            respond {
+                It's in your pocket, genius.
+            }
+        }
+        else {
+            respond {
+                You think you left your keys in the kitchen.
+            }
         }
     }
     command go post office {
@@ -1621,11 +1646,30 @@ location bedroom house {
             Your bedroom opens up onto the living room.
         }
     }
+    command take pen {
+        if `hasPen` {
+            respond {
+                You already have a pen.
+            }
+        }
+        else {
+            respond {
+                You don't see a pen. Maybe there's one in the dresser?
+            }
+        }
+    }
     command wear clothes {
         respond {
             You have clean, fluffy clothes. You don't need 
             these clothes for wearing. They make good decoration,
             though.
+        }
+    }
+    command take dresser {
+        respond {
+            You don't have enough muscles to pick up
+            this dresser. You're kind of wimpy. You just
+            leave it alone.
         }
     }
     command open dresser {
@@ -1635,6 +1679,13 @@ location bedroom house {
         respond {
             This isn't your finest work of furiture assembly.
             The drawer doesn't open.
+        }
+    }
+    command open night-table {
+        respond {
+            You pry the top of the night table off. Wait, you're
+            pretty sure that's not supposed to happen. You quickly
+            put it back together.
         }
     }
     command sit bed {
@@ -1766,7 +1817,7 @@ location bedroom house {
         better things to be doing!
     }
     object night-table {
-        That's a nice box you've got there.
+        That's a nice box you call a table.
     } 
     object bed {
         There are so many blankets. You may be cold blooded.
@@ -1790,6 +1841,7 @@ location entryway house {
     synonym "talk" "say hello" "say hello to" "greet";
     synonym "hurt" "harm" "kick" "bite" "punch" "hit" "slap" "kill" "stab";
     synonym "follow" "chase after" "chase";
+
     
     command look {
         respond {
@@ -2276,10 +2328,34 @@ location kitchen house {
             You still have a couple of clean plates left.
         }
     }
+    command clean kitchen {
+        respond {
+            That sounds way too difficult. You're pretty sure
+            you can't muster up the motivation to clean a plate.
+        }
+    }
     command clean dishes {
         respond {
             Why would you waste your time washing
             dishes when you have clean plates?
+        }
+    }
+    command take breakfast {
+        respond {
+            You've heard that breakfast is the most
+            important meal of the day. So it's probably important
+            in some way that you slept through breakfast.
+        }
+    }
+    command take lunch {
+        respond {
+            That sounds like way too much work.
+        }
+    }
+    command take dinner {
+        respond {
+            It's not dinner time now. You hope you have enough
+            energy to make food when you're hungry.
         }
     }
     command take food {
@@ -2409,6 +2485,18 @@ location kitchen house {
         else {
             respond {
                 What are you talking about?
+            }
+        }
+    }
+    command take keys {
+        if `hasKeys` {
+            respond {
+                They're already in your pocket.
+            }
+        }
+        else {
+            respond {
+                Did you check the fridge? They might be in there.
             }
         }
     }
@@ -2559,7 +2647,8 @@ location kitchen house {
 location bathroom house {
     synonym "clean" "wash" "rinse";
     synonym "tile" "floor" "tiles" "tile floor";
-    synonym "take shower" "turn on shower" "turn on water";
+    synonym "take shower" "turn on shower" "turn on water"
+    "open shower";
     synonym "clean room" "clean shower" 
     "clean mirror" "clean toilet" "clean sink";
     synonym "sweatshirt" "sweater";
@@ -2588,6 +2677,16 @@ location bathroom house {
         respond {
             Why would you wear your bath mat?
         }
+    }
+    command open mirror {
+        respond {
+            This isn't the type of mirror that opens. You try
+            to pry it open anyway, but all you get is a reflection
+            of you looking like an idiot trying to open the mirror.
+        }
+    }
+    command turn on sink {
+        trigger clean hands;
     }
     command wear sweatshirt {
         trigger wear clothes;
@@ -2720,6 +2819,12 @@ location living-room house {
         respond {
             Your house has enough dust already. 
             Let's keep this dust where it belongs, right here.
+        }
+    }
+    command open desk {
+        respond {
+            The desk doesn't have any draers. Or, if it was supposed
+            to, you forgot to assemble them. Either way, it doesn't open.
         }
     }
     command go desk {
@@ -3442,6 +3547,9 @@ location outdoors outside {
             Fortunately, you can fit in the car.
         }
     }
+    command turn on car {
+        trigger drive car;
+    }
     command drive car {
         if `not hasKeys` {
             set triedCar 1;
@@ -3730,7 +3838,8 @@ location postoffice global {
     synonym "man" "employee" "worker" "kleisthenes" "person" "guy";
     synonym "scream" "yell";
     synonym "flail" "wave your arms" "wave arms" "wave";
-    synonym "punch" "hit" "slap" "hurt" "harm" "kill" "murder" "kick";
+    synonym "punch" "hit" "slap" "hurt" "harm" "kill" "murder" 
+    "kick" "stab";
     synonym "burn" "burn the post office down" 
     "burn post office down" "burn post office to ground" "burn down" 
     "burn post office" "start fire" "light fire";
@@ -3749,6 +3858,9 @@ location postoffice global {
      "mr robertson" "mr robertson's house"
     "robertson's house" "robertson" "13310 podwoic avenue";
     synonym "tape" "packing tape" "packaging tape";
+    synonym "talk man" "ask man about package";
+    synonym "show package" "show medallion to man" "show medallion"
+    "show package to man";
     
     command look {
         respond {
@@ -3760,6 +3872,20 @@ location postoffice global {
             Besides the counter and inattentive employee, the 
             room contains some shelves of packing and shipping
             necessities.
+        }
+    }
+    command show package {
+        respond {
+            You hold up the empty package and the medallion,
+            and try using words to explain your situation.
+            Words are ineffective. You could wave your arms, punch
+            the man, yell, burn the place down. No effect.
+        }
+    }
+    command punch man with pen {
+        respond {
+            You take out your pen and jab it into the man's
+            hand. He does not respond.
         }
     }
     command talk man {
@@ -4010,40 +4136,33 @@ location postoffice global {
         }
     }
     command drive address {
-        if `donePostOffice` {
-            respond {
-                You begin to drive. 
+        respond {
+            Fine. This man isn't going to listen to you.
+            You're delivering the package your way.
 
-                It's understandable how the package could have
-                been delivered to the wrong address, given the 
-                awful city planning that went on during Rockburg 
-                early years. Matthias Matusiak, Rockburg's founder,
-                did many great things, but creating an avenue with two
-                of every street number, only differentiable 
-                by use of 'E' or 'W', was somewhat asinine. You 
-                would also have preferred the avenue not have
-                a difficult to pronounce Polish name. 
+            You begin to drive. 
 
-                You always forget how small Rockburg is. 
-                Actually, you have no idea what size Rockburg is.
-                The point is, you are at the address, and it didn't
-                seem to take that long to get there. You get 
-                out of the car and walk to the doorstep of the 
-                intended package recipient's home.
-            }
-            move-to robertson-front-door;
-            if `eq hintsState "deliver1"` {
-                set hintsState "findCat";
-                set hintsCounter 0;
-            }
+            It's understandable how the package could have
+            been delivered to the wrong address, given the 
+            awful city planning that went on during Rockburg 
+            early years. Matthias Matusiak, Rockburg's founder,
+            did many great things, but creating an avenue with two
+            of every street number, only differentiable 
+            by use of 'E' or 'W', was somewhat asinine. You 
+            would also have preferred the avenue not have
+            a difficult to pronounce Polish name. 
+
+            You always forget how small Rockburg is. 
+            Actually, you have no idea what size Rockburg is.
+            The point is, you are at the address, and it didn't
+            seem to take that long to get there. You get 
+            out of the car and walk to the doorstep of the 
+            intended package recipient's home.
         }
-        else {
-            respond {
-                You aren't ready to give up on this employee,
-                even if he won't pay any attention to you. You will scream.
-                You will wave your arms. You will kick him. You will start
-                a fire. You will get his attention!
-            }
+        move-to robertson-front-door;
+        if `eq hintsState "deliver1"` {
+            set hintsState "findCat";
+            set hintsCounter 0;
         }
     }
     object counter {
@@ -4119,7 +4238,9 @@ location robertson-front-door outside {
     synonym "home" "house";
     synonym "headbutt" "head butt" "hit head against";
     synonym "door" "door step";
-    command "yard" "backyard" "sideyard" "back yard" "side yard";
+    synonym "ring doorbell" "push doorbell";
+    synonym "yard" "backyard" "sideyard" "back yard" "side yard";
+    synonym "walk around home" "drive back door";
     
     command look {
         respond {
@@ -4147,8 +4268,20 @@ location robertson-front-door outside {
             }
         }
     }
+    command slip medallion under door {
+        respond {
+            The medallion is just a little too wide to
+            fit under the door.
+        }
+    }
     command drive yard {
         trigger look yard;
+    }
+    command walk around home {
+        respond {
+            You can't see another side to the house. Maybe climbing
+            that tree over there will help?
+        }
     }
     command kick door {
         respond {
@@ -4456,6 +4589,9 @@ location robertson-front-door outside {
     object yard {
         From here, you can see no other yard.
     }
+    object window {
+        There isn't a window. You see no way in.
+    }
 }
 
 location backyard outside {
@@ -4609,7 +4745,7 @@ environment puzzle-room global{
     synonym "alarm" "fire alarm";
     synonym "painting" "picture" "image";
     synonym "leave" "walk out" "go door" "leave room"
-    "go through door" "leave door" "leave through door";
+    "go through door" "leave door" "leave through door" "exit";
     synonym "go outside" "jump out window" "go out window" "go window"
     "open window" "jump through window";
     synonym "scorch" "scorch marks" "scorch mark"
@@ -4661,6 +4797,23 @@ environment puzzle-room global{
                 The cat looks curious, but then realizes you have no
                 food and glares angrily.
             }
+        }
+    }
+    command stab cat {
+        respond {
+            You jab your pen into the cat. She yelps
+            loudly and stops trusting you.
+        }
+    }
+    command adopt cat {
+        respond {
+            That cat does not look like she wants to belong
+            to you.
+        }
+    }
+    command take bookshelf {
+        respond {
+            Which book do you want?
         }
     }
     command burn cat {
@@ -5277,7 +5430,9 @@ environment puzzle-room global{
 
 location room-one puzzle-room {
     synonym "burn chair" "use flint on chair"  
-    "start fire" "set chair on fire";
+    "start fire" "set chair on fire" "ignite chair" "ignite book"
+    "set book on fire" "burn book" "ignite leaves of grass" 
+    "set leaves of grass on fire" "burn leaves of grass";
     synonym "put book on chair";
     
     command look { 
@@ -5299,6 +5454,29 @@ location room-one puzzle-room {
                 Also the chair is on fire. You might want to
                 get out of here.
             }
+        }
+    }
+    command put painting on chair {
+        respond {
+            The painting doesn't come off the wall, otherwise
+            you'd happily burn it.
+        }
+    }
+    command put package on chair {
+        respond {
+            You can't bring yourself to burn packages, even mangled open
+            ones.
+        }
+    }
+    command put medallion on chair {
+        respond {
+            You place the medallion on the chair. It doesn't
+            spontaneously combust, so you pick it back up.
+        }
+    }
+    command put bookshelf on chair {
+        respond {
+            Which book?
         }
     }
     # Should do something about heldBook in command...
