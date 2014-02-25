@@ -4767,6 +4767,7 @@ environment puzzle-room global{
     "bring hot dogs";
     synonym "hot dogs" "hot dog" "hotdog" "hotdogs";
     synonym "door" "doorway";
+    synonym "apologize" "apologize to";
     
     command feed cat {
         if `hasCatFood` {
@@ -4803,6 +4804,13 @@ environment puzzle-room global{
         respond {
             You jab your pen into the cat. She yelps
             loudly and stops trusting you.
+        }
+    }
+    command apologize cat {
+        respond {
+            You give the cat your sincerest apology for all of
+            the terrible things you've done. SHe merely flicks her
+            tail at you.
         }
     }
     command adopt cat {
