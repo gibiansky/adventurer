@@ -3066,7 +3066,7 @@ location bathroom house {
 
 location living-room house {
     synonym "couch" "sofa" "loveseat";
-    synonym "dust bunnies" "dust bunny" "dust";
+    synonym "dust" "dust bunny" "dust bunnies";
     synonym "cushion" "cushions";
     synonym "leg" "legs" "desk legs";
     synonym "read words" "read paper" "read papers";
@@ -3148,7 +3148,7 @@ location living-room house {
     command exit {
         trigger go bedroom;
     }
-    command take dust bunnies {
+    command take dust {
         respond {
             Your house has enough dust already. 
             Let's keep this dust where it belongs, right here.
@@ -3785,7 +3785,7 @@ location living-room house {
     object gap {
         No monster here, only a bunch of dust bunnies and a lost quarter.
     }
-    object dust bunnies {
+    object dust {
         Misnomer: these are not actually bunnies, 
         just clumps of dust that are not even alive. Disappointing.
     }
