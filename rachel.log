@@ -1,0 +1,609 @@
+Cmd: 'look at bed' -> 'look bed'
+Cmd: 'look at blankets' -> 'look blankets'
+Cmd: 'take blankets' -> 'take blankets'
+Cmd: 'take off jacket' -> 'take off jacket'
+Cmd: 'look at closet' -> 'look closet'
+Cmd: 'look' -> 'look'
+Cmd: 'look at clothes' -> 'look clothes'
+-----
+Err:	Cmd: 'look at furniture' -> 'look furniture'
+	Loc: bedroom
+-----
+-----
+Err:	Cmd: 'go to back corner' -> 'go back corner'
+	Loc: bedroom
+-----
+Cmd: 'go to living room' -> 'go living-room'
+Cmd: 'look at tv' -> 'look tv'
+Cmd: 'turn on tv' -> 'turn on tv'
+-----
+Err:	Cmd: 'find remot' -> 'look remot'
+	Loc: living-room
+-----
+Cmd: 'find remote' -> 'look remote'
+-----
+Err:	Cmd: 'look at wall' -> 'look wall'
+	Loc: living-room
+-----
+-----
+Err:	Cmd: 'look at chair' -> 'look armchair'
+	Loc: living-room
+-----
+Cmd: 'look at desk' -> 'look desk'
+Cmd: 'look at couch' -> 'look couch'
+-----
+Err:	Cmd: 'look under couch' -> 'look under couch'
+	Loc: living-room
+-----
+-----
+Err:	Cmd: 'look at floor' -> 'look floor'
+	Loc: living-room
+-----
+Cmd: 'look at gap' -> 'look gap'
+Cmd: 'take quarter' -> 'take quarter'
+-----
+Err:	Cmd: 'take dust bunnies' -> 'take dust bunnies bunnies'
+	Loc: living-room
+-----
+-----
+Err:	Cmd: 'love dust bunnies' -> 'love dust bunnies bunnies'
+	Loc: living-room
+-----
+-----
+Err:	Cmd: 'move cushions' -> 'go cushion'
+	Loc: living-room
+-----
+Cmd: 'sit on couch' -> 'sit couch'
+-----
+Err:	Cmd: 'caress cushions' -> 'caress cushion'
+	Loc: living-room
+-----
+-----
+Err:	Cmd: 'look between couch cushions' -> 'look between couch cushion'
+	Loc: living-room
+-----
+Cmd: 'look' -> 'look'
+Cmd: 'scream' -> 'scream'
+-----
+Err:	Cmd: 'danse' -> 'danse'
+	Loc: living-room
+-----
+-----
+Err:	Cmd: 'dance' -> 'dance'
+	Loc: living-room
+-----
+Cmd: 'look' -> 'look'
+Cmd: 'go to bathroom' -> 'go bathroom'
+Cmd: 'take toilet' -> 'take toilet'
+-----
+Err:	Cmd: 'take sink' -> 'take sink'
+	Loc: bathroom
+-----
+Cmd: 'look at sink' -> 'look sink'
+Cmd: 'look at toilet' -> 'look toilet'
+-----
+Err:	Cmd: 'flush toilet' -> 'flush toilet'
+	Loc: bathroom
+-----
+-----
+Err:	Cmd: 'use toilet' -> 'use toilet'
+	Loc: bathroom
+-----
+-----
+Err:	Cmd: 'use shower' -> 'use shower'
+	Loc: bathroom
+-----
+Cmd: 'turn on shower' -> 'take shower'
+-----
+Err:	Cmd: 'look in mirror' -> 'look in mirror'
+	Loc: bathroom
+-----
+Cmd: 'look at mirror' -> 'look mirror'
+Cmd: 'look at clothes' -> 'look clothes'
+Cmd: 'take sweater' -> 'take sweatshirt'
+-----
+Err:	Cmd: 'take mat' -> 'take mat'
+	Loc: bathroom
+-----
+-----
+Err:	Cmd: 'take mirror' -> 'take mirror'
+	Loc: bathroom
+-----
+Cmd: 'look' -> 'look'
+Cmd: 'go to living room' -> 'go living-room'
+Cmd: 'go to entryway' -> 'go entryway'
+Cmd: 'open door' -> 'open door'
+Cmd: 'sign ' -> 'sign'
+-----
+Err:	Cmd: 'harass woman to give me a pen' -> 'harass woman to give me pen'
+	Loc: entryway
+-----
+-----
+Err:	Cmd: 'talk' -> 'talk'
+	Loc: entryway
+-----
+Cmd: 'talk to woman' -> 'talk woman'
+-----
+Err:	Cmd: '1' -> '1'
+	Loc: entryway
+-----
+Cmd: 'say 1' -> 'say 1'
+Cmd: 'say 2' -> 'say 2'
+Cmd: 'say 3' -> 'say 3'
+Cmd: 'look' -> 'look'
+Cmd: 'close door' -> 'close door'
+Cmd: 'go to kitchen' -> 'go kitchen'
+-----
+Err:	Cmd: 'clean' -> 'clean'
+	Loc: kitchen
+-----
+Cmd: 'clean stove' -> 'clean stove'
+Cmd: 'look at food' -> 'look food'
+Cmd: 'take bread' -> 'take food'
+Cmd: 'take pasta' -> 'take food'
+Cmd: 'take cookies' -> 'take food'
+Cmd: 'look at stove' -> 'look stove'
+Cmd: 'look at sink' -> 'look sink'
+Cmd: 'wash dishes' -> 'clean dishes'
+Cmd: 'go to bedroom' -> 'go bedroom'
+-----
+Err:	Cmd: 'look in dresser' -> 'look in dresser'
+	Loc: bedroom
+-----
+Cmd: 'look dresser' -> 'look dresser'
+Cmd: 'open drawer' -> 'open drawer'
+Cmd: 'inventory' -> 'inventory'
+-----
+Err:	Cmd: 'smell lint' -> 'smell lint'
+	Loc: bedroom
+-----
+-----
+Err:	Cmd: 'read ticket' -> 'read ticket'
+	Loc: bedroom
+-----
+Cmd: 'look at money' -> 'look money'
+Cmd: 'look at ticket' -> 'look ticket'
+Cmd: 'look rabbit' -> 'look rabbit'
+Cmd: 'look lint' -> 'look lint'
+Cmd: 'go to entryway' -> 'go entryway'
+Cmd: 'open door' -> 'open door'
+Cmd: 'sign' -> 'sign'
+Cmd: 'open package' -> 'open package'
+Cmd: 'look medallion' -> 'look medallion'
+Cmd: 'look package' -> 'look package'
+Cmd: 'go outside' -> 'go outside'
+-----
+Err:	Cmd: 'get in car' -> 'take in car'
+	Loc: outdoors
+-----
+Cmd: 'drive car' -> 'drive car'
+-----
+Err:	Cmd: 'go to kitchen' -> 'drive kitchen'
+	Loc: outdoors
+-----
+Cmd: 'go inside' -> 'drive inside'
+Cmd: 'go kitchen' -> 'go kitchen'
+Cmd: 'look refrigerator' -> 'look fridge'
+Cmd: 'open refrigerator' -> 'open fridge'
+Cmd: 'look at shelves' -> 'look shelves'
+Cmd: 'open little butter dish thing' -> 'open butter'
+Cmd: 'go outside' -> 'go outside'
+Cmd: 'drive car' -> 'drive car'
+Cmd: 'drive to post office' -> 'drive post office'
+Cmd: 'look at shelves' -> 'look shelves'
+Cmd: 'look at employee' -> 'look man'
+Cmd: 'wave arms' -> 'flail'
+Cmd: 'punch employee' -> 'punch man'
+Cmd: 'burn down post office' -> 'burn'
+Cmd: 'talk to employee' -> 'talk man'
+Cmd: 'scream' -> 'scream'
+-----
+Err:	Cmd: 'deliver package' -> 'deliver package'
+	Loc: postoffice
+-----
+Cmd: 'drive to address' -> 'drive address'
+-----
+Err:	Cmd: 'look doorstep' -> 'look doorstep'
+	Loc: robertson-front-door
+-----
+Cmd: 'look' -> 'look'
+-----
+Err:	Cmd: 'look at door' -> 'look door'
+	Loc: robertson-front-door
+-----
+Cmd: 'knock' -> 'knock'
+Cmd: 'look at yard' -> 'look yard'
+Cmd: 'look at porch' -> 'look porch'
+Cmd: 'look at trees' -> 'look trees'
+Cmd: 'follow cat' -> 'follow cat'
+Cmd: 'pet reindeer' -> 'take reindeer'
+Cmd: 'look' -> 'look'
+Cmd: 'look window' -> 'look window'
+Cmd: 'look reindeer' -> 'look reindeer'
+Cmd: 'go through window' -> 'open window'
+Cmd: 'look at painting' -> 'look painting'
+Cmd: 'look armchair' -> 'look chair'
+Cmd: 'look rocks' -> 'look rock'
+Cmd: 'take flint' -> 'take rock'
+Cmd: 'look filing cabinet' -> 'look cabinet'
+-----
+Err:	Cmd: 'look in drawers' -> 'look in cabinet'
+	Loc: room-one
+-----
+Cmd: 'look 1' -> 'look 1'
+Cmd: 'look 2' -> 'look 2'
+Cmd: 'look 3' -> 'look 3'
+Cmd: 'look drawers' -> 'look cabinet'
+Cmd: 'open drawers' -> 'open cabinet'
+Cmd: 'open 1' -> 'open 1'
+Cmd: 'look' -> 'look'
+Cmd: 'look bookshelf' -> 'look bookshelf'
+-----
+Err:	Cmd: 'set fire to chair' -> 'set fire to chair'
+	Loc: room-one
+-----
+-----
+Err:	Cmd: 'use flint on chair' -> 'use rock on chair'
+	Loc: room-one
+-----
+-----
+Err:	Cmd: 'fire' -> 'fire'
+	Loc: room-one
+-----
+Cmd: 'read leaves of grass' -> 'read leaves of grass'
+Cmd: 'take leaves of grass' -> 'take leaves of grass'
+Cmd: 'look fantasy series' -> 'look fantasy series'
+Cmd: 'read fantasy series' -> 'read fantasy series'
+Cmd: 'read passion in paradise' -> 'read passion in paradise'
+Cmd: 'look passion in paradise' -> 'look passion in paradise'
+Cmd: 'look bookshelf' -> 'look bookshelf'
+Cmd: 'look passion in pompeii' -> 'look passion in pompeii'
+Cmd: 'look passion in a poppy field' -> 'look passion in poppy field'
+Cmd: 'look passion in a pot' -> 'look passion in pot'
+-----
+Err:	Cmd: 'chortle' -> 'chortle'
+	Loc: room-one
+-----
+-----
+Err:	Cmd: 'use flint on leaves of grass' -> 'use rock on leaves of grass'
+	Loc: room-one
+-----
+-----
+Err:	Cmd: 'set fire' -> 'set fire'
+	Loc: room-one
+-----
+Cmd: 'look at chair' -> 'look chair'
+-----
+Err:	Cmd: 'put leaves of grass on cahir' -> 'put leaves of grass on cahir'
+	Loc: room-one
+-----
+Cmd: 'put leaves of grass on chair' -> 'put leaves of grass on chair'
+-----
+Err:	Cmd: 'use flint with chair' -> 'use rock with chair'
+	Loc: room-one
+-----
+-----
+Err:	Cmd: 'flinttttttt' -> 'flinttttttt'
+	Loc: room-one
+-----
+-----
+Err:	Cmd: 'use flint on leaves of grass' -> 'use rock on leaves of grass'
+	Loc: room-one
+-----
+Cmd: 'start fire' -> 'burn chair'
+Cmd: 'leave room' -> 'leave'
+Cmd: 'look at scorch mark' -> 'look scorch'
+Cmd: 'look at couch' -> 'look couch'
+Cmd: 'look through couch cushions' -> 'open couch'
+Cmd: 'read note' -> 'read note'
+Cmd: 'open 1' -> 'open 1'
+-----
+Err:	Cmd: 'read yellow' -> 'read yellow'
+	Loc: room-two
+-----
+Cmd: 'take yellow' -> 'take yellow'
+-----
+Err:	Cmd: 'read yellow' -> 'read yellow'
+	Loc: room-two
+-----
+-----
+Err:	Cmd: 'what' -> 'what'
+	Loc: room-two
+-----
+Cmd: 'look yellow' -> 'look yellow'
+Cmd: 'look blue' -> 'look blue'
+Cmd: 'look green' -> 'look green'
+Cmd: 'put green in 2' -> 'put green 2'
+Cmd: 'look white' -> 'look white'
+Cmd: 'put white in drawer 2' -> 'put white 2'
+Cmd: 'put blue in 2' -> 'put blue 2'
+Cmd: 'put yellow in 2' -> 'put yellow 2'
+Cmd: 'look pink' -> 'look pink'
+Cmd: 'put pink in 1' -> 'put pink 1'
+Cmd: 'leave room' -> 'leave'
+Cmd: 'look at cat' -> 'look cat'
+-----
+Err:	Cmd: 'hiss at cat' -> 'hiss at cat'
+	Loc: room-three
+-----
+Cmd: 'look painting' -> 'look painting'
+Cmd: 'look cabinet' -> 'look cabinet'
+Cmd: 'look 3' -> 'look 3'
+-----
+Err:	Cmd: 'take cate food' -> 'take cate food'
+	Loc: room-three
+-----
+Cmd: 'take cat food' -> 'take food'
+Cmd: 'eat cat food' -> 'eat food'
+-----
+Err:	Cmd: 'throw cat food at cat' -> 'throw food at cat'
+	Loc: room-three
+-----
+-----
+Err:	Cmd: 'use cat food on cat' -> 'use food on cat'
+	Loc: room-three
+-----
+-----
+Err:	Cmd: 'offer cat cat food' -> 'offer food'
+	Loc: room-three
+-----
+-----
+Err:	Cmd: 'cat food' -> 'food'
+	Loc: room-three
+-----
+-----
+Err:	Cmd: 'use cat food' -> 'use food'
+	Loc: room-three
+-----
+Cmd: 'look cat' -> 'look cat'
+Cmd: 'leave room' -> 'leave'
+Cmd: 'feed cat' -> 'feed cat'
+Cmd: 'leave room' -> 'leave'
+Cmd: 'look painting' -> 'look painting'
+Cmd: 'look rocks' -> 'look rock'
+Cmd: 'look fire alarm' -> 'look alarm'
+-----
+Err:	Cmd: 'oogle man' -> 'oogle man'
+	Loc: room-four
+-----
+Cmd: 'look at man' -> 'look man'
+Cmd: 'talk to man' -> 'talk man'
+-----
+Err:	Cmd: '1' -> '1'
+	Loc: room-four
+-----
+Cmd: 'say 1' -> 'say 1'
+Cmd: 'say 3' -> 'say 3'
+Cmd: 'say 4' -> 'say 4'
+Cmd: 'say 5' -> 'say 5'
+Cmd: 'say 6' -> 'say 6'
+Cmd: 'say 2' -> 'say 2'
+-----
+Err:	Cmd: 'look brown parcel' -> 'look brown parcel'
+	Loc: room-four
+-----
+Cmd: 'look package' -> 'look package'
+-----
+Err:	Cmd: 'dude i didnt even talk to emily' -> 'dude inventory didnt even talk emily'
+	Loc: room-four
+-----
+-----
+Err:	Cmd: 'drive to emily' -> 'drive to emily'
+	Loc: room-four
+-----
+-----
+Err:	Cmd: 'drive home' -> 'drive home'
+	Loc: room-four
+-----
+-----
+Err:	Cmd: 'deliver package' -> 'deliver package'
+	Loc: room-four
+-----
+Cmd: 'say 6' -> 'say 6'
+-----
+Err:	Cmd: 'drive car' -> 'drive car'
+	Loc: robertson-front-door
+-----
+-----
+Err:	Cmd: 'get in car' -> 'take in car'
+	Loc: robertson-front-door
+-----
+-----
+Err:	Cmd: 'car' -> 'car'
+	Loc: robertson-front-door
+-----
+-----
+Err:	Cmd: 'look car' -> 'look car'
+	Loc: robertson-front-door
+-----
+Cmd: 'look' -> 'look'
+-----
+Err:	Cmd: 'leave' -> 'leave'
+	Loc: robertson-front-door
+-----
+Cmd: 'go home' -> 'drive home'
+Cmd: 'look package' -> 'look package'
+Cmd: 'drive home' -> 'drive home'
+Cmd: 'drive to emilys' -> 'drive emily'
+Cmd: 'look' -> 'look'
+-----
+Err:	Cmd: 'console plant' -> 'console plant'
+	Loc: emily-house
+-----
+-----
+Err:	Cmd: 'pronch' -> 'pronch'
+	Loc: emily-house
+-----
+-----
+Err:	Cmd: 'hahahhahahahhaha' -> 'hahahhahahahhaha'
+	Loc: emily-house
+-----
+Cmd: 'look packages' -> 'look packages'
+Cmd: 'knock' -> 'knock'
+Cmd: 'look' -> 'look'
+Cmd: 'look plant' -> 'look plant'
+Cmd: 'leave package' -> 'deliver package'
+Cmd: 'go home' -> 'drive home'
+Cmd: 'go to living room' -> 'go living-room'
+Cmd: 'turn on computer' -> 'turn on computer'
+Cmd: 'click chatroom' -> 'open chat'
+Cmd: 'talk to emily' -> 'chat emily'
+-----
+Err:	Cmd: '1' -> '1'
+	Loc: living-room
+-----
+-----
+Err:	Cmd: 'dammit' -> 'dammit'
+	Loc: living-room
+-----
+Cmd: 'say 1' -> 'say 1'
+Cmd: 'say 2' -> 'say 2'
+Cmd: 'say 3' -> 'say 3'
+Cmd: 'say 4' -> 'say 4'
+Cmd: 'say 5' -> 'say 5'
+Cmd: 'say 6' -> 'say 6'
+Cmd: 'say 5' -> 'say 5'
+Cmd: 'look desktop' -> 'look computer'
+Cmd: 'look monitor' -> 'look monitor'
+Cmd: 'look mouse' -> 'look mouse'
+Cmd: 'look keyboard' -> 'look keyboard'
+-----
+Err:	Cmd: 'type q' -> 'type q'
+	Loc: living-room
+-----
+Cmd: 'look computer' -> 'look computer'
+-----
+Err:	Cmd: 'open browers' -> 'open browers'
+	Loc: living-room
+-----
+Cmd: 'open browser' -> 'open swifts'
+Cmd: 'buy pens' -> 'buy pen'
+Cmd: 'go outside' -> 'go outside'
+Cmd: 'go to entryway' -> 'go entryway'
+Cmd: 'open door' -> 'open door'
+-----
+Err:	Cmd: 'awww cute door alread open' -> 'awww cute door alread open'
+	Loc: entryway
+-----
+-----
+Err:	Cmd: 'go to uhh whatever that place was' -> 'go uhh whatever put was'
+	Loc: entryway
+-----
+Cmd: 'go to living room' -> 'go living-room'
+Cmd: 'look computer' -> 'look computer'
+Cmd: 'talk to emily' -> 'chat emily'
+-----
+Err:	Cmd: '6' -> '6'
+	Loc: living-room
+-----
+Cmd: 'say 6' -> 'say 6'
+Cmd: 'go to emilys' -> 'go emily'
+Cmd: 'go outside' -> 'go outside'
+-----
+Err:	Cmd: 'receive package somehow' -> 'receive package somehow'
+	Loc: living-room
+-----
+Cmd: 'open browser' -> 'open swifts'
+Cmd: 'buy everything' -> 'buy everything'
+-----
+Err:	Cmd: 'look at swifts' -> 'look swifts'
+	Loc: living-room
+-----
+Cmd: 'buy something' -> 'buy something'
+Cmd: 'buy explosives' -> 'buy explosives'
+-----
+Err:	Cmd: 'wander listlessly' -> 'wander listlessly'
+	Loc: living-room
+-----
+Cmd: 'look' -> 'look'
+Cmd: 'open door' -> 'open door'
+Cmd: 'look package' -> 'look package'
+-----
+Err:	Cmd: 'noooo' -> 'noooo'
+	Loc: living-room
+-----
+Cmd: 'go outside' -> 'go outside'
+-----
+Err:	Cmd: 'look outside' -> 'look outside'
+	Loc: living-room
+-----
+-----
+Err:	Cmd: 'look entryway' -> 'look entryway'
+	Loc: living-room
+-----
+Cmd: 'go to entryway' -> 'go entryway'
+Cmd: 'look' -> 'look'
+Cmd: 'open door' -> 'open door'
+-----
+Err:	Cmd: 'sldjflksjdf' -> 'sldjflksjdf'
+	Loc: entryway
+-----
+Cmd: 'die' -> 'die'
+Cmd: 'hint' -> 'hint'
+-----
+Err:	Cmd: 'where' -> 'where'
+	Loc: entryway
+-----
+-----
+Err:	Cmd: 'take pacakge' -> 'take pacakge'
+	Loc: entryway
+-----
+Cmd: 'take package' -> 'sign'
+-----
+Err:	Cmd: 'the one emily left me' -> '1 emily left me'
+	Loc: entryway
+-----
+-----
+Err:	Cmd: 'i am typing in capital letters' -> 'inventory am typing in capital letters'
+	Loc: entryway
+-----
+-----
+Err:	Cmd: 'find pacakge' -> 'find pacakge'
+	Loc: entryway
+-----
+Cmd: 'hint' -> 'hint'
+Cmd: 'open door' -> 'open door'
+-----
+Err:	Cmd: 'look out door' -> 'look out door'
+	Loc: entryway
+-----
+-----
+Err:	Cmd: 'look outside' -> 'look outside'
+	Loc: entryway
+-----
+Cmd: 'take package' -> 'sign'
+Cmd: 'hint' -> 'hint'
+-----
+Err:	Cmd: 'but its not there' -> 'but its not there'
+	Loc: entryway
+-----
+Cmd: 'hint' -> 'hint'
+Cmd: 'go to entryway' -> 'go entryway'
+Cmd: 'open door' -> 'open door'
+Cmd: 'get package' -> 'sign'
+-----
+Err:	Cmd: 'ljjlaajsfj' -> 'ljjlaajsfj'
+	Loc: entryway
+-----
+-----
+Err:	Cmd: 'ok' -> 'ok'
+	Loc: entryway
+-----
+-----
+Err:	Cmd: 'looklook' -> 'looklook'
+	Loc: entryway
+-----
+Cmd: 'open package' -> 'open package'
+-----
+Err:	Cmd: 'why is there no package' -> 'why is there no package'
+	Loc: entryway
+-----
+Cmd: 'help' -> 'hint'
+Cmd: 'go to entryway' -> 'go entryway'
+Cmd: 'close door' -> 'close door'
+Cmd: 'open door' -> 'open door'
+Cmd: 'open package' -> 'open package'
+Cmd: 'go to living room' -> 'go living-room'
+Cmd: 'open swifts' -> 'open swifts'
+Cmd: 'buy tea' -> 'buy tea'
+Cmd: 'flail' -> 'flail'
