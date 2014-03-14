@@ -213,6 +213,7 @@ environment global {
     synonym "you" "yourself" "self";
     synonym "put hands on head" "set hands on head";
     synonym "understand" "understand anything";
+    synonym "wall" "plaster";
 
     # Some display of the items you have, I guess.
     command inventory {
@@ -991,7 +992,33 @@ environment global {
             }
         }
     }
-    command tear hear {
+    command cry {
+        respond {
+            You curl up in a ball and cry. Then you get
+            back up and feel a lot better.
+        }
+    }
+    command smile {
+        respond {
+            You smile broadly. You are so happy to be 
+            right here right now.
+        }
+    }
+    command frown {
+        respond {
+            You frown broadly. You are so sad to be 
+            right here right now.
+        }
+    }
+    command win game {
+        respond {
+            You win!
+
+
+            Just kidding. Keep trying.
+        }
+    }
+    command tear hair {
         respond {
             You tear out a clump of your hair.
             You think it will be dramatic, but it's mostly just painful.
@@ -1634,7 +1661,6 @@ environment global {
             invincible.
         }
     }
-    # Just for Devon
     command break *{
         respond {
             You raise your arms above your head, ready to unleash
@@ -1673,6 +1699,9 @@ environment global {
     }
     object you {
         You are wonderful.
+    }
+    object junk {
+        No material good could ever be junk.
     }
 }
     
@@ -1863,6 +1892,12 @@ environment house global {
     }
     object outside {
         Cold. You're glad you're inside.
+    }
+    object apartment {
+        You would describe your apartment's size as "cozy." You would also
+        describe you arpartment's cleanliness as "cozy." In fact, "cozy"
+        is a great work to describe something you don't really want to
+        describe.
     }
 }
 
@@ -2091,6 +2126,13 @@ location bedroom house {
     object drawer {
         The top one opens. The bottom one does not.
     }
+    object floor covering {
+        Those dirty clothes probably look better than any purposeful
+        decoration you could come up with.
+    }
+    object bottom drawer {
+        Not your finest piece of self-assembled furniture.
+    }
 }
 
 # Set up for entryway
@@ -2104,10 +2146,12 @@ location entryway house {
     synonym "talk" "say hello" "say hello to" "greet";
     synonym "hurt" "harm" "kick" "bite" "punch" "hit" 
     "slap" "kill" "stab" "murder";
-    synonym "follow" "chase after" "chase";
+    synonym "follow" "chase after" "chase" "run after";
     synonym "sign anyway" "sign with blood" "sign with your own blood";
     synonym "ask for" "request";
     synonym "ring doorbell" "push doorbell";
+    synonym "consider" "contemplate";
+    synonym "exit" "leave";
 
     command look {
         respond {
@@ -2248,9 +2292,16 @@ location entryway house {
         }
     }
     command follow woman {
-        respond {
-            She's just too fast for you. She got away, taking all
-            of her beautiful packages along with her.
+        if `and (eq frontDoor "open") (not mailWomanPresent)` {
+            respond {
+                She's just too fast for you. She got away, taking all
+                of her beautiful packages along with her.
+            }
+        }
+        else {
+            respond {
+                Who are you chasing?
+            }
         }
     }
     command hurt woman {
@@ -2644,13 +2695,14 @@ location entryway house {
 
 location kitchen house {
 
-    synonym "stove" "stains" "oven";
-    synonym "food" "bread" "pasta" "cookies";
+    synonym "stove" "stains" "oven" "stain";
+    synonym "food" "loaf of bread" "bread" "empty box of pasta" 
+    "pasta" "cookies";
     synonym "tomato-sauce" "tomato sauce" "tomatosauce";
     synonym "food" "bread" "pasta" "cookies";
     synonym "take" "eat";
     synonym "fridge" "refrigerator" "fridge door" "refrigerator door";
-    synonym "cheese" "boxes";
+    synonym "cheese" "take out boxes" "boxes";
     synonym "butter"  "little butter dish thing" 
     "butter dish thing" "butter dish";
     synonym "jars" "jar" "jam" "jams" "marmalade" "condiments";
@@ -2659,6 +2711,9 @@ location kitchen house {
     synonym "shelves" "fridge shelves";
     synonym "counter" "counters" "counter top" "counter tops";
     synonym "kill" "destroy" "remove";
+    synonym "smell" "smell room";
+    synonym "dinosaur" "triceratops";
+    synonym "take breakfast" "make breakfast";
     
     command look {
         respond {
@@ -2682,6 +2737,18 @@ location kitchen house {
     }
     command exit {
         trigger go living room;
+    }
+    command find sponge {
+        respond {
+            You know it's somewhere beneath the dirty dishes.
+            You consider that found.
+        }
+    }
+    command smell {
+        respond {
+            Delicious. Or, at least it doesn't smell much like
+            rotting food.
+        }
     }
     command clean {
         respond {
@@ -2828,6 +2895,19 @@ location kitchen house {
             }
         }
     }
+    command look cheese {
+        if `fridgeOpen` {
+            respond {
+                A bit of cheese next to some old take out boxes.
+                Indisputable proof of your ability to feed yourself.
+            }
+        }
+        else {
+            respond {
+                Where?
+            }
+        }
+    }
     command look shelves {
         if `fridgeOpen` {
             respond {
@@ -2945,6 +3025,19 @@ location kitchen house {
             }
         }
     }
+    command close butter {
+        if `hasKeys` {
+            respond {
+                Your butter dish is closed, waiting until your
+                next need to store your keys.
+            }
+        }
+        else {
+            respond {
+                The dish is already closed.
+            }
+        }
+    }
     command take steve {
         respond {
             Steve is a stain, and therefore can only exist on
@@ -2955,6 +3048,19 @@ location kitchen house {
         respond {
             That would involve cleaning the stove, which sounds
             really difficult.
+        }
+    }
+    command kill stove {
+        respond {
+            That would involve cleaning the stove, which sounds
+            really difficult.
+        }     
+    }
+    command make food {
+        respond {
+            Now, you know you are a responsible adult, but being able to
+            make food goes way beyond responsibility and into insanity.
+            You're not going that far.
         }
     }
     command pet steve {
@@ -3019,6 +3125,13 @@ location kitchen house {
         You can't actually see the counter top because of the food,
         but you're pretty sure its there.
     }
+    object sponge {
+        It's somewhere beneath the dirty dishes. You can't see
+        it right now. That might be a good thing. 
+    }
+    object pictures {
+        Your fridge is tankfully free of little kid pictures.
+    }
 }
 
 location bathroom house {
@@ -3031,6 +3144,7 @@ location bathroom house {
     synonym "sweatshirt" "sweater" "mat";
     synonym "clothes" "clothing";
     synonym "look" "look in";
+    synonym "room" "bathroom";
 
     command look {
         respond {
@@ -3042,6 +3156,12 @@ location bathroom house {
     }
     command exit {
         trigger go living room;
+    }
+    command dry hands {
+        respond {
+            You have no idea where the towels went, if you 
+            ever had any.
+        }
     }
     command open toilet {
         respond {
@@ -3121,6 +3241,9 @@ location bathroom house {
             That pile of clothes is exactly where is should be. 
             You don't want to move your perfectly formed bath mat.
         }
+    }
+    command clean {
+        trigger clean room;
     }
     command clean room {
         respond {
@@ -3213,8 +3336,10 @@ location living-room house {
     synonym "remote" "remote control";
     synonym "look" "find" "look for" "browse for" 
      "browse through" "look through" "browse";
-    synonym "turn on computer" "turn computer on";
-    synonym "turn off computer" "turn computer off";
+    synonym "turn on computer" "turn computer on" 
+    "press on button" "press on" "push on button";
+    synonym "turn off computer" "turn computer off"
+    "press off button" "press off" "push off button";
     synonym "caress" "stroke";
     synonym "sales" "other sales";
     synonym "hello" "hi";
@@ -3257,6 +3382,11 @@ location living-room house {
         respond {
             You find nothing of interest between the cushions.
             They're really soft and cuddly, though.
+        }
+    }
+    command caress cushion {
+        respond {
+            You run your hand over the soft, soft cushion.
         }
     }
     command use computer {
@@ -3381,7 +3511,7 @@ location living-room house {
             like so much effort.
         }
     }
-    command turn of tv {
+    command turn off tv {
         respond {
             You're pretty sure your TV is off. Or maybe it's broken!
             That would be the worst.  Where would you watch your
@@ -3415,7 +3545,10 @@ location living-room house {
         }
         set onSwifts 1;
     }
-        command open swifts {
+    command use swifts {
+        trigger open swifts;
+    }
+    command open swifts {
         if `eq computerState "off"` {
             respond {
                 You first turn on your computer, because you
@@ -3516,7 +3649,7 @@ location living-room house {
             }
         }
     }
-    command browse swifts {
+    command look swifts {
         if `onSwifts` {
             respond {
                 The baby clothes look really cute. 
@@ -3747,6 +3880,14 @@ location living-room house {
                 Kittens? Kittens! You see no kittens, sadly.
             }
         } 
+    }
+    command say hello {
+        if `onChat` {
+            trigger 1;
+        }
+        else {
+            trigger hello;
+        }
     }
     command respond emily {
         trigger chat emily;
@@ -4025,6 +4166,9 @@ environment outside global {
     object sky {
         Gray, gloomy, and cold.
     }
+    object cloud {
+        That cloud almost looks like a lump of plaster.
+    }
 }
 
 # just outside the house
@@ -4040,6 +4184,10 @@ location outdoors outside {
     synonym "drive inside" "open door" "enter" 
     "enter house" "enter door";
     synonym "knock" "knock on door" "knock at door" "knock door";
+    synonym "address" "address on package" "package address"
+     "mr robertson" "mr robertsons house"
+    "robertsons house" "robertson" "13310 podwoic avenue";
+    synonym "drive post office" "deliver package";
 
     command look {
         respond {
@@ -4050,7 +4198,20 @@ location outdoors outside {
             Your car is sitting in the driveway, waiting. Good car.
         }
     }
-
+    command drive robertson {
+        if `hasSeenAddress` {
+            respond {
+                The nice, responsive people at the 
+                post office can get this package back for you. You
+                should just talk to them instead.
+            }
+        }
+        else {
+            respond {
+                Where are you trying to go?
+            }
+        }
+    }
     # This is really sad. :( due to sad aliasing of "go"
     command drive inside {
         respond { 
@@ -4450,8 +4611,8 @@ location postoffice global {
     synonym "solitaire" "game" "solitaire game";
     synonym "home" "back";
     synonym "address" "address on package" "package address"
-     "mr robertson" "mr robertson's house"
-    "robertson's house" "robertson" "13310 podwoic avenue";
+     "mr robertson" "mr robertsons house"
+    "robertsons house" "robertson" "13310 podwoic avenue";
     synonym "tape" "packing tape" "packaging tape";
     synonym "talk man" "ask man about package" "address man";
     synonym "show package" "show medallion to man" "show medallion"
@@ -4462,6 +4623,7 @@ location postoffice global {
     synonym "check pulse" "check man for pulse" 
     "check for pulse" "check man pulse";
     synonym "drive address" "deliver package";
+    synonym "ruin" "mess up";
     
     command look {
         respond {
@@ -4475,12 +4637,31 @@ location postoffice global {
             necessities.
         }
     }
+    command leave {
+        if `donePostOffice` {
+            respond {
+                You just want to wander aimlessly out the door? Give
+                yourself some more direction. You need it.
+            }
+        }
+        else {
+            respond {
+                You're going to get this man's attention even if it
+                involves burning down the post office.
+            }
+        }
+    }
     command ruin solitaire {
         respond {
             You mess up the order of the cards by shoving your
             hand across the desk. The man patiently gathers up all 
             of the cards and places them in the exact order
             they were in before, then continues.
+        }
+    }
+    command buy solitaire {
+        respond {
+            You really want nothing to do with that game.
         }
     }
     command check pulse {
@@ -4537,6 +4718,11 @@ location postoffice global {
             hit him, flail, burn the post office to the ground,
             and he wouldn't notice. In fact, you inform him
             of this observation. He doesn't respond.
+        }
+    }
+    command win solitaire {
+        respond {
+            That game is pretty hopeless.
         }
     }
     command go counter {
@@ -4811,6 +4997,11 @@ location postoffice global {
             set hintsCounter 0;
         }
     }
+    command buy name pin {
+        respond {
+            You really have no need of a name pin that say 'KLEISTHENES'.
+        }
+    }
     object counter {
         The counter's sole purpose is to hold the cards
         that the unresponsive man is using to play solitaire.
@@ -4835,6 +5026,9 @@ location postoffice global {
     }
     object chocolate {
         Yummmmmmmmmm
+    }
+    object bell {
+        Bells should be heard but not seen. That's your motto for bells.
     }
     object solitaire {
         The man has managed to find all of the clubs up to nine,
@@ -4862,6 +5056,10 @@ location postoffice global {
     object eye {
         Oddly familiar.
     }
+    object name pin {
+        It says 'KLEISTHENES' and is about as responsive
+        as the man wearing it.
+    }
 }
 
 location robertson-front-door outside {
@@ -4870,8 +5068,10 @@ location robertson-front-door outside {
     synonym "open door" "enter" "enter house" "enter door";
     synonym "leave package" "leave medallion" "leave package at door"
      "leave medallion at door" "leave package at house"
-      "leave medallion at house";
-    synonym "follow cat" "go after cat" "follow footprints" "enter bushes" "go bushes";
+      "leave medallion at house" "deliver package";
+    synonym "follow cat" "drive after cat" "follow footprints" 
+    "enter bushes" "drive bushes" 
+    "drive with cat" "drive through bushes" "leave through bushes";
     synonym "drive" "drive to" "go";
     synonym "emily" "emilys" "emilys house" 
     "emily house" "emilys place";
@@ -4888,6 +5088,7 @@ location robertson-front-door outside {
     synonym "yard" "backyard" "sideyard" "back yard" "side yard";
     synonym "walk around home" "drive back door";
     synonym "drive car" "take in car";
+    synonym "headbutt" "bang head on";
     
     command look {
         respond {
@@ -5070,6 +5271,42 @@ location robertson-front-door outside {
             respond {
                 Cat footprints in the snow, showing 
                 you a convenient path.
+            }
+        }
+    }
+    command look cat {
+        if `not catPresent` {
+            respond {
+                You don't see any cats around here, though
+                admittedly you didn't look very hard.
+            }
+        }
+        else {
+            respond {
+                The cat left through the bushes, giving you a look
+                that demanded that it must be followed.
+            }
+        }
+    }
+    command use medallion on cat {
+        if `not catPresent` {
+            respond {
+                You don't see any cats around here, though
+                admittedly you didn't look very hard.
+            }
+        }
+        else {
+            if `hasMedallion` {
+                respond {
+                    The cat left through the bushes, giving you a look
+                    that demanded that it must be followed.
+                }
+            }
+            else {
+                respond {
+                    You left the medallion and the cat in the house,
+                    remember?
+                }
             }
         }
     }
@@ -5353,6 +5590,11 @@ location backyard outside {
             set hintsCounter 0;
         }
     }
+    command use medallion on cat {
+        respond {
+            The cat is nowhere to be found.
+        }
+    }
     command kick reindeer {
         respond {
             You aim your best kick at the first reindeer. Instead of
@@ -5380,7 +5622,13 @@ location backyard outside {
     }
     command follow cat {
         respond {
-            The cat is nowhere to be found/ How did she get away?
+            The cat is nowhere to be found. How did she get away?
+        }
+    }
+    command find cat {
+        respond {
+            She might have gone inside the house somehow, but you
+            can't find her.
         }
     }
     object window {
@@ -5402,6 +5650,9 @@ location backyard outside {
     }
     object fences {
         Tall fences that prevent you from seeing anywhere else.
+    }
+    object cat {
+        You can't see the cat anymore.
     }
 }
 
@@ -5527,6 +5778,11 @@ environment puzzle-room global{
             respond {
                 You have nothing to throw at the cat.
             }
+        }
+    }
+    command eat cat {
+        respond {
+            The cat does not look particularly delicious.
         }
     }
     command cut painting out of frame {
