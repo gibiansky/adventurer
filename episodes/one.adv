@@ -166,12 +166,12 @@ environment global {
     synonym "look" "examine" "x" "see" "view" 
     "look at" "look around" "l" "check";
     synonym "take off jacket" "strip" "remove jacket";
-    synonym "go" "move" "g" "go in" "go to" "move to" "enter"
-    "go into" "goto";
+    synonym "go" "move" "g" "go back to" "go in" "go to" "move to" "enter"
+    "go into" "goto" "walk to" "walk";
     synonym "" "damn" "fucking" "goddamn" "god damn";
     synonym "living-room" "living room" "livingroom";
     synonym "close" "shut";
-    synonym "take" "pick up" "get";
+    synonym "take" "pick up" "get" "take out";
     synonym "package" "box" "packaging" "brown parcel" "parcel";
     synonym "empty package" "torn package" "opened package" "ripped package";
     synonym "entryway" "entrance" "entry way" "entry-way" 
@@ -206,7 +206,8 @@ environment global {
     "inventory refuse to be brought down";
     synonym  "hands" "hand" "own hands" 
     "own hand";
-    synonym "scream" "yell" "shout";
+    synonym "scream" "yell" "shout" "scream loudly" "yell loudly"
+    "shout loudly";
     synonym "flail" "wave your arms" "wave arms" "wave";
     synonym "doorbell" "door bell";
     synonym "jump" "leap";
@@ -214,6 +215,7 @@ environment global {
     synonym "put hands on head" "set hands on head";
     synonym "understand" "understand anything";
     synonym "wall" "plaster";
+    synonym "find" "look for";
 
     # Some display of the items you have, I guess.
     command inventory {
@@ -478,7 +480,7 @@ environment global {
             if `eq hintsCounter 2` {
                 respond {
                     You love the feel of cold keys. Maybe
-                    you should check the refrgerator.
+                    you should check the refrigerator.
                 }
             }
             if `eq hintsCounter 3` {
@@ -564,8 +566,8 @@ environment global {
         if `eq hintsState "findCat"` {
             if `eq hintsCounter 0` {
                 respond {
-                    What a nice yard. You should look
-                    around and see what you can find.
+                    What a nice place. You should look
+                    around.
                 }
             }
             if `eq hintsCounter 1` {
@@ -881,8 +883,8 @@ environment global {
             }
             if `gt hintsCounter 1` {
                 respond {
-                    Talk to mr. Robertson and give him
-                    his medallion so youcan get out of here.
+                    Talk to Mr. Robertson and give him
+                    his medallion so you can get out of here.
                 }
             }
             set hintsCounter `add hintsCounter 1`;
@@ -998,10 +1000,33 @@ environment global {
             back up and feel a lot better.
         }
     }
+    command yay {
+        respond {
+            Hooray for you!
+        }
+    }
+    command package {
+        trigger look package;
+    }
+    command wear pants {
+        respond {
+            You're already wearing pants. Another pair would be excessive.
+        }
+    }
+    command hungry {
+        respond {
+            Your stomach rumbles dramatically.
+        }
+    }
     command smile {
         respond {
             You smile broadly. You are so happy to be 
             right here right now.
+        }
+    }
+    command go store {
+        respond {
+            Everything you could possibly buy can be found on Swifts.com.
         }
     }
     command frown {
@@ -1717,11 +1742,50 @@ environment house global {
     synonym "4" "say 4";
     synonym "5" "say 5";
     synonym "6" "say 6";
-
+    synonym "sign" "sign for" "sign clipboard" 
+    "take clipboard" "take package" "sign things" "go sign for";
+    synonym "entryway" "doorway";
 
     command go emily {
         respond {
             Your car's outside.
+        }
+    }
+    command turn on computer {
+        trigger go computer;
+    }
+    command go computer {
+        respond {
+            Your computer is in the living room.
+        }
+    }
+    command get package {
+        respond {
+            If you have a package, you should open the front door
+            in the entryway to see if anything is waiting for you.
+        }
+    }
+    command read book {
+        respond {
+            You don't have any books around to read since you already
+            finished your supply of romance novels.
+        }
+    }
+    command go bed {
+        respond {
+            You're really not that tired right now.
+        }
+    }
+    command sign package {
+        if `mailWomanPresent` {
+            respond {
+                The mailwoman is probably waiting at the entryway.
+            }
+        }
+        else {
+            respond {
+                What are you trying to do?
+            }
         }
     }
     command wander listlessly {
@@ -1740,8 +1804,18 @@ environment house global {
             Sadly, you don't own a cat.
         }
     }
+    command eat breakfast {
+        respond {
+            You've heard that breakfast is the most
+            important meal of the day. So it's probably important
+            in some way that you slept through breakfast.
+        }
+    }
     command take pen {
         trigger find pen;
+    }
+    command keys {
+        trigger find keys;
     }
     command take keys {
         trigger find keys;
@@ -1775,6 +1849,13 @@ environment house global {
             Your car's outside.
         }
     }
+    command go door {
+        respond {
+            You walk over to your open door, from which you can
+            access the entirity of the house: bedroom, bathroom, kitchen,
+            living room, entryway.
+        }
+    }
     command take furniture {
         respond {
             You have pretty big pockets, but not quite that big.
@@ -1798,6 +1879,9 @@ environment house global {
         respond {
             Which room?
         }
+    }
+    command go front door {
+        trigger go entryway;
     }
     command go living-room {
         move-to living-room;
@@ -1890,6 +1974,10 @@ environment house global {
     object floor {
         Pretty solid. It hasn't failed you yet.
     }
+    object ceiling {
+        Still right above your head. You're counting on it remaining that
+        way.
+    }
     object outside {
         Cold. You're glad you're inside.
     }
@@ -1910,7 +1998,7 @@ location bedroom house {
      "go back corner";
      synonym "open drawer" "look in dresser" "look in drawer";
     synonym "blankets" "blanket" "covers" "cover";
-    synonym "sleep" "nap" "doze off" "take in bed";
+    synonym "sleep" "nap" "doze off" "take in bed" "go sleep";
     synonym "clothes" "clothing" "shirt" "shirts";
     synonym "clean" "tidy" "clean room" "tidy up" "tidy room"
     "pick up clothes";
@@ -1935,6 +2023,12 @@ location bedroom house {
     command exit {
         trigger go living room;
     }
+    command fluff pillow {
+        respond {
+            You poof up your pillow until it's just the right level
+            of fluffiness.
+        }
+    }
     command take pen {
         if `hasPen` {
             respond {
@@ -1945,6 +2039,12 @@ location bedroom house {
             respond {
                 You don't see a pen. Maybe there's one in the dresser?
             }
+        }
+    }
+    command look on dresser {
+        respond {
+            There's nothing of interest on top of your poorly constructed
+            dresser.
         }
     }
     command wear clothes {
@@ -1995,6 +2095,13 @@ location bedroom house {
             sleep through every day.
         }
     }
+    command take dressed {
+        # get dressed
+        respond {
+            The clothes you are wearing right now are good enough to
+            last the day. And maybe even the day after.
+        }
+    }
     command take blankets {
         respond {
             There doesn't really seem to be a point to doing this.
@@ -2012,7 +2119,7 @@ location bedroom house {
     command go closet {
         respond {
             You're pretty sure your closet offers a portal
-            to a new world, but you've never managed to find yet
+            to a new world, but you've never managed to find it yet,
             even though you've entered your closet many times.
         }
     }
@@ -2141,7 +2248,7 @@ location entryway house {
      "delivery person" "delivery woman" "person" "deliveryperson";
     synonym "peanuts" "packaging peanuts" "peanut";
     synonym "sign" "sign for" "sign clipboard" 
-    "take clipboard" "take package" "sign things";
+    "take clipboard" "take package" "sign things" "go sign for";
     synonym "door" "front door";
     synonym "talk" "say hello" "say hello to" "greet";
     synonym "hurt" "harm" "kick" "bite" "punch" "hit" 
@@ -2152,6 +2259,7 @@ location entryway house {
     synonym "ring doorbell" "push doorbell";
     synonym "consider" "contemplate";
     synonym "exit" "leave";
+    synonym "hurt woman" "hurt woman over head";
 
     command look {
         respond {
@@ -2164,12 +2272,33 @@ location entryway house {
             not quite sure what. The front door
             is `frontDoor`. Maybe also a metaphor.
         }
+        if `and (eq frontDoor "open") mailWomanPresent` {
+            respond {
+                Holding out a clipboard, `mailPersonName` stands
+                waiting for you to sign for your package.
+            }
+        }
     }
     command exit {
         trigger go outside;
     }
     command talk {
         trigger talk woman;
+    }
+    command hurt woman with pencil {
+        respond {
+            You don't have a pencil on you.
+        }
+    }
+    command hurt woman with pen {
+        if `hasPen` {
+            trigger hurt woman;
+        }
+        else {
+            respond {
+                You don't have a pen on you.
+            }
+        }
     }
     command open door {
         if `eq frontDoor "open"` {
@@ -2714,6 +2843,9 @@ location kitchen house {
     synonym "smell" "smell room";
     synonym "dinosaur" "triceratops";
     synonym "take breakfast" "make breakfast";
+    synonym "make sandwich" "take sandwich";
+    synonym "take milk" "take out milk";
+    synonym "make" "fix";
     
     command look {
         respond {
@@ -2744,10 +2876,52 @@ location kitchen house {
             You consider that found.
         }
     }
+    command open dishwasher {
+        trigger look dishwasher;
+    }
+    command take {
+        # eat
+        trigger take food;
+    }
     command smell {
         respond {
             Delicious. Or, at least it doesn't smell much like
             rotting food.
+        }
+    }
+    command make grilled cheese sandwich {
+        respond {
+            That requires bread, cheese, a pan, and compotency. You
+            don't feel like finding all of those right now.
+        }
+    }
+    command look in sink {
+        trigger look sink;
+    }
+    command look in pantry {
+        trigger look pantry;
+    }
+    command look in fridge {
+        if `fridgeOpen` {
+            trigger look fridge;
+        }
+        else {
+            trigger open fridge;
+        }
+    }
+    command open freezer {
+        respond {
+            If that part of your fridge once was a freezer, it is now 
+            welded shut with ice and possibly other substances.
+        }
+    }
+    command make sandwich {
+        respond {
+            Making a sandwich sounds like way too much work right now. You'd
+            have to get bread, and things to put between the bread, and then
+            you'd have to put everything away. But you wouldn't
+            put everything away and instead opt to feel guilt at your lack
+            of responsibility. It's better to not even start.
         }
     }
     command clean {
@@ -2806,6 +2980,12 @@ location kitchen house {
         respond {
             Everything is balanced as such a perfect
             structure that it would be a shame to move anything.
+        }
+    }
+    command take milk {
+        respond {
+            You stopped buying milk because it was too much trouble to 
+            get rid of when it went bad.
         }
     }
     command look fridge {
@@ -3102,6 +3282,11 @@ location kitchen house {
         apartment, ok? Anyway, you have dishes to spare,
         so don't worry about cleaning these.
     }
+    object dishwasher {
+        Your kitchen doesn no have a dishwasher. Yo wonder if a
+        dishwasher might make you more likely to wash dishes.
+        Probably not.
+    }
     object dishes {
         That's a lot of dirty dishes. Luckily, you
         have enough plates and silverware to
@@ -3319,7 +3504,7 @@ location living-room house {
     synonym "sit" "sit on" "relax" "relax on" "lay" "lay on";
     synonym "tv" "television";
     synonym "browse" "search" "explore" "scroll through";
-    synonym "buy" "purchase";
+    synonym "buy" "purchase" "order";
     synonym "baby clothes" "onesie";
     synonym "explosives" "bomb" "bombs" "dynamite";
     synonym "emoticon" "smiley" "smiley face";
@@ -3392,7 +3577,7 @@ location living-room house {
     command use computer {
         trigger turn on computer;
     }
-    command exit {
+    command close {
         trigger go bedroom;
     }
     command take dust {
@@ -3461,6 +3646,22 @@ location living-room house {
         respond {
             You sit in the chair a swivel around a few times before
             getting back up.
+        }
+    }
+    command type {
+        respond {
+            You furisouly type pure poetry into the computer.
+        }
+        if `eq computerState "off"` {
+            respond {
+                Then you remember that your computer is off.
+            }
+        }
+        else {
+            respond {
+                Then you realize you never acutally selected anything
+                to type into.
+            }
         }
     }
     command turn on computer {
@@ -4174,8 +4375,9 @@ environment outside global {
 # just outside the house
 location outdoors outside {
     synonym "inside" "house" "indoors";
-    synonym "drive car" "open car" "take in car";
-    synonym "drive" "go" "drive to";
+    synonym "drive car" "open car" "take in car" "start car" 
+    "drive back in car";
+    synonym "drive" "go" "drive to" "drive car to";
     synonym "emily"  "emilys house" 
     "emily house" "emilys place" "emilys";
     synonym "car" "vehicle";
@@ -4209,6 +4411,18 @@ location outdoors outside {
         else {
             respond {
                 Where are you trying to go?
+            }
+        }
+    }
+    command find keys {
+        if `hasKeys` {
+            respond {
+                It's in your pocket, genius.
+            }
+        }
+        else {
+            respond {
+                You think you left your keys in the kitchen.
             }
         }
     }
@@ -4397,7 +4611,8 @@ location outdoors outside {
 location emily-house outside {
     synonym "plant" "potted plant" "dead plant";
     synonym "knock" "knock on door" "knock at door" "knock door" 
-    "ring doorbell" "call for emily" "yell" "call" "knock on emilys door";
+    "ring doorbell" "call for emily" "yell" "call" "knock on emilys door"
+    "ring bell";
     synonym "open door" "enter" "enter house" "enter door";
     synonym "deliver" "leave" "give emily" "give" "drop" "add";
     synonym "drive" "go" "drive to";
@@ -4725,7 +4940,7 @@ location postoffice global {
             That game is pretty hopeless.
         }
     }
-    command go counter {
+    command drive counter {
         respond {
             You walk up to the counter.
         }
@@ -4758,7 +4973,7 @@ location postoffice global {
             You let out a primal scream. 
             The clerk doesn't react, which makes you
             feel a little sad about the lack of power
-            you seem to have to affect change in your own life.
+            you seem to have to effect change in your own life.
             On the bright side, at least your face reading prowess
             has been partially confirmed.
         }
@@ -5086,7 +5301,7 @@ location robertson-front-door outside {
     synonym "door" "door step";
     synonym "ring doorbell" "push doorbell" "ring bell" "push bell";
     synonym "yard" "backyard" "sideyard" "back yard" "side yard";
-    synonym "walk around home" "drive back door";
+    synonym "walk around home" "drive back door" "drive back of home";
     synonym "drive car" "take in car";
     synonym "headbutt" "bang head on";
     
@@ -5111,6 +5326,12 @@ location robertson-front-door outside {
     }
     command leave {
         trigger drive car;
+    }
+    command knock againg {
+        respond {
+            You knock. You knock some more. 
+            Nothing changes. No one answers.
+        }
     }
     command drive car{
         if `hasMedallion` {
@@ -5226,6 +5447,7 @@ location robertson-front-door outside {
                 restraint. You really do.
             }
             move-to emily-house;
+            trigger look;
         }
     }
     command look snow {
@@ -5671,7 +5893,7 @@ environment puzzle-room global{
     synonym "leave medallion" "leave package" "drop medallion" "drop package";
     synonym "cabinet" "filing cabinet" "drawers";
     synonym "open" "look through";
-    synonym "food" "cat food";
+    synonym "food" "cat food" "catfood";
     synonym "feed cat" "use food with cat" 
     "use cat food with cat" "give food to cat" 
     "give cat food to cat" "give cat food cat" 
@@ -5682,7 +5904,7 @@ environment puzzle-room global{
     synonym "painting" "picture" "image";
     synonym "leave" "walk out" "go door" "leave room"
     "go through door" "leave door" "leave through door" "exit"
-    "go hallway";
+    "go hallway" "run";
     synonym "go outside" "jump out window" "go out window" "go window"
     "open window" "jump through window";
     synonym "scorch" "scorch marks" "scorch mark"
@@ -5750,6 +5972,13 @@ environment puzzle-room global{
             }
         }
     }
+    command write note {
+        respond {
+            You pull out your BERT'S TREE TRIMMING pen in order to
+            write a heartfelt note. Then you decide not to write all
+            over this man's possessions.
+        }
+    }
     command throw food {
         if `hasCatFood` {
             respond {
@@ -5785,9 +6014,35 @@ environment puzzle-room global{
             The cat does not look particularly delicious.
         }
     }
+    command imitate painting {
+        respond {
+            In a feat worthy of a championship game of charades, you
+            move your body in a way that could only be interpreted as the
+            picture on the wall,
+        }
+    }
     command cut painting out of frame {
         respond {
             You wouldn't destroy this...beautiful...art.
+        }
+    }
+    command put package on book {
+        respond {
+            These books don't belong in some torn up package.
+        }
+    }
+    command put medallion in rock {
+        if `hasMedallion` {
+            respond {
+                The medallion is not a piece of flint, and therefore
+                would look rather out of place in a rock collection
+                of just flint.
+            }
+        }
+        else {
+            respond {
+                You no longer have a medallion.
+            }
         }
     }
     command burn room {
@@ -5927,6 +6182,11 @@ environment puzzle-room global{
             Which book do you want?
         }
     }
+    command take book {
+        respond {
+            You should take a specific book that you want.
+        }
+    }
     command burn cat {
         respond {
             Not the kitty!
@@ -6037,7 +6297,7 @@ environment puzzle-room global{
 
                 Just kidding!
 
-                You aren't allowed to be quite this stupid, solitaire
+                You aren't allowed to be quite this stupid, so
                 I'm taking over for now and you are leaving the room.
             }
             trigger leave;
@@ -6540,13 +6800,21 @@ environment puzzle-room global{
 }
 
 location room-one puzzle-room {
-    synonym "burn chair" "use rock on chair" "use rock on book"
-    "use rock on leaves of grass" "use rock with chair" "use rock with book"
-    "use rock with leaves of grass"
-    "start fire" "set chair on fire" "ignite chair" "ignite book"
+    synonym "burn" "light chair on fire with rock"
+    "use rock to make fire" "use rock to burn chair"
+    "light chair on fire" "light chair"
+    "burn chair" "fire chair" "use rock on chair" 
+     "use rock with chair" "use rock" "hit rock"
+    "start fire" "set chair on fire" "set on fire" "ignite chair" 
+    "set fire to chair" "set fire to" "set fire" "fire";
+    synonym "use rock on book" "use rock on leaves of grass" 
+    "use rock with book" "use rock with leaves of grass" "ignite book"
     "set book on fire" "burn book" "ignite leaves of grass" 
     "set leaves of grass on fire" "burn leaves of grass"
-    "set fire to chair" "fire";
+    "light book on fire with rock"
+    "light book on fire" "light book"
+    "light leaves of grass on fire with rock"
+    "light leaves of grass on fire" "light leaves of grass";
     synonym "put book on chair";
     
     command look { 
@@ -6593,6 +6861,26 @@ location room-one puzzle-room {
             Which book?
         }
     }
+    command use rock on book {
+        if `placedBook` {
+            trigger burn;
+        }
+        else {
+            if `eq heldBook "None"` {
+                respond {
+                    You aren't holding any book to light on fire.
+                }
+            }
+            else {
+                respond {
+                    You should first but the book on whatever you want to
+                    light on fire. There's no point in using the book for
+                    kindling if the fire isn't going to burn 
+                    down something else.
+                }
+            }
+        }
+    }
     # Should do something about heldBook in command...
     command put book on chair {
         if `eq heldBook "None"` {
@@ -6615,7 +6903,8 @@ location room-one puzzle-room {
                 respond {
                     You can't believe you! This book is in no way
                     expendable. You are absolutely not setting
-                    fire to this. Never.
+                    fire to this. Never. You refuse to place the book on
+                    the chair.
                 }
             }
         }
@@ -6679,7 +6968,8 @@ location room-one puzzle-room {
             respond {
                 You can't believe you! This book is in no
                 way expendable. You are absolutely not setting
-                fire to this. Never.
+                fire to this. Never. You refuse to place the book on
+                the chair.
             }
         }
         else {
@@ -6693,7 +6983,8 @@ location room-one puzzle-room {
             respond {
                 You can't believe you! This book is in no
                 way expendable. You are absolutely not setting
-                fire to this. Never.
+                fire to this. Never. You refuse to place the book on
+                the chair.
             }
         }
         else {
@@ -6707,7 +6998,8 @@ location room-one puzzle-room {
             respond {
                 You can't believe you! This book is in no
                 way expendable. You are absolutely not setting
-                fire to this. Never.
+                fire to this. Never. You refuse to place the book on
+                the chair.
             }
         }
         else {
@@ -6721,7 +7013,8 @@ location room-one puzzle-room {
             respond {
                 You can't believe you! This book is in no
                 way expendable. You are absolutely not setting
-                fire to this. Never.
+                fire to this. Never. You refuse to place the book on
+                the chair.
             }
         }
         else {
@@ -6735,7 +7028,8 @@ location room-one puzzle-room {
             respond {
                 You can't believe you! This book is in no
                 way expendable. You are absolutely not setting
-                fire to this. Never.
+                fire to this. Never. You refuse to place the book on
+                the chair.
             }
         }
         else {
@@ -6749,7 +7043,8 @@ location room-one puzzle-room {
             respond {
                 You can't believe you! This book is in no
                 way expendable. You are absolutely not setting
-                fire to this. Never.
+                fire to this. Never. You refuse to place the book on
+                the chair.
             }
         }
         else {
@@ -6763,7 +7058,8 @@ location room-one puzzle-room {
             respond {
                 You can't believe you! This book is in no
                 way expendable. You are absolutely not setting
-                fire to this. Never.
+                fire to this. Never. You refuse to place the book on
+                the chair.
             }
         }
         else {
@@ -6772,7 +7068,7 @@ location room-one puzzle-room {
             }
         }
     }
-    command burn chair {
+    command burn {
         if `hasFlint` {
             if `placedBook` {
                 respond {
@@ -6907,7 +7203,8 @@ location room-one puzzle-room {
 location room-two puzzle-room {
     synonym "couch" "couch cushions" "cushion" "cushions";
     synonym "search" "search through" "search in" "look in" "look for";
-    synonym "note" "love note" "letter" "love letter" "heart-shaped note";
+    synonym "note" "love note" "letter" "love letter" "heart-shaped note"
+    "love notes" "notes";
     synonym "papers" "paper" "colored paper" "colored papers";
     synonym "pink" "pink paper" "pink page" "pink papers" "pink pages";
     synonym "white" "white paper" "white page" 
@@ -6926,6 +7223,10 @@ location room-two puzzle-room {
     synonym "look pink" "read pink";
     synonym "look white" "read white"; 
     synonym "vomit" "throw up" "be sick";
+    synonym "make paper airplanes" "make paper airplane" "make airplanes"
+    "make airplane";
+    synonym "make rainbow" "make rainbows" "make paper rainbow" 
+    "make paper rainbows";
     
     command look {
         respond {
@@ -7657,6 +7958,9 @@ location room-two puzzle-room {
             }
         }
     }
+    command search note {
+        trigger search couch;
+    }
     command search couch {
         respond {
             Feeling somewhat invasive, you search through the couch
@@ -7697,6 +8001,37 @@ location room-two puzzle-room {
         else {
             respond {
                 Heart? Where? Murder it!
+            }
+        }
+    }
+    command make rainbow {
+        if `hasPapers` {
+            respond {
+                You arrange the papers into the best rainbow you can
+                form with the colors pink, yellow, blue, green, and white.
+                It's beautiful.
+            }
+        }
+        else {
+            respond {
+                You have nothing to make yourself a rainbow.
+            }
+        }
+    }
+
+    command make paper airplanes {
+        if `hasPapers` {
+            respond {
+                You fold the sheets of colored papers into
+                paper airplanes and race them. The pink one gets
+                the farthest. The yellow on hits the cat in the back
+                on the head. She hisses at you, so you unfold the papers
+                and go back to organizing the cabinet.
+            }
+        }
+        else {
+            respond {
+                You don't have any papers to turn into paper airplanes.
             }
         }
     }
@@ -8079,16 +8414,20 @@ location room-three puzzle-room {
 }
 
 location room-four puzzle-room {
-    synonym "man" "mr. robertson" "robertson" 
-    "stuart" "stuart robertson" "person" "guy";
+    synonym "man" "mr robertson" "robertson" 
+    "stuart" "stuart robertson" "person" "guy" "him";
     synonym "talk" "talk to" "speak" "speak to"
-     "converse" "converse with";
+     "converse" "converse with" "hello";
     synonym "look man" "oogle man";
     synonym "emily" "emilys put" "emilys house" "emilys"  
     "emily house";
     synonym "drive home" "go home" "go emily" "drive to home"
     "drive to emily" "drive emily";
-
+    synonym "give medallion" "give man medallion" "give man" 
+    "give to man";
+    synonym "goodbye" "good bye";
+    synonym "goodbye" "say goodbye"
+    "say i should be going" "say goodbye man" "say goodbye man";
 
     command look {
         respond {
@@ -8114,6 +8453,36 @@ location room-four puzzle-room {
             you never bothered to mention before because you had no
             idea what it was. After he presses a button, the alarm
             just stops. Magic!
+        }
+    }
+    command goodbye {
+        if `not beganConv` {
+            respond {
+                Maybe you should talk to the man before awkwardly
+                leaving his house.
+            }
+        }
+        else {
+            trigger 6;
+        }
+    }
+    command give medallion {
+        if `hasMedallion` {
+            if `not beganConv` {
+                respond {
+                    You decide to first announce your
+                    presence by starting a conversation
+                } 
+                trigger talk man;
+            }
+            else {
+                trigger 2;
+            }
+        }
+        else {
+            respond {
+                You already handed back your medallion.
+            }
         }
     }
     command talk {
@@ -8318,7 +8687,8 @@ location room-four puzzle-room {
                 }
                 else {
                     respond {
-                        "Yeah, that might be a good idea," he says. "I was
+                        "Yeah, maybe it's a good idea for
+                        you to go now" he says. "I was
                         thinking about closing the window soon since
                         it's getting cold in here."
                     }
