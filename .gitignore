@@ -1,0 +1,4 @@
+*.hi
+*.log
+*.o
+dist
